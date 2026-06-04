@@ -9,7 +9,20 @@ import {
   PREFLIGHT_SEVERITY_STYLES,
   EVIDENCE_KIND_LABEL,
 } from "@/lib/styles";
-import type { Study } from "@/server/types";
+import type { Provider, Study } from "@/server/types";
+
+type LocalProvider = Extract<Provider, "ollama" | "lmstudio" | "llama_server">;
+
+const LOCAL_PROVIDER_STORAGE_KEY = "reviewer.methods.localProvider";
+const LOCAL_PROVIDER_OPTIONS: { value: LocalProvider; label: string }[] = [
+  { value: "ollama", label: "Ollama" },
+  { value: "lmstudio", label: "LM Studio" },
+  { value: "llama_server", label: "llama-server" },
+];
+
+function isLocalProvider(value: string | null): value is LocalProvider {
+  return LOCAL_PROVIDER_OPTIONS.some((option) => option.value === value);
+}
 
 interface StreamTarget {
   id: string;
@@ -142,9 +155,28 @@ export function StudyWorkspace({
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [highlight, setHighlight] = useState<string | null>(null);
   const [pending, setPending] = useState<{ cardType: string; value: string } | null>(null);
+  const [localProvider, setLocalProvider] = useState<LocalProvider | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const stored = window.localStorage.getItem(LOCAL_PROVIDER_STORAGE_KEY);
+      return isLocalProvider(stored) ? stored : null;
+    } catch {
+      return null;
+    }
+  });
   const initialized = useRef(false);
 
   const base = `/api/studies/${studyId}`;
+  const requiresLocalProvider = study.confidentiality_mode === "local_only";
+
+  const chooseLocalProvider = useCallback((provider: LocalProvider) => {
+    setLocalProvider(provider);
+    try {
+      window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, provider);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const apply = useCallback((d: Awaited<ReturnType<typeof loadAll>>) => {
     setCards(d.cards);
@@ -210,6 +242,8 @@ export function StudyWorkspace({
       <Header
         study={study}
         inspector={inspector}
+        localProvider={localProvider}
+        onLocalProviderChange={chooseLocalProvider}
         onJumpNext={() =>
           inspector?.nextBestActionCard && scrollToCard(inspector.nextBestActionCard)
         }
@@ -230,15 +264,20 @@ export function StudyWorkspace({
           expanded={expanded}
           highlight={highlight}
           pending={pending}
+          requiresLocalProvider={requiresLocalProvider}
+          localProvider={localProvider}
           onToggle={toggleCard}
           onChange={refresh}
           onStream={setStream}
+          setNotice={setNotice}
           onPendingApplied={() => setPending(null)}
         />
         <InspectorPanel
           base={base}
           inspector={inspector}
           cards={cards}
+          requiresLocalProvider={requiresLocalProvider}
+          localProvider={localProvider}
           setNotice={setNotice}
           onStream={setStream}
           onJump={(card) => scrollToCard(card)}
@@ -286,10 +325,14 @@ export function StudyWorkspace({
 function Header({
   study,
   inspector,
+  localProvider,
+  onLocalProviderChange,
   onJumpNext,
 }: {
   study: Study;
   inspector: Inspector | null;
+  localProvider: LocalProvider | null;
+  onLocalProviderChange: (provider: LocalProvider) => void;
   onJumpNext: () => void;
 }) {
   const MODE_LABEL: Record<string, string> = {
@@ -314,6 +357,12 @@ function Header({
             <span className="px-2 py-0.5 border border-[color:var(--color-tertiary)] text-[color:var(--color-tertiary)]">
               local-only
             </span>
+          )}
+          {study.confidentiality_mode === "local_only" && (
+            <LocalProviderPicker
+              value={localProvider}
+              onChange={onLocalProviderChange}
+            />
           )}
           <span className="px-2 py-0.5 border border-[color:var(--color-ink)]">
             {inspector?.readyPct ?? 0}% ready
@@ -342,6 +391,38 @@ function Header({
             Next: {inspector.nextBestAction} →
           </button>
         )}
+      </div>
+    </div>
+  );
+}
+
+function LocalProviderPicker({
+  value,
+  onChange,
+}: {
+  value: LocalProvider | null;
+  onChange: (provider: LocalProvider) => void;
+}) {
+  return (
+    <div className="inline-flex items-center gap-1">
+      <span className="text-[color:var(--color-on-surface-variant)]">
+        Local provider
+      </span>
+      <div className="inline-flex border border-[color:var(--color-outline-variant)]">
+        {LOCAL_PROVIDER_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(option.value)}
+            className={`px-2 py-0.5 transition-colors ${
+              value === option.value
+                ? "bg-[color:var(--color-ink)] text-[color:var(--color-paper)]"
+                : "text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -508,9 +589,12 @@ function Canvas({
   expanded,
   highlight,
   pending,
+  requiresLocalProvider,
+  localProvider,
   onToggle,
   onChange,
   onStream,
+  setNotice,
   onPendingApplied,
 }: {
   base: string;
@@ -519,9 +603,12 @@ function Canvas({
   expanded: Set<string>;
   highlight: string | null;
   pending: { cardType: string; value: string } | null;
+  requiresLocalProvider: boolean;
+  localProvider: LocalProvider | null;
   onToggle: (cardType: string) => void;
   onChange: () => void;
   onStream: (s: StreamTarget) => void;
+  setNotice: (s: string | null) => void;
   onPendingApplied: () => void;
 }) {
   const conflictCards = new Set(
@@ -566,9 +653,12 @@ function Canvas({
                   pendingValue={
                     pending?.cardType === card.card_type ? pending.value : null
                   }
+                  requiresLocalProvider={requiresLocalProvider}
+                  localProvider={localProvider}
                   onToggle={() => onToggle(card.card_type)}
                   onChange={onChange}
                   onStream={onStream}
+                  setNotice={setNotice}
                   onPendingApplied={onPendingApplied}
                 />
               ))}
@@ -587,9 +677,12 @@ function CardItem({
   open,
   highlighted,
   pendingValue,
+  requiresLocalProvider,
+  localProvider,
   onToggle,
   onChange,
   onStream,
+  setNotice,
   onPendingApplied,
 }: {
   base: string;
@@ -598,9 +691,12 @@ function CardItem({
   open: boolean;
   highlighted: boolean;
   pendingValue: string | null;
+  requiresLocalProvider: boolean;
+  localProvider: LocalProvider | null;
   onToggle: () => void;
   onChange: () => void;
   onStream: (s: StreamTarget) => void;
+  setNotice: (s: string | null) => void;
   onPendingApplied: () => void;
 }) {
   const [value, setValue] = useState(card.value.value ?? "");
@@ -642,10 +738,20 @@ function CardItem({
     onChange();
   }
   async function propose() {
-    const r = await post(`${base}/cards/${card.card_type}/propose`, {});
+    if (requiresLocalProvider && !localProvider) {
+      setNotice("Choose a local provider before starting an agent pass.");
+      return;
+    }
+    const r = await post(
+      `${base}/cards/${card.card_type}/propose`,
+      requiresLocalProvider ? { provider: localProvider } : {},
+    );
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.session_id) {
+      setNotice(null);
       onStream({ id: j.session_id, title: `Proposals — ${card.label}`, cardType: card.card_type });
+    } else {
+      setNotice(`Could not start proposals: ${j.error ?? "no provider"}`);
     }
   }
 
@@ -793,6 +899,8 @@ function InspectorPanel({
   base,
   inspector,
   cards,
+  requiresLocalProvider,
+  localProvider,
   setNotice,
   onStream,
   onJump,
@@ -800,14 +908,24 @@ function InspectorPanel({
   base: string;
   inspector: Inspector | null;
   cards: CardView[];
+  requiresLocalProvider: boolean;
+  localProvider: LocalProvider | null;
   setNotice: (s: string | null) => void;
   onStream: (s: StreamTarget) => void;
   onJump: (cardType: string) => void;
 }) {
   async function runRisk() {
-    const r = await post(`${base}/preflight/run-risk`, {});
+    if (requiresLocalProvider && !localProvider) {
+      setNotice("Choose a local provider before starting an agent pass.");
+      return;
+    }
+    const r = await post(
+      `${base}/preflight/run-risk`,
+      requiresLocalProvider ? { provider: localProvider } : {},
+    );
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.session_id) {
+      setNotice(null);
       onStream({ id: j.session_id, title: "Methodological risk pass" });
     } else {
       setNotice(`Could not start risk pass: ${j.error ?? "no provider"}`);

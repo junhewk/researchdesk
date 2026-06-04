@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStudy } from "@/server/studies";
-import { apiAgentRequestSchema, isLocalApiProvider } from "@/server/apiAgent/providers";
+import {
+  apiAgentRequestSchema,
+  providerFieldWasProvided,
+  requireLocalApiProvider,
+} from "@/server/apiAgent/providers";
 import { runPreflightRiskAgent } from "@/server/apiAgent/workflows";
 
 export async function POST(
@@ -17,17 +21,16 @@ export async function POST(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  const providerWasProvided =
-    body && typeof body === "object" && typeof (body as { provider?: unknown }).provider === "string";
-  const provider =
-    study.confidentiality_mode === "local_only" && !providerWasProvided
-      ? "llama_server"
-      : parsed.data.provider;
-  if (study.confidentiality_mode === "local_only" && !isLocalApiProvider(provider)) {
-    return NextResponse.json(
-      { error: "study is local_only; use ollama, lmstudio, or llama_server" },
-      { status: 400 },
+  let provider = parsed.data.provider;
+  if (study.confidentiality_mode === "local_only") {
+    const local = requireLocalApiProvider(
+      parsed.data.provider,
+      providerFieldWasProvided(body),
     );
+    if (local.error || !local.provider) {
+      return NextResponse.json({ error: local.error }, { status: 400 });
+    }
+    provider = local.provider;
   }
   try {
     const result = await runPreflightRiskAgent({

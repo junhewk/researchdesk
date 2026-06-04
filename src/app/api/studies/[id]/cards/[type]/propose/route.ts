@@ -10,7 +10,11 @@ import {
 import { getStudySupervisor } from "@/server/methods/studySessions";
 import { buildSeedProposalOptions } from "@/server/methods/proposals";
 import type { Provider } from "@/server/types";
-import { apiProviderSchema } from "@/server/apiAgent/providers";
+import {
+  apiProviderSchema,
+  providerFieldWasProvided,
+  requireLocalApiProvider,
+} from "@/server/apiAgent/providers";
 
 const bodySchema = z.object({
   provider: apiProviderSchema.optional(),
@@ -27,17 +31,22 @@ export async function POST(
   if (!study) {
     return NextResponse.json({ error: "Study not found" }, { status: 404 });
   }
-  const parsed = bodySchema.safeParse(await request.json().catch(() => ({})));
+  const body = await request.json().catch(() => ({}));
+  const parsed = bodySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  const provider: Provider =
-    study.confidentiality_mode === "local_only"
-      ? "openai"
-      : (parsed.data.provider ?? "openai");
-
-  // Replace any previous options for this card before the new pass runs.
-  clearProposalOptions(id, type);
+  let provider: Provider = parsed.data.provider ?? "openai";
+  if (study.confidentiality_mode === "local_only") {
+    const local = requireLocalApiProvider(
+      parsed.data.provider,
+      providerFieldWasProvided(body),
+    );
+    if (local.error || !local.provider) {
+      return NextResponse.json({ error: local.error }, { status: 400 });
+    }
+    provider = local.provider;
+  }
 
   const sup = getStudySupervisor();
   try {
@@ -48,6 +57,8 @@ export async function POST(
       model: parsed.data.model,
       effort: parsed.data.effort,
     });
+    // Replace any previous options for this card before the new pass runs.
+    clearProposalOptions(id, type);
     const seeded = buildSeedProposalOptions({
       study,
       decisions: listDecisions(id),

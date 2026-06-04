@@ -12,8 +12,46 @@ export const apiProviderSchema = z.enum([
 
 export type ApiProvider = z.infer<typeof apiProviderSchema>;
 
-export function isLocalApiProvider(provider: ApiProvider): boolean {
-  return provider === "ollama" || provider === "lmstudio" || provider === "llama_server";
+export const localApiProviders = [
+  "ollama",
+  "lmstudio",
+  "llama_server",
+] as const satisfies readonly ApiProvider[];
+
+export type LocalApiProvider = (typeof localApiProviders)[number];
+
+const localApiProviderSet = new Set<ApiProvider>(localApiProviders);
+
+export function isLocalApiProvider(provider: ApiProvider): provider is LocalApiProvider {
+  return localApiProviderSet.has(provider);
+}
+
+export function providerFieldWasProvided(body: unknown): boolean {
+  return (
+    body !== null &&
+    typeof body === "object" &&
+    Object.prototype.hasOwnProperty.call(body, "provider")
+  );
+}
+
+export function requireLocalApiProvider(
+  provider: ApiProvider | undefined,
+  providerWasProvided: boolean,
+): { provider: LocalApiProvider | null; error: string | null } {
+  const providerList = localApiProviders.join(", ");
+  if (!providerWasProvided) {
+    return {
+      provider: null,
+      error: `study is local_only; choose a local provider: ${providerList}`,
+    };
+  }
+  if (!provider || !isLocalApiProvider(provider)) {
+    return {
+      provider: null,
+      error: `study is local_only; use ${providerList}`,
+    };
+  }
+  return { provider, error: null };
 }
 
 export const apiAgentRequestSchema = z.object({
