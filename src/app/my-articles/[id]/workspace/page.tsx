@@ -43,6 +43,7 @@ import {
   type AgentEffortInput,
 } from "@/lib/agentChoices";
 import { CATEGORY_STYLES } from "@/lib/styles";
+import { relativeTime } from "@/lib/utils";
 import type {
   Manuscript,
   Provider,
@@ -220,24 +221,6 @@ function severityChipClass(s: CommentSeverity): string {
     default:
       return "border-[color:var(--color-outline-variant)] bg-transparent text-[color:var(--color-on-surface-variant)]";
   }
-}
-
-// ─── Date helpers ──────────────────────────────────────────────────────────
-
-function relativeTime(unixSec: number, now: number): string {
-  const diff = now - unixSec;
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-  if (diff < 86400) {
-    const h = Math.floor(diff / 3600);
-    return `${h} hour${h === 1 ? "" : "s"} ago`;
-  }
-  if (diff < 172800) return "yesterday";
-  if (diff < 7 * 86400) return `${Math.floor(diff / 86400)} days ago`;
-  return new Date(unixSec * 1000).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-  });
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────

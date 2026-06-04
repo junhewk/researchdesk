@@ -31,3 +31,23 @@ export function getDb(): Database.Database {
   }
   return g[globalKey]!;
 }
+
+/**
+ * Build `column = ?` assignment fragments for each defined (non-undefined) field
+ * in `patch`, returning the SET-clause fragments and their bound params in matching
+ * order. Shared by the data-layer `update*` functions so the dynamic-UPDATE pattern
+ * lives in one place.
+ */
+export function buildAssignments(
+  patch: Record<string, unknown>,
+): { sets: string[]; params: unknown[] } {
+  const sets: string[] = [];
+  const params: unknown[] = [];
+  for (const [column, value] of Object.entries(patch)) {
+    if (value !== undefined) {
+      sets.push(`${column} = ?`);
+      params.push(value);
+    }
+  }
+  return { sets, params };
+}

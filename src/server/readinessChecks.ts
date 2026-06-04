@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { getDb } from "./db";
+import { getDb, buildAssignments } from "./db";
 import { nowUnix } from "@/lib/utils";
 import { getManuscript, touchManuscript } from "./manuscripts";
 import { getStudy, listDecisions } from "./studies";
@@ -110,13 +110,7 @@ export function updateReadinessCheck(
 ): ReadinessCheck | undefined {
   const existing = getReadinessCheck(checkId);
   if (!existing) return undefined;
-  const sets: string[] = [];
-  const params: unknown[] = [];
-  for (const [k, v] of Object.entries(patch)) {
-    if (v === undefined) continue;
-    sets.push(`${k} = ?`);
-    params.push(v);
-  }
+  const { sets, params } = buildAssignments(patch);
   if (sets.length === 0) return existing;
   const now = nowUnix();
   sets.push("updated_at = ?");

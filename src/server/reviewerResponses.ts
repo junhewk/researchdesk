@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { getDb } from "./db";
+import { getDb, buildAssignments } from "./db";
 import { nowUnix } from "@/lib/utils";
 import { getManuscript, touchManuscript } from "./manuscripts";
 import { getCommentary, listCommentaries } from "./commentaries";
@@ -158,13 +158,7 @@ export function updateResponseItem(
 ): ReviewerResponseItem | undefined {
   const existing = getResponseItem(itemId);
   if (!existing) return undefined;
-  const sets: string[] = [];
-  const params: unknown[] = [];
-  for (const [k, v] of Object.entries(patch)) {
-    if (v === undefined) continue;
-    sets.push(`${k} = ?`);
-    params.push(v);
-  }
+  const { sets, params } = buildAssignments(patch);
   if (sets.length === 0) return existing;
   const now = nowUnix();
   sets.push("updated_at = ?");
@@ -187,13 +181,7 @@ export function updateResponse(
 ): ReviewerResponse | undefined {
   const existing = getReviewerResponse(responseId);
   if (!existing) return undefined;
-  const sets: string[] = [];
-  const params: unknown[] = [];
-  for (const [k, v] of Object.entries(patch)) {
-    if (v === undefined) continue;
-    sets.push(`${k} = ?`);
-    params.push(v);
-  }
+  const { sets, params } = buildAssignments(patch);
   if (sets.length === 0) return existing;
   const now = nowUnix();
   sets.push("updated_at = ?");

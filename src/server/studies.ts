@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { getDb } from "./db";
+import { getDb, buildAssignments } from "./db";
 import { nowUnix } from "@/lib/utils";
 import { getModeSchema, downstreamCards } from "./methods/cardSchema";
 import type {
@@ -129,14 +129,7 @@ export function updateStudy(
   const db = getDb();
   const existing = getStudy(id);
   if (!existing) return undefined;
-  const sets: string[] = [];
-  const params: unknown[] = [];
-  for (const [key, value] of Object.entries(data)) {
-    if (value !== undefined) {
-      sets.push(`${key} = ?`);
-      params.push(value);
-    }
-  }
+  const { sets, params } = buildAssignments(data);
   if (sets.length === 0) return existing;
   sets.push("updated_at = ?");
   params.push(nowUnix(), id);

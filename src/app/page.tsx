@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { getDb } from "@/server/db";
 import { MarkdownText } from "@/components/MarkdownText";
+import { relativeTime } from "@/lib/utils";
 
 interface SubmissionRow {
   id: string;
@@ -113,25 +114,6 @@ const ACTIVITY_VERB: Record<ActivityRow["kind"], { noun: string; verb: string }>
   revision: { noun: "Revision", verb: "filed for" },
   review: { noun: "Review", verb: "drafted for" },
 };
-
-function relativeTime(unixSec: number, nowSec: number): string {
-  const diff = nowSec - unixSec;
-  if (diff < 60) return "just now";
-  if (diff < 3600) {
-    const m = Math.floor(diff / 60);
-    return `${m} min${m === 1 ? "" : "s"} ago`;
-  }
-  if (diff < 86400) {
-    const h = Math.floor(diff / 3600);
-    return `${h} hour${h === 1 ? "" : "s"} ago`;
-  }
-  if (diff < 172800) return "yesterday";
-  if (diff < 7 * 86400) return `${Math.floor(diff / 86400)} days ago`;
-  return new Date(unixSec * 1000).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-  });
-}
 
 function SubmissionCard({ s, now }: { s: SubmissionRow; now: number }) {
   const inRevision = s.status === "in_revision";

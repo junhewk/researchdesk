@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { getDb } from "./db";
+import { getDb, buildAssignments } from "./db";
 import { nowUnix } from "@/lib/utils";
 import { touchManuscript } from "./manuscripts";
 import { exportRevision } from "./markdownExport";
@@ -84,15 +84,7 @@ export function updateRevision(
   const existing = getRevision(id);
   if (!existing) return undefined;
 
-  const sets: string[] = [];
-  const params: unknown[] = [];
-
-  for (const [key, value] of Object.entries(data)) {
-    if (value !== undefined) {
-      sets.push(`${key} = ?`);
-      params.push(value);
-    }
-  }
+  const { sets, params } = buildAssignments(data);
 
   if (data.status === "applied") {
     sets.push("applied_at = ?");

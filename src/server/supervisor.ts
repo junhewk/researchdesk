@@ -246,22 +246,7 @@ class Supervisor {
       };
       this.slots.set(sessionId, slot);
 
-      proc.on("event", (ev) => this.onEvent(sessionId, slot, ev));
-      proc.on("stderr", (line) => {
-        publish({ session_id: sessionId, kind: "error", payload: { stderr: line }, timestamp: nowUnix() });
-      });
-      proc.on("exit", (info) => {
-        this.updateSessionStatus(sessionId, "crashed");
-        this.clearIdleTimer(slot);
-        this.slots.delete(sessionId);
-        publish({ session_id: sessionId, kind: "process_exit", payload: info, timestamp: nowUnix() });
-      });
-      proc.on("error", (err) => {
-        this.updateSessionStatus(sessionId, "crashed");
-        this.clearIdleTimer(slot);
-        this.slots.delete(sessionId);
-        publish({ session_id: sessionId, kind: "error", payload: { message: err.message }, timestamp: nowUnix() });
-      });
+      this.attachProcessHandlers(proc, sessionId, slot);
 
       this.updateSessionStatus(sessionId, "running");
       publish({ session_id: sessionId, kind: "process_start", payload: {}, timestamp: nowUnix() });
@@ -355,6 +340,32 @@ class Supervisor {
     this.slots.delete(sessionId);
   }
 
+  /** Wire the process lifecycle events for a session's slot. Shared by the
+   *  revision/review and methods session start paths. */
+  private attachProcessHandlers(
+    proc: AgentProcess,
+    sessionId: string,
+    slot: Slot,
+  ): void {
+    proc.on("event", (ev) => this.onEvent(sessionId, slot, ev));
+    proc.on("stderr", (line) => {
+      publish({
+        session_id: sessionId,
+        kind: "error",
+        payload: { stderr: line },
+        timestamp: nowUnix(),
+      });
+    });
+    const onCrash = (kind: "process_exit" | "error", payload: unknown) => {
+      this.updateSessionStatus(sessionId, "crashed");
+      this.clearIdleTimer(slot);
+      this.slots.delete(sessionId);
+      publish({ session_id: sessionId, kind, payload, timestamp: nowUnix() });
+    };
+    proc.on("exit", (info) => onCrash("process_exit", info));
+    proc.on("error", (err) => onCrash("error", { message: err.message }));
+  }
+
   private async startMethodsSession(
     session: Session,
     opts?: { apiBaseUrl?: string; initialMessage?: string },
@@ -404,37 +415,7 @@ class Supervisor {
     const slot: Slot = { proc, session, turnSeq: 0, idleTimer: null };
     this.slots.set(sessionId, slot);
 
-    proc.on("event", (ev) => this.onEvent(sessionId, slot, ev));
-    proc.on("stderr", (line) => {
-      publish({
-        session_id: sessionId,
-        kind: "error",
-        payload: { stderr: line },
-        timestamp: nowUnix(),
-      });
-    });
-    proc.on("exit", (info) => {
-      this.updateSessionStatus(sessionId, "crashed");
-      this.clearIdleTimer(slot);
-      this.slots.delete(sessionId);
-      publish({
-        session_id: sessionId,
-        kind: "process_exit",
-        payload: info,
-        timestamp: nowUnix(),
-      });
-    });
-    proc.on("error", (err) => {
-      this.updateSessionStatus(sessionId, "crashed");
-      this.clearIdleTimer(slot);
-      this.slots.delete(sessionId);
-      publish({
-        session_id: sessionId,
-        kind: "error",
-        payload: { message: err.message },
-        timestamp: nowUnix(),
-      });
-    });
+    this.attachProcessHandlers(proc, sessionId, slot);
 
     this.updateSessionStatus(sessionId, "running");
     publish({
