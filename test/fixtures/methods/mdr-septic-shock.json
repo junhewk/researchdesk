@@ -1,0 +1,39 @@
+{
+  "source": "mdr",
+  "label": "MDR deep research: early vasopressors in septic shock",
+  "report_md": "# Early vasopressor initiation in septic shock\n\nEvidence graded by EBM hierarchy. Three RCTs and twelve retrospective cohorts examine timing of vasopressor initiation relative to fluid resuscitation. Outcome definitions vary: most RCTs use 28-day mortality; several observational studies use in-hospital mortality, which is sensitive to discharge practices. Immortal-time bias recurs where exposure (vasopressor start) is ascertained after cohort entry.",
+  "articles": [
+    { "title": "Early vasopressors vs usual care in septic shock: a randomized trial", "doi": "10.1000/rct.1", "year": 2021, "design": "rct" },
+    { "title": "Timing of norepinephrine and 28-day mortality", "doi": "10.1000/rct.2", "year": 2020, "design": "rct" },
+    { "title": "Vasopressor timing in a retrospective ICU cohort", "doi": "10.1000/cohort.1", "year": 2019, "design": "cohort" }
+  ],
+  "digest": {
+    "prior_designs": [
+      { "label": "Retrospective cohort", "detail": "12 prior studies in this corpus" },
+      { "label": "Randomized trial", "detail": "3 trials" }
+    ],
+    "populations": [
+      { "label": "ICU adults with septic shock" },
+      { "label": "ED sepsis patients meeting Sepsis-3" }
+    ],
+    "outcomes": [
+      { "label": "28-day mortality", "detail": "Primary outcome in 7 prior RCTs" },
+      { "label": "In-hospital mortality", "detail": "Used by 4 observational studies; affected by discharge practices" },
+      { "label": "ICU length of stay" },
+      { "label": "Vasopressor-free days" }
+    ],
+    "confounders": [
+      { "label": "Baseline SOFA score" },
+      { "label": "Vasopressor dose (norepinephrine equivalents)" },
+      { "label": "Source of infection" },
+      { "label": "Age" }
+    ],
+    "biases": [
+      { "label": "Immortal-time bias", "detail": "Exposure ascertained after cohort entry misclassifies early person-time" },
+      { "label": "Confounding by indication", "detail": "Sicker patients receive vasopressors earlier" }
+    ],
+    "measures": [
+      { "label": "Norepinephrine-equivalent dose" }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "source": "rw",
+  "label": "RW wiki + knowledge graph: vasopressor timing in sepsis",
+  "wiki_md": "## Vasopressor timing in septic shock\n\nA living wiki synthesizing the topic. Links exposure definitions, outcome conventions, and recurrent methodological pitfalls across the literature.",
+  "knowledge_graph": {
+    "nodes": [
+      { "id": "exposure:early_vasopressor", "label": "Early vasopressor initiation" },
+      { "id": "outcome:28d_mortality", "label": "28-day mortality" },
+      { "id": "bias:immortal_time", "label": "Immortal-time bias" },
+      { "id": "confounder:sofa", "label": "Baseline SOFA" }
+    ],
+    "edges": [
+      { "from": "exposure:early_vasopressor", "to": "bias:immortal_time", "rel": "vulnerable_to" },
+      { "from": "exposure:early_vasopressor", "to": "outcome:28d_mortality", "rel": "studied_against" }
+    ]
+  },
+  "related_docs": [
+    { "title": "Defining index date in sepsis cohorts", "url": "https://example.org/index-date" }
+  ],
+  "digest": {
+    "outcomes": [
+      { "label": "90-day mortality", "detail": "Emphasized by 2 guidelines for long-term signal" }
+    ],
+    "confounders": [
+      { "label": "Time to antibiotics" },
+      { "label": "Lactate clearance" }
+    ],
+    "biases": [
+      { "label": "Selection bias from ICU admission criteria" }
+    ],
+    "other": [
+      { "label": "Index date = first Sepsis-3 criterion met", "detail": "Common convention in linked cohorts" }
+    ]
+  }
+}

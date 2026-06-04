@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+/* ============================================================================
+ * SCHOLARLY MINIMALIST / reviewer-agent
+ *
+ * A typography-first peer-review interface. System sans handles the functional
+ * chrome of the application (navigation, buttons, metadata); a serif stack
+ * is reserved for manuscript bodies. Surfaces lift through tonal layering
+ * and 1px outlines — never shadows.
+ *
+ * Editor change markers (red ink for deletions, green for insertions) are
+ * the only place the manuscript's editorial color story breaks through.
+ * ============================================================================ */
+
+@theme {
+  /* ─── Surface tonal palette ──────────────────────────────────────────── */
+  --color-surface: #f8fafa;
+  --color-surface-dim: #d8dada;
+  --color-surface-bright: #f8fafa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f4;
+  --color-surface-container: #eceeee;
+  --color-surface-container-high: #e6e8e9;
+  --color-surface-container-highest: #e1e3e3;
+
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #43474c;
+  --color-inverse-surface: #2e3131;
+  --color-inverse-on-surface: #eff1f1;
+
+  --color-outline: #74777d;
+  --color-outline-variant: #c4c6cd;
+  --color-surface-tint: #4e6073;
+
+  /* ─── Brand semantics ────────────────────────────────────────────────── */
+  /* Primary — Deep Slate Blue. Authority, navigation, primary actions. */
+  --color-primary: #162839;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #2c3e50;
+  --color-on-primary-container: #96a9be;
+  --color-inverse-primary: #b5c8df;
+
+  /* Secondary — Sage. Resolved threads, applied revisions. */
+  --color-secondary: #376847;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #b6edc2;
+  --color-on-secondary-container: #3b6d4b;
+
+  /* Tertiary — Muted Ochre. Active annotations, "Major" severity. */
+  --color-tertiary: #3e1f00;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #5c3205;
+  --color-on-tertiary-container: #d89a65;
+
+  /* Error — measured red, not vermilion. Critical severity, dismissals. */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* ─── Legacy aliases (preserve var names; layer on new tokens) ───────── */
+  /* The codebase reads var(--color-paper), var(--color-ink), etc. extensively.
+   * Renaming was rejected; we remap the semantics instead. */
+  --color-paper: #f8fafa;                /* was #faf7f0 warm */
+  --color-paper-2: #f2f4f4;              /* was #f3efe4 */
+  --color-paper-3: #eceeee;              /* was #e9e3d2 */
+  --color-ink: #191c1d;                  /* was #1a1713 */
+  --color-ink-soft: #43474c;             /* was #3a3530 */
+  --color-sepia: #43474c;                /* was #7a7063 */
+  --color-sepia-light: #74777d;          /* was #aaa396 */
+  --color-rule: #c4c6cd;                 /* was #e4dfd0 */
+  --color-rule-soft: #e6e8e9;            /* was #eee9db */
+  --color-rule-dark: #74777d;            /* new — heavier hairline */
+
+  /* Red ink — chrome uses measured error; editor red preserved below */
+  --color-redink: #ba1a1a;               /* was #9c2a1f */
+  --color-redink-soft: #c26057;          /* unchanged */
+
+  /* Status accents */
+  --color-ok: #376847;                   /* sage — applied/resolved */
+  --color-warn: #5c3205;                 /* ochre — needs attention */
+
+  /* Category palette — used for finding/suggestion chips */
+  --color-mechanical: #162839;           /* slate = proofreading */
+  --color-rewrite: #5c3205;              /* ochre = rewrite */
+  --color-structural: #93000a;           /* oxblood = structural defect */
+  --color-evidence: #2c3e50;             /* slate-blue = evidence concern */
+
+  --color-accent: #2c3e50;
+  --color-accent-dim: #e6e8e9;
+  --color-accent-ink: #ffffff;
+
+  /* ─── Editor change markers — manuscript brand, UNCHANGED ────────────── */
+  /* The editor's red strikethrough and green bold are the only place the
+   * old editorial color story survives. Do not touch. */
+  --color-change-deleted-bg: #f0dcda;
+  --color-change-deleted-ink: #8a1218;
+  --color-change-inserted-bg: #e3ead5;
+  --color-change-inserted-ink: #2f5622;
+  --color-redink-bg: #f5e7e4;
+
+  /* ─── Tailwind / shadcn semantic overrides ───────────────────────────── */
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-on-surface);
+  --color-border: var(--color-outline-variant);
+  --color-input: var(--color-outline-variant);
+  --color-ring: var(--color-primary);
+  --color-muted: var(--color-surface-container-low);
+  --color-muted-foreground: var(--color-on-surface-variant);
+  --color-primary-foreground: var(--color-on-primary);
+  --color-secondary-foreground: var(--color-on-secondary);
+  --color-destructive: var(--color-error);
+  --color-destructive-foreground: var(--color-on-error);
+  --color-card: var(--color-surface-container-lowest);
+  --color-card-foreground: var(--color-on-surface);
+  --color-popover: var(--color-surface-container-lowest);
+  --color-popover-foreground: var(--color-on-surface);
+  --color-accent-foreground: var(--color-on-primary);
+
+  /* ─── Fonts ──────────────────────────────────────────────────────────── */
+  /* --font-display:    system sans — UI chrome, navigation, headlines
+   * --font-body:       serif stack — manuscript bodies (opt-in via .font-body)
+   * --font-manuscript: serif stack — explicit alias for editorial content
+   * --font-mono:       system monospace — metadata, small-caps labels
+   *
+   * Note: <body> intentionally defaults to --font-display, not --font-body.
+   * Manuscript regions opt into serif type via .font-body, .font-manuscript,
+   * or .manuscript-prose. */
+  --font-display: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: Georgia, "Times New Roman", serif;
+  --font-manuscript: Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* ─── Radii ──────────────────────────────────────────────────────────── */
+  --radius-sm: 2px;
+  --radius: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+}
+
+@layer base {
+  html {
+    background: var(--color-surface);
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-display);
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    color: var(--color-on-surface);
+    background: var(--color-surface);
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--color-on-surface);
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-weight: 600;
+  }
+
+  /* Editorial prose flow — applied to manuscript regions explicitly */
+  .manuscript-prose,
+  .manuscript-prose p {
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 32px;
+    color: var(--color-on-surface);
+  }
+  .manuscript-prose blockquote {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 28px;
+    font-style: italic;
+    color: var(--color-on-surface-variant);
+    border-left: 2px solid var(--color-outline-variant);
+    padding-left: 1.25rem;
+    margin: 1.5rem 0;
+  }
+}
+
+@layer utilities {
+  /* ─── Font utilities ─────────────────────────────────────────────────── */
+  .font-display {
+    font-family: var(--font-display);
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+
+  .font-body,
+  .font-manuscript {
+    font-family: var(--font-body);
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+
+  /* Metadata with tabular numerals and tight tracking. */
+  .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* 10px uppercase metadata chip — preserves existing .label semantic */
+  .label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-on-surface-variant);
+  }
+
+  /* 13px label per spec — for section headers, form labels */
+  .label-sm {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0.02em;
+    color: var(--color-on-surface-variant);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Hairline rule — one of the few "shapes" in the design language */
+  .hairline {
+    border-color: var(--color-outline-variant);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  animation: fade-in 0.4s ease-out both;
+}

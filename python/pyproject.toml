@@ -1,0 +1,11 @@
+[project]
+name = "reviewer-agent-sidecar"
+version = "0.1.0"
+description = "OpenAI Agents SDK sidecar for reviewer-agent"
+requires-python = ">=3.11"
+dependencies = [
+    "openai-agents>=0.1.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.34.0",
+    "sse-starlette>=2.2.0",
+]
