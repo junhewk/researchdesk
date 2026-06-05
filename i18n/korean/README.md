@@ -6,6 +6,28 @@
 
 영문 README: [`../../README.md`](../../README.md)
 
+## 상태
+
+이 앱은 pre-0.1.0 closed-beta 연구 보조 앱입니다. 이 prerelease에서 배포하는
+binary는 `v0.1.0-beta.0` GitHub prerelease에 첨부된 Windows x64 portable
+`.exe`뿐입니다.
+
+편집과 methods 점검을 돕는 workspace로 사용해야 하며, 의학적/법적/규제적/
+통계적 조언으로 간주하면 안 됩니다. LLM 출력, 인용, 계산, 원고 변경 사항은
+사용자가 직접 검증해야 합니다.
+
+## 개인정보와 보안 모델
+
+데이터는 로컬 SQLite와 markdown export에 저장됩니다. Cloud API 제공자를
+설정하고 사용할 때만 원고 또는 reviewer 내용이 해당 제공자에게 전송됩니다.
+PHI, PII, embargo 상태의 원고, confidential peer review 자료는 전송 권한이
+있을 때만 cloud 제공자로 보내야 합니다.
+
+Electron 데스크톱 앱은 서버를 `127.0.0.1`에 바인딩하고, 짧게 유지되는 앱
+토큰을 Electron main process가 주입해 로컬 `/api/*` 요청을 보호합니다.
+`npm run dev` / `npm run start`로 브라우저에서 직접 실행하는 방식은 개발자
+모드이므로 네트워크에 노출하지 마세요.
+
 ## 워크스페이스
 
 ### Methods Workbench
@@ -126,6 +148,7 @@ Methods Workbench -> Create Article Draft -> My Articles -> Readiness / Review /
 ## 빠른 시작
 
 ```bash
+nvm use
 npm install --include=dev
 npm run dev
 ```
@@ -148,3 +171,8 @@ npm run seed:demo
 
 SQLite 데이터와 markdown export는 `REVIEWER_DATA_DIR` 아래에 저장됩니다.
 기본값은 `./data`입니다.
+
+## 보안
+
+로컬 앱 보안 모델과 취약점 신고 절차는 [`../../SECURITY.md`](../../SECURITY.md)를
+참조하세요.

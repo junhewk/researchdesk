@@ -1,9 +1,17 @@
 {
   "name": "reviewer-agent-desktop",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.0",
   "description": "Desktop academic peer-review and readiness workspace.",
   "author": "Reviewer Agent contributors",
+  "license": "MIT",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/junhewk/reviewer-agent-desktop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/junhewk/reviewer-agent-desktop/issues"
+  },
   "main": "electron/main.cjs",
   "type": "module",
   "engines": {
@@ -14,7 +22,8 @@
     "desktop:dev": "ELECTRON_START_URL=http://127.0.0.1:${PORT:-3871} concurrently -k \"npm run dev\" \"wait-on http://127.0.0.1:${PORT:-3871} && electron .\"",
     "desktop:pack": "npm run build && electron-builder --dir",
     "desktop:dist": "npm run build && electron-builder",
-    "build": "NODE_ENV=production next build",
+    "desktop:dist:win": "npm run build && electron-builder --win portable --x64 --publish never",
+    "build": "next build",
     "start": "NODE_ENV=production PORT=${PORT:-3871} next start --port ${PORT:-3871}",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -90,6 +99,17 @@
     ],
     "directories": {
       "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Reviewer-Agent-${version}-windows-${arch}.${ext}"
     }
   }
 }

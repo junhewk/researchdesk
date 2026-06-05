@@ -4,10 +4,10 @@ A journal article reviewer agent, not "hypothetical reviewer persona"-based revi
 
 ## backend
 
-Two backend support, based on next.js
+Backend support is based on Next.js:
 
 - claude-code headless mode (refer to /home/jk/programming/claude-board and ssh jkworkstation '/home/jk/programming/claude-code-main')
-- agent sdks (openai agent sdk https://openai.github.io/openai-agents-python/ , anthropic agent dsk https://code.claude.com/docs/en/agent-sdk/overview , gemini adk https://adk.dev/agents/models/google-gemini/ )
+- TypeScript API agents through OpenAI-compatible providers, including OpenAI, Gemini, DeepSeek, Ollama, LM Studio, and llama-server
 
 ## frontend
 

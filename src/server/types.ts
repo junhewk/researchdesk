@@ -118,7 +118,7 @@ export type OutsideToolKind =
   | "grep"
   | "scholarly_search"
   | "web_search"
-  | "python_stats"
+  | "quantitative_check"
   | "image_check"
   | "reference_audit";
 export type OutsideToolRunStatus = "completed" | "blocked" | "failed";

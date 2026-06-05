@@ -1,4 +1,5 @@
 import type { Manuscript, SessionMode } from "./types";
+import { curlAuthArgs, curlJsonHeaders } from "../lib/localApiAuth";
 
 // Manuscript-stage methods prompts: reporting-checklist mapping, manuscript
 // readiness, and reviewer-response drafting. The document-centric protocol
@@ -30,6 +31,9 @@ function manuscriptMeta(m: Manuscript): string {
 }
 
 function reportingChecklistPrompt(manuscript: Manuscript, base: string): string {
+  const curl = curlAuthArgs();
+  const jsonHeaders = curlJsonHeaders();
+
   return `You are a reporting-guideline compliance assistant. Map each guideline item to specific evidence in the manuscript.
 
 ${CORE_RULES}
@@ -51,11 +55,11 @@ ${manuscript.content_md}
 
 \`\`\`bash
 # List items
-curl -s '${base}/api/checklists/<checklist_id>'
+curl ${curl} '${base}/api/checklists/<checklist_id>'
 
 # Update an item
-curl -s -X PATCH '${base}/api/checklists/<checklist_id>/items/<item_id>' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X PATCH '${base}/api/checklists/<checklist_id>/items/<item_id>' \\
+${jsonHeaders}
   --data '{"status":"addressed","evidence_md":"...", "location_ref":"§3.2"}'
 \`\`\`
 `;
@@ -66,6 +70,9 @@ function readinessPrompt(
   checkId: string | undefined,
   base: string,
 ): string {
+  const curl = curlAuthArgs();
+  const jsonHeaders = curlJsonHeaders();
+
   return `You are a manuscript-readiness assistant. The user is preparing to submit this manuscript. Identify everything that must be addressed before a defensible submission.
 
 ${CORE_RULES}
@@ -96,8 +103,8 @@ ${manuscript.content_md}
 
 \`\`\`bash
 # Post one readiness item
-curl -s -X POST '${base}/api/readiness/${checkId ?? "<check_id>"}/items' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/readiness/${checkId ?? "<check_id>"}/items' \\
+${jsonHeaders}
   --data @- <<'JSON'
 {
   "gate": "data_availability",
@@ -108,8 +115,8 @@ curl -s -X POST '${base}/api/readiness/${checkId ?? "<check_id>"}/items' \\
 JSON
 
 # Finalize
-curl -s -X PATCH '${base}/api/readiness/${checkId ?? "<check_id>"}' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X PATCH '${base}/api/readiness/${checkId ?? "<check_id>"}' \\
+${jsonHeaders}
   --data '{"status":"completed","overall_score":78,"summary_md":"..."}'
 \`\`\`
 
@@ -122,6 +129,9 @@ function reviewerResponsePrompt(
   responseId: string | undefined,
   base: string,
 ): string {
+  const curl = curlAuthArgs();
+  const jsonHeaders = curlJsonHeaders();
+
   return `You are a response-to-reviewers assistant. Help the user draft a defensible point-by-point response.
 
 ${CORE_RULES}
@@ -136,9 +146,9 @@ ${manuscriptMeta(manuscript)}
 ## How to do your work
 
 1. Fetch the decision letter and reviewer reports via the letters API:
-   \`curl -s '${base}/api/manuscripts/${manuscript.id}/letters'\`
+   \`curl ${curl} '${base}/api/manuscripts/${manuscript.id}/letters'\`
 2. For each numbered reviewer point, ensure a corresponding response item exists. The seeding step has likely already inserted items from the decision letter — confirm with:
-   \`curl -s '${base}/api/reviewer-responses/${responseId ?? "<response_id>"}'\`
+   \`curl ${curl} '${base}/api/reviewer-responses/${responseId ?? "<response_id>"}'\`
 3. For each item, draft a response in three parts:
    a. **Acknowledgement** of the reviewer's concern (one sentence).
    b. **What we changed** — quote the new manuscript text, with a section/line pointer in \`change_pointer_md\`.
@@ -147,8 +157,8 @@ ${manuscriptMeta(manuscript)}
 5. When all items are drafted, the user clicks "Compile" in the UI — that writes a \`response_letter\` asset on the manuscript.
 
 \`\`\`bash
-curl -s -X PATCH '${base}/api/reviewer-responses/${responseId ?? "<response_id>"}/items/<item_id>' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X PATCH '${base}/api/reviewer-responses/${responseId ?? "<response_id>"}/items/<item_id>' \\
+${jsonHeaders}
   --data @- <<'JSON'
 {
   "response_md": "We thank Reviewer 2 for highlighting...",

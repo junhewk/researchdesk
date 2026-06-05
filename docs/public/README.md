@@ -3,6 +3,13 @@
 A local-first desktop-ready workspace for academic manuscript revision and
 methods work.
 
+This is a pre-0.1.0 closed-beta research-assistance app. The only distributed
+binary for this prerelease is the Windows x64 portable `.exe` attached to the
+`v0.1.0-beta.0` GitHub prerelease. Verify LLM output, citations, calculations,
+and manuscript changes before relying on them. Do not send PHI, PII, embargoed
+manuscripts, or confidential peer review material to a cloud provider unless you
+have the right to do so.
+
 ## Workspaces
 
 ### My Articles
@@ -28,6 +35,7 @@ preparation:
 ## Quick Start
 
 ```bash
+nvm use
 npm install --include=dev
 npm run dev
 ```

@@ -2,6 +2,7 @@ import {
   buildMethodsSystemPrompt,
   type MethodsPromptContext,
 } from "./methodsPrompts";
+import { curlAuthArgs, curlJsonHeaders } from "../lib/localApiAuth";
 import type { Manuscript, SessionMode } from "./types";
 
 export interface ToolDefinition {
@@ -60,6 +61,8 @@ function revisionOverlayInstructions(
   explicitBase?: string,
 ): string {
   const base = apiBase(explicitBase);
+  const curl = curlAuthArgs();
+  const jsonHeaders = curlJsonHeaders();
   const today = new Date().toISOString().slice(2, 10).replace(/-/g, "");
   const fileSummary =
     ctx.fileList && ctx.fileList.length > 0
@@ -99,9 +102,9 @@ ${fileSummary}
 You may also call the local HTTP API at \`${base}\` via Bash + curl to consult prior reviewer commentaries and decision letters that the user already saved:
 
 \`\`\`bash
-curl -s '${base}/api/manuscripts/${ctx.manuscriptId}/commentaries'
-curl -s '${base}/api/manuscripts/${ctx.manuscriptId}/letters'
-curl -s '${base}/api/search/internal?type=commentaries&q=QUERY&limit=5'
+curl ${curl} '${base}/api/manuscripts/${ctx.manuscriptId}/commentaries'
+curl ${curl} '${base}/api/manuscripts/${ctx.manuscriptId}/letters'
+curl ${curl} '${base}/api/search/internal?type=commentaries&q=QUERY&limit=5'
 \`\`\`
 
 Do **not** post to \`/revisions\` or any "create suggestion" endpoint — the workflow has changed; the deliverable is the file edits and the revision table.
@@ -123,8 +126,8 @@ TMP=$(mktemp -t revised_manuscript.XXXXXX.md)
 #    into a single JSON string, then builds the request body.
 jq -Rs --arg label "Round 1 revision" \\
   '{label: $label, content_md: ., source: "agent_revise"}' < "$TMP" | \\
-  curl -s -X POST '${base}/api/manuscripts/${ctx.manuscriptId}/versions' \\
-    -H 'Content-Type: application/json' \\
+  curl ${curl} -X POST '${base}/api/manuscripts/${ctx.manuscriptId}/versions' \\
+${jsonHeaders}
     --data @-
 \`\`\`
 
@@ -142,6 +145,8 @@ in your verdict so the user knows which row to open in the Diff tab.
 
 function reviewOverlayInstructions(manuscriptId: string, explicitBase?: string): string {
   const base = apiBase(explicitBase);
+  const curl = curlAuthArgs();
+  const jsonHeaders = curlJsonHeaders();
   return `
 ## How to do your work
 
@@ -149,42 +154,52 @@ You do NOT have custom tools for this task. Use the built-in **Bash** tool with 
 
 ### 1. Search past reviews to calibrate severity and style
 \`\`\`bash
-curl -s '${base}/api/search/internal?type=reviews&q=QUERY&limit=5'
-curl -s '${base}/api/search/internal?type=commentaries&q=QUERY&limit=5'
+curl ${curl} '${base}/api/search/internal?type=reviews&q=QUERY&limit=5'
+curl ${curl} '${base}/api/search/internal?type=commentaries&q=QUERY&limit=5'
 \`\`\`
 
 ### 2. Search scholarly articles for evidence
 \`\`\`bash
-curl -s '${base}/api/search/articles?q=QUERY&limit=10'
+curl ${curl} '${base}/api/search/articles?q=QUERY&limit=10'
 # Optional: &source=semantic_scholar  or  &source=openalex  or  &source=both
 # Optional: &year_from=2015&year_to=2024
 \`\`\`
 
 ### 2b. Validate any DOI before relying on it
 \`\`\`bash
-curl -s '${base}/api/articles/validate?doi=10.xxxx/yyy'
+curl ${curl} '${base}/api/articles/validate?doi=10.xxxx/yyy'
 # Returns { exists, is_retracted, title, authors, year, citation_count, source }
 \`\`\`
 Never cite a DOI returning \`exists: false\` or \`is_retracted: true\`.
 
-### 2c. Recompute quantitative claims (means, proportions, p-values, CIs, effect sizes)
-Use the sandboxed Python endpoint instead of running \`python3\` yourself; it enforces resource limits and a clean working directory.
+### 2c. Recompute quantitative claims with the TypeScript quantitative endpoint
+Use the structured quantitative endpoint for means, proportions, p-values, CIs,
+risk ratios, and odds ratios. Do not execute ad hoc local code.
 \`\`\`bash
-curl -s -X POST '${base}/api/sandbox/python' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/quantitative/check' \\
+${jsonHeaders}
   --data @- <<'JSON'
 {
-  "code": "from scipy import stats\\nprint(stats.ttest_ind_from_stats(10.2, 2.1, 40, 9.8, 2.0, 42))"
+  "kind": "two_sample_ttest_from_stats",
+  "mean1": 10.2,
+  "sd1": 2.1,
+  "n1": 40,
+  "mean2": 9.8,
+  "sd2": 2.0,
+  "n2": 42
 }
 JSON
 \`\`\`
-Returns \`{ exit_code, stdout, stderr, timed_out, duration_ms }\`. \`numpy\`, \`scipy\`, \`pandas\`, and \`statsmodels\` are typically available.
+Supported \`kind\` values: \`two_sample_ttest_from_stats\`,
+\`one_sample_ttest_from_stats\`, \`proportion_ci\`, \`risk_ratio\`,
+\`odds_ratio\`. Quote the returned notes when publication-critical claims need
+independent statistical verification.
 
 ### 2d. Diagram the article's structure to surface validity gaps
 Two diagram kinds. Use \`logic\` to test argument flow (claims → evidence → conclusions). Use \`narrative\` to test rhetorical order (section-by-section storytelling). Both accept any standard mermaid source.
 \`\`\`bash
-curl -s -X POST '${base}/api/manuscripts/${manuscriptId}/diagrams' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/manuscripts/${manuscriptId}/diagrams' \\
+${jsonHeaders}
   --data @- <<'JSON'
 {
   "kind": "logic",
@@ -200,8 +215,8 @@ Category must be one of: \`mechanical\`, \`rewrite\`, \`structural\`, \`evidence
 Severity: \`minor\`, \`major\`, \`critical\`.
 
 \`\`\`bash
-curl -s -X POST '${base}/api/manuscripts/${manuscriptId}/reviews' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/manuscripts/${manuscriptId}/reviews' \\
+${jsonHeaders}
   --data @- <<'JSON'
 {
   "category": "mechanical",
@@ -240,6 +255,7 @@ function renderAttachedSection(
   if (!hasAssets && !hasCommentaries) return "";
 
   const base = apiBase(explicitBase);
+  const curl = curlAuthArgs();
   const lines: string[] = [];
   lines.push(`### Attached materials`);
   lines.push(
@@ -260,7 +276,7 @@ function renderAttachedSection(
     lines.push("Fetch any commentary's full text:");
     lines.push("```bash");
     lines.push(
-      `curl -s '${base}/api/manuscripts/${manuscriptId}/commentaries' | jq '.[] | select(.id == "<commentary_id>")'`,
+      `curl ${curl} '${base}/api/manuscripts/${manuscriptId}/commentaries' | jq '.[] | select(.id == "<commentary_id>")'`,
     );
     lines.push("```");
   }
@@ -278,7 +294,7 @@ function renderAttachedSection(
     lines.push("Fetch a single asset's full content_md:");
     lines.push("```bash");
     lines.push(
-      `curl -s '${base}/api/manuscripts/${manuscriptId}/assets/<asset_id>'`,
+      `curl ${curl} '${base}/api/manuscripts/${manuscriptId}/assets/<asset_id>'`,
     );
     lines.push("```");
     lines.push("");
@@ -286,7 +302,7 @@ function renderAttachedSection(
       "List again to refresh (e.g. after the user uploads more during the session):",
     );
     lines.push("```bash");
-    lines.push(`curl -s '${base}/api/manuscripts/${manuscriptId}/assets'`);
+    lines.push(`curl ${curl} '${base}/api/manuscripts/${manuscriptId}/assets'`);
     lines.push("```");
   }
 
@@ -484,7 +500,7 @@ ${
 - NEVER play a "hypothetical reviewer persona." Ground your review in the user's prior review patterns — search them via the API.
 - NEVER generate new research content. You critique what exists.
 - Use article search to find supporting or contradicting evidence; use \`article_validate\` to confirm any DOI or citation you cite is real and not retracted.
-- Use \`python_check\` to verify quantitative claims (means, proportions, p-values, CIs, effect sizes) instead of trusting numbers at face value.
+- Use the TypeScript quantitative check endpoint to verify quantitative claims (means, proportions, p-values, CIs, effect sizes) instead of trusting numbers at face value.
 - Use \`create_diagram\` (kind=logic) to surface unsupported leaps in the argument and (kind=narrative) to surface missing rhetorical setup or unmotivated transitions.
 - If the user provided a "What the user wants from this review" section above, treat it as authoritative scope guidance — emphasize what they ask for, do not invent extra mandates.
 - Structure findings into four categories:

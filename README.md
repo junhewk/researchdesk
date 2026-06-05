@@ -5,6 +5,28 @@ methods work.
 
 Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
+## Status
+
+This is a pre-0.1.0 closed-beta research-assistance app. The only distributed
+binary for this prerelease is the Windows x64 portable `.exe` attached to the
+`v0.1.0-beta.0` GitHub prerelease.
+
+Use it as an editorial and methods-checking workspace, not as medical, legal,
+regulatory, or statistical advice. Verify all LLM output, citations,
+calculations, and manuscript changes before relying on them.
+
+## Privacy Model
+
+The app stores data locally in SQLite and markdown exports. Cloud providers
+receive manuscript or reviewer content only when you configure and use a cloud
+API provider. Do not send PHI, PII, embargoed manuscripts, or confidential peer
+review material to a cloud provider unless you have the right to do so.
+
+The Electron desktop app binds its server to `127.0.0.1` and protects local
+`/api/*` requests with a short-lived app token injected by the Electron main
+process. Direct `npm run dev` / `npm run start` is developer browser mode; do
+not expose it to a network.
+
 ## Workspaces
 
 ### Methods Workbench
@@ -127,6 +149,7 @@ Methods Workbench -> Create Article Draft -> My Articles -> Readiness / Review /
 ## Quick Start
 
 ```bash
+nvm use
 npm install --include=dev
 npm run dev
 ```
@@ -141,9 +164,15 @@ npm run build
 npm run typecheck
 npm run lint
 npm test
+npm run desktop:dist:win
 ```
 
 ## Data
 
 SQLite data and markdown exports are stored under `REVIEWER_DATA_DIR`, defaulting
 to `./data`.
+
+## Security
+
+See [`SECURITY.md`](SECURITY.md) for the local app security model and reporting
+process.

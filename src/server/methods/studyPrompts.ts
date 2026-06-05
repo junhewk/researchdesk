@@ -1,5 +1,6 @@
 import { getModeSchema, getCardDef } from "./cardSchema";
 import { parseValue } from "./preflight";
+import { curlAuthArgs, curlJsonHeaders } from "../../lib/localApiAuth";
 import type { Study, DesignDecision, EvidenceSnapshot } from "../types";
 
 // Forked methods prompts for the StudyDesignState workspace. Distinct from the
@@ -59,6 +60,8 @@ export function buildStudyPrompt(
   ctx: StudyPromptContext,
 ): string {
   const base = apiBase(ctx.apiBaseUrl);
+  const curl = curlAuthArgs();
+  const jsonHeaders = curlJsonHeaders();
   const { study } = ctx;
 
   if (pass === "card_proposal") {
@@ -79,15 +82,15 @@ ${cardsDigest(study, ctx.decisions)}
 Propose options for the **${def?.label ?? ctx.targetCardType}** decision: "${def?.help ?? ""}"
 
 1. Search the imported evidence for what prior studies did here:
-   \`curl -s '${base}/api/studies/${study.id}/evidence'\`
+   \`curl ${curl} '${base}/api/studies/${study.id}/evidence'\`
 2. Decide on 2–4 concrete options. For EACH, POST one structured option so the
    user can pick it with one click — \`value_suggestion\` is the exact text that
    would go in the card's headline value, \`consequence_md\` is a one-line
    trade-off (feasibility, bias, missingness, comparability):
 
 \`\`\`bash
-curl -s -X POST '${base}/api/studies/${study.id}/cards/${ctx.targetCardType ?? "<card_type>"}/proposals' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/studies/${study.id}/cards/${ctx.targetCardType ?? "<card_type>"}/proposals' \\
+${jsonHeaders}
   --data @- <<'JSON'
 { "label": "30-day all-cause mortality",
   "value_suggestion": "30-day all-cause mortality",
@@ -111,14 +114,14 @@ ${studyHeader(study)}
 
 ## Your task
 The snapshot (id \`${ctx.snapshot?.id ?? "<snapshot_id>"}\`, source ${ctx.snapshot?.source ?? "?"}) is a deep-research report / wiki / knowledge graph. Read it:
-\`curl -s '${base}/api/studies/${study.id}/snapshots/${ctx.snapshot?.id ?? "<snapshot_id>"}'\`
+\`curl ${curl} '${base}/api/studies/${study.id}/snapshots/${ctx.snapshot?.id ?? "<snapshot_id>"}'\`
 
 Extract design-relevant items and POST each as one evidence item. Group by kind:
 prior_design, population, outcome, confounder, bias, measure, other.
 
 \`\`\`bash
-curl -s -X POST '${base}/api/studies/${study.id}/evidence/items' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/studies/${study.id}/evidence/items' \\
+${jsonHeaders}
   --data @- <<'JSON'
 { "kind": "outcome", "label": "28-day mortality",
   "detail_md": "Used as the primary outcome in 7 prior RCTs in this snapshot.",
@@ -142,13 +145,13 @@ ${cardsDigest(study, ctx.decisions)}
 
 ## Your task
 Fetch the full card values:
-\`curl -s '${base}/api/studies/${study.id}/cards'\`
+\`curl ${curl} '${base}/api/studies/${study.id}/cards'\`
 
 Identify concrete methodological risks given the decisions made so far — e.g. immortal-time bias (exposure window starting after cohort entry), confounding by indication, outcome measured before exposure, selection bias from eligibility, unplanned multiplicity. For each risk, POST one finding:
 
 \`\`\`bash
-curl -s -X POST '${base}/api/studies/${study.id}/preflight/findings' \\
-  -H 'Content-Type: application/json' \\
+curl ${curl} -X POST '${base}/api/studies/${study.id}/preflight/findings' \\
+${jsonHeaders}
   --data @- <<'JSON'
 { "layer": "risk", "severity": "blocking", "card_type": "exposure",
   "title": "Immortal-time bias risk",

@@ -30,8 +30,8 @@ function copyTree(src: string, dst: string): void {
   for (const entry of entries) {
     if (IGNORE_NAMES.has(entry.name)) continue;
     if (entry.name.startsWith(".")) continue;
-    const srcPath = path.join(src, entry.name);
-    const dstPath = path.join(dst, entry.name);
+    const srcPath = path.join(/* turbopackIgnore: true */ src, entry.name);
+    const dstPath = path.join(/* turbopackIgnore: true */ dst, entry.name);
     if (entry.isDirectory()) {
       copyTree(srcPath, dstPath);
     } else if (entry.isFile()) {
@@ -67,7 +67,7 @@ export function diffAgainstSnapshot(
     return { changed: [], created: [], deleted: [] };
   }
   const collect = (root: string, rel: string, out: Map<string, string>) => {
-    const dir = path.join(root, rel);
+    const dir = path.join(/* turbopackIgnore: true */ root, rel);
     let entries: fs.Dirent[];
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -77,12 +77,18 @@ export function diffAgainstSnapshot(
     for (const entry of entries) {
       if (IGNORE_NAMES.has(entry.name)) continue;
       if (entry.name.startsWith(".")) continue;
-      const childRel = rel ? path.join(rel, entry.name) : entry.name;
+      const childRel = rel ? path.join(/* turbopackIgnore: true */ rel, entry.name) : entry.name;
       if (entry.isDirectory()) {
         collect(root, childRel, out);
       } else if (entry.isFile()) {
         try {
-          out.set(childRel, fs.readFileSync(path.join(root, childRel), "utf-8"));
+          out.set(
+            childRel,
+            fs.readFileSync(
+              path.join(/* turbopackIgnore: true */ root, childRel),
+              "utf-8",
+            ),
+          );
         } catch {
           // ignore
         }

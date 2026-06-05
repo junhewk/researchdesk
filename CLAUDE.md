@@ -9,7 +9,7 @@ Initial implementation complete. All core features are in place. See `SPEC.md` f
 ## Build & Run
 
 ```bash
-nvm use              # Node.js 22.x
+nvm use              # Node.js 26.x
 npm install --include=dev
 npm run dev          # Next.js 16 dev server with webpack (port 3871)
 npm run build        # Production build
@@ -29,20 +29,15 @@ If Node.js is upgraded (or `better-sqlite3` throws `NODE_MODULE_VERSION` mismatc
 npm rebuild better-sqlite3
 ```
 
-Tailscale / remote access: add the tailnet IP to `allowedDevOrigins` in `next.config.ts`.
-
-For the OpenAI Agents SDK sidecar:
-```bash
-cd python && pip install -e . && python server.py
-```
+Remote browser access is not a supported default. The desktop app binds its
+local server to `127.0.0.1` and protects `/api/*` with a short-lived app token.
 
 ## Architecture
 
-**Backend**: Claude Code, Codex CLI, and OpenAI Agents SDK behind a provider abstraction (`src/server/agentProcess.ts`).
+**Backend**: Claude Code, Codex CLI, and TypeScript/LangChain API agents behind provider abstractions (`src/server/agentProcess.ts`, `src/server/apiAgent/`).
 - `ClaudeProcess`: spawns `claude` CLI as subprocess with NDJSON stream-json protocol. Auto-detects CLI from PATH, `~/.local/bin`, `~/.claude/local`, `/usr/local/bin`, `/opt/homebrew/bin`. Override with `CLAUDE_BIN`. Per-session model/effort are passed as CLI flags.
 - `CodexProcess`: runs `codex exec` in JSON mode per turn, resumes the provider thread, and passes per-session model/effort as CLI config. Override with `CODEX_BIN`.
-- `OpenAIProcess`: HTTP client to Python FastAPI sidecar (`python/server.py`) kept as an optional legacy provider.
-- Confidential review requests use `localProcess.ts` against an OpenAI-compatible local `/v1` endpoint for outline and local-only detail. Paragraph-level cloud assist is opt-in per outside manuscript.
+- API-agent workflows are implemented in TypeScript and call OpenAI-compatible cloud/local providers through LangChain adapters.
 
 **Frontend**: Next.js 16 App Router + Server Components + Tailwind CSS 4 + shadcn/ui primitives
 
@@ -73,7 +68,6 @@ cd python && pip install -e . && python server.py
 - `src/app/manuscripts/` — compatibility page implementations reused by the top-level routes
 - `src/components/` — React components (UI primitives, session streaming, editor)
 - `src/lib/` — shared utilities (`utils.ts`, `styles.ts`, `changeMarkers.ts`), hooks
-- `python/` — OpenAI Agents SDK sidecar
 
 ## Workspaces
 

@@ -1,7 +1,10 @@
 const http = require("node:http");
 const path = require("node:path");
+const { randomBytes } = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { app, BrowserWindow, shell } = require("electron");
+
+const LOCAL_API_TOKEN_HEADER = "x-reviewer-app-token";
 
 let server = null;
 let serverProcess = null;
@@ -14,6 +17,72 @@ function ensureDesktopEnv() {
   process.env.NODE_ENV = process.env.NODE_ENV || "production";
   process.env.REVIEWER_DATA_DIR =
     process.env.REVIEWER_DATA_DIR || path.join(app.getPath("userData"), "data");
+  process.env.REVIEWER_APP_TOKEN =
+    process.env.REVIEWER_APP_TOKEN || randomBytes(32).toString("hex");
+}
+
+function isApiRequest(req) {
+  try {
+    const url = new URL(req.url || "/", "http://127.0.0.1");
+    return url.pathname.startsWith("/api/");
+  } catch {
+    return false;
+  }
+}
+
+function rejectUnauthorizedApiRequest(req, res) {
+  if (!isApiRequest(req) || req.method === "OPTIONS") return false;
+  const token = process.env.REVIEWER_APP_TOKEN;
+  if (!token) return false;
+  const provided = req.headers[LOCAL_API_TOKEN_HEADER];
+  const headerValue = Array.isArray(provided) ? provided[0] : provided;
+  if (headerValue === token) return false;
+
+  res.writeHead(401, {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store",
+  });
+  res.end(JSON.stringify({ error: "Unauthorized local app request" }));
+  return true;
+}
+
+function isSafeExternalUrl(target) {
+  try {
+    const parsed = new URL(target);
+    return parsed.protocol === "https:" || parsed.protocol === "mailto:";
+  } catch {
+    return false;
+  }
+}
+
+function openExternalIfSafe(target) {
+  if (isSafeExternalUrl(target)) {
+    void shell.openExternal(target);
+  }
+}
+
+function installLocalApiHeader(win, appUrl) {
+  const token = process.env.REVIEWER_APP_TOKEN;
+  if (!token) return;
+
+  let origin;
+  try {
+    origin = new URL(appUrl).origin;
+  } catch {
+    return;
+  }
+
+  win.webContents.session.webRequest.onBeforeSendHeaders(
+    { urls: [`${origin}/*`] },
+    (details, callback) => {
+      callback({
+        requestHeaders: {
+          ...details.requestHeaders,
+          [LOCAL_API_TOKEN_HEADER]: token,
+        },
+      });
+    },
+  );
 }
 
 async function startNextServer() {
@@ -23,7 +92,10 @@ async function startNextServer() {
   const handler = nextApp.getRequestHandler();
   await nextApp.prepare();
 
-  server = http.createServer((req, res) => handler(req, res));
+  server = http.createServer((req, res) => {
+    if (rejectUnauthorizedApiRequest(req, res)) return;
+    handler(req, res);
+  });
   await new Promise((resolve, reject) => {
     server.once("error", reject);
     server.listen(0, "127.0.0.1", resolve);
@@ -89,6 +161,7 @@ function startNodeNextServer() {
 }
 
 function createWindow(url) {
+  const appOrigin = new URL(url).origin;
   const win = new BrowserWindow({
     width: 1280,
     height: 860,
@@ -102,9 +175,22 @@ function createWindow(url) {
     },
   });
 
+  installLocalApiHeader(win, url);
+
   win.webContents.setWindowOpenHandler(({ url: target }) => {
-    shell.openExternal(target);
+    openExternalIfSafe(target);
     return { action: "deny" };
+  });
+
+  win.webContents.on("will-navigate", (event, target) => {
+    try {
+      const targetUrl = new URL(target);
+      if (targetUrl.origin === appOrigin) return;
+      event.preventDefault();
+      openExternalIfSafe(target);
+    } catch {
+      event.preventDefault();
+    }
   });
 
   void win.loadURL(url);

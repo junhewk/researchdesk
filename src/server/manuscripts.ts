@@ -249,7 +249,7 @@ function listFiles(root: string, test: (name: string) => boolean): string[] {
   const queue: string[] = [""];
   while (queue.length) {
     const rel = queue.shift()!;
-    const dir = path.join(root, rel);
+    const dir = path.join(/* turbopackIgnore: true */ root, rel);
     let entries: fs.Dirent[];
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -260,7 +260,7 @@ function listFiles(root: string, test: (name: string) => boolean): string[] {
       const name = entry.name;
       if (name.startsWith(".")) continue;
       if (name === "node_modules" || name === ".next" || name === ".git") continue;
-      const childRel = rel ? path.join(rel, name) : name;
+      const childRel = rel ? path.join(/* turbopackIgnore: true */ rel, name) : name;
       if (entry.isDirectory()) {
         queue.push(childRel);
       } else if (entry.isFile() && test(name)) {
@@ -454,7 +454,7 @@ export function setPrimaryFile(
   if (!MARKDOWN_FILE_RE.test(primaryFile)) {
     throw new Error("primary file must be Markdown");
   }
-  const full = path.join(m.project_root, primaryFile);
+  const full = path.join(/* turbopackIgnore: true */ m.project_root, primaryFile);
   if (!fs.existsSync(full)) {
     throw new Error(`primary file not found: ${primaryFile}`);
   }
@@ -468,7 +468,7 @@ export function setPrimaryFile(
 export function syncPrimaryFileToContentMd(manuscriptId: string): void {
   const m = getManuscript(manuscriptId);
   if (!m?.project_root || !m.primary_file) return;
-  const full = path.join(m.project_root, m.primary_file);
+  const full = path.join(/* turbopackIgnore: true */ m.project_root, m.primary_file);
   if (!fs.existsSync(full)) return;
   const text = fs.readFileSync(full, "utf-8");
   const db = getDb();
@@ -484,7 +484,7 @@ export function autoProvisionProjectFolder(
   if (m.project_root) return m;
   const root = autoProvisionedRoot(manuscriptId);
   fs.mkdirSync(root, { recursive: true });
-  const target = path.join(root, "manuscript.md");
+  const target = path.join(/* turbopackIgnore: true */ root, "manuscript.md");
   if (!fs.existsSync(target)) {
     fs.writeFileSync(target, m.content_md, "utf-8");
   }

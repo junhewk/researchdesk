@@ -1909,7 +1909,7 @@ function migrateV9(db: Database.Database): void {
       id              TEXT PRIMARY KEY,
       manuscript_id   TEXT NOT NULL REFERENCES outside_manuscripts(id) ON DELETE CASCADE,
       stage           TEXT NOT NULL,
-      tool_kind       TEXT NOT NULL CHECK (tool_kind IN ('file_search','grep','scholarly_search','web_search','python_stats','image_check','reference_audit')),
+      tool_kind       TEXT NOT NULL CHECK (tool_kind IN ('file_search','grep','scholarly_search','web_search','quantitative_check','image_check','reference_audit')),
       query           TEXT,
       input_json      TEXT,
       output_json     TEXT,
