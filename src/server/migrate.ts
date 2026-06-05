@@ -1,6 +1,6 @@
-import type Database from "better-sqlite3";
+import type { AppDatabase } from "./sqlite";
 
-export function runMigrations(db: Database.Database): void {
+export function runMigrations(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Schema version tracking
@@ -39,7 +39,7 @@ export function runMigrations(db: Database.Database): void {
   if (currentVersion < 23) migrateV23(db);
 }
 
-function migrateV23(db: Database.Database): void {
+function migrateV23(db: AppDatabase): void {
   db.exec(`
     ALTER TABLE manuscripts
       ADD COLUMN study_id TEXT REFERENCES studies(id) ON DELETE SET NULL;
@@ -51,7 +51,7 @@ function migrateV23(db: Database.Database): void {
   `);
 }
 
-function migrateV22(db: Database.Database): void {
+function migrateV22(db: AppDatabase): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS app_settings (
       key         TEXT PRIMARY KEY,
@@ -72,7 +72,7 @@ function migrateV22(db: Database.Database): void {
   `);
 }
 
-function migrateV21(db: Database.Database): void {
+function migrateV21(db: AppDatabase): void {
   // ===================================================================
   // Widen studies.mode to admit the interventional (AI-intervention
   // trial) mode, and let a readiness check be bound to a study so the
@@ -125,7 +125,7 @@ function migrateV21(db: Database.Database): void {
   }
 }
 
-function migrateV20(db: Database.Database): void {
+function migrateV20(db: AppDatabase): void {
   // Agent-proposed options for a single decision card (card_proposal pass).
   // Ephemeral-ish: replaced each time a new proposal runs for that card.
   db.exec(`
@@ -145,7 +145,7 @@ function migrateV20(db: Database.Database): void {
   `);
 }
 
-function migrateV19(db: Database.Database): void {
+function migrateV19(db: AppDatabase): void {
   // ===================================================================
   // Strip the dangling foreign keys to the (now-dropped) protocols table
   // from the two surviving tables that referenced it. Earlier builds of
@@ -225,7 +225,7 @@ function migrateV19(db: Database.Database): void {
   }
 }
 
-function migrateV18(db: Database.Database): void {
+function migrateV18(db: AppDatabase): void {
   // ===================================================================
   // Retire the document-centric protocol model. The Methods Workbench
   // is now the StudyDesignState workspace (migrate V17); the protocol
@@ -333,7 +333,7 @@ function migrateV18(db: Database.Database): void {
   }
 }
 
-function migrateV17(db: Database.Database): void {
+function migrateV17(db: AppDatabase): void {
   // ===================================================================
   // Methods Workbench v2 — pre-document study-design workspace.
   //
@@ -597,7 +597,7 @@ function migrateV17(db: Database.Database): void {
   }
 }
 
-function migrateV16(db: Database.Database): void {
+function migrateV16(db: AppDatabase): void {
   // ===================================================================
   // Methods Workbench layer.
   //
@@ -1056,7 +1056,7 @@ function migrateV16(db: Database.Database): void {
   }
 }
 
-function migrateV15(db: Database.Database): void {
+function migrateV15(db: AppDatabase): void {
   // ===================================================================
   // Supplementary files attached to a manuscript — tables, appendices,
   // figures, supplements, response letters, "other". Commentaries
@@ -1093,7 +1093,7 @@ function migrateV15(db: Database.Database): void {
   `);
 }
 
-function migrateV14(db: Database.Database): void {
+function migrateV14(db: AppDatabase): void {
   // ===================================================================
   // Versioned manuscript snapshots.
   //
@@ -1139,7 +1139,7 @@ function migrateV14(db: Database.Database): void {
   `);
 }
 
-function migrateV13(db: Database.Database): void {
+function migrateV13(db: AppDatabase): void {
   // ===================================================================
   // Snapshot the original manuscript content at upload time so we can
   // diff original-vs-current. content_md drifts as the agent edits the
@@ -1162,7 +1162,7 @@ function migrateV13(db: Database.Database): void {
   `);
 }
 
-function migrateV12(db: Database.Database): void {
+function migrateV12(db: AppDatabase): void {
   // ===================================================================
   // Structured peer-review form for outside (third-party) manuscripts.
   // One draft per manuscript — the local user is the single author.
@@ -1187,7 +1187,7 @@ function migrateV12(db: Database.Database): void {
   `);
 }
 
-function migrateV1(db: Database.Database): void {
+function migrateV1(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Core tables
@@ -1459,7 +1459,7 @@ function migrateV1(db: Database.Database): void {
   `);
 }
 
-function migrateV2(db: Database.Database): void {
+function migrateV2(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Outside review (third-party manuscript reviewing workflow)
@@ -1559,7 +1559,7 @@ function migrateV2(db: Database.Database): void {
   `);
 }
 
-function migrateV3(db: Database.Database): void {
+function migrateV3(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Confidentiality controls for outside review requests.
@@ -1586,7 +1586,7 @@ function migrateV3(db: Database.Database): void {
   `);
 }
 
-function migrateV4(db: Database.Database): void {
+function migrateV4(db: AppDatabase): void {
   const cols = db
     .prepare("PRAGMA table_info(sessions)")
     .all() as Array<{ name: string }>;
@@ -1645,7 +1645,7 @@ function migrateV4(db: Database.Database): void {
   }
 }
 
-function migrateV5(db: Database.Database): void {
+function migrateV5(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Per-manuscript user-supplied review request. Captures what the user
@@ -1661,7 +1661,7 @@ function migrateV5(db: Database.Database): void {
   `);
 }
 
-function migrateV6(db: Database.Database): void {
+function migrateV6(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Diagrams produced by the agent to test article validity. Two kinds:
@@ -1687,7 +1687,7 @@ function migrateV6(db: Database.Database): void {
   `);
 }
 
-function migrateV7(db: Database.Database): void {
+function migrateV7(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Local-first confidential review metadata.
@@ -1722,7 +1722,7 @@ function migrateV7(db: Database.Database): void {
   `);
 }
 
-function migrateV8(db: Database.Database): void {
+function migrateV8(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Hardened local-first review metadata.
@@ -1813,7 +1813,7 @@ function migrateV8(db: Database.Database): void {
   `);
 }
 
-function migrateV9(db: Database.Database): void {
+function migrateV9(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Multi-stage local-first outside review.
@@ -1972,7 +1972,7 @@ function migrateV9(db: Database.Database): void {
   `);
 }
 
-function migrateV11(db: Database.Database): void {
+function migrateV11(db: AppDatabase): void {
   // ===================================================================
   // Unified "manuscript" workflow + per-turn slash-command mode.
   //
@@ -2029,7 +2029,7 @@ function migrateV11(db: Database.Database): void {
   }
 }
 
-function migrateV10(db: Database.Database): void {
+function migrateV10(db: AppDatabase): void {
   db.exec(`
     -- =======================================================================
     -- Folder-linked manuscripts.
