@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { closeDb } from "../db";
 
 // Each test runs against a fresh temp DB so migrations + seeding are exercised.
 async function withTempDb<T>(fn: () => Promise<T>): Promise<T> {
@@ -11,12 +12,11 @@ async function withTempDb<T>(fn: () => Promise<T>): Promise<T> {
   process.env.REVIEWER_DATA_DIR = dir;
   // db.ts memoizes the connection on globalThis; clear it so each test gets
   // its own temp database.
-  const g = globalThis as unknown as Record<string, unknown>;
-  delete g["__REVIEWER_AGENT_DB__"];
+  closeDb();
   try {
     return await fn();
   } finally {
-    delete g["__REVIEWER_AGENT_DB__"];
+    closeDb();
     if (previous === undefined) delete process.env.REVIEWER_DATA_DIR;
     else process.env.REVIEWER_DATA_DIR = previous;
     rmSync(dir, { recursive: true, force: true });

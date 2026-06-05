@@ -32,6 +32,17 @@ export function getDb(): Database.Database {
   return g[globalKey]!;
 }
 
+export function closeDb(): void {
+  const db = g[globalKey];
+  if (!db) return;
+
+  try {
+    db.close();
+  } finally {
+    delete g[globalKey];
+  }
+}
+
 /**
  * Build `column = ?` assignment fragments for each defined (non-undefined) field
  * in `patch`, returning the SET-clause fragments and their bound params in matching

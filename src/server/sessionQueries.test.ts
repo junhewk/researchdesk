@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { getDb } from "./db";
+import { closeDb, getDb } from "./db";
 import { getActiveSession } from "./sessionQueries";
 
 test("getActiveSession skips crashed sessions", () => {
@@ -29,6 +29,7 @@ test("getActiveSession skips crashed sessions", () => {
 
     assert.equal(getActiveSession("ms-active", "revision")?.id, "idle");
   } finally {
+    closeDb();
     if (previous === undefined) delete process.env.REVIEWER_DATA_DIR;
     else process.env.REVIEWER_DATA_DIR = previous;
     rmSync(dataDir, { recursive: true, force: true });
