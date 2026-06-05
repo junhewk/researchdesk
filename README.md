@@ -1,7 +1,23 @@
 # reviewer-agent
 
-A local-first desktop-ready workspace for academic manuscript revision and
-methods work.
+Reviewer Agent is a local-first desktop workspace for researchers who want to
+keep study design, manuscript drafting, peer-review response, and readiness
+checks in one traceable place. It is built around a simple direction of work:
+start upstream in Methods Workbench, make the study decisions explicit, compile
+the protocol/SAP/checklist artifacts, create a linked article draft, then
+continue in My Articles for manuscript review, readiness checks, revisions, and
+reviewer-response drafting.
+
+The app is meant to be an editorial and methods workbench, not an autonomous
+paper writer. It helps organize decisions, surface inconsistencies, draft
+structured text, and run LLM-assisted checks against the materials you provide.
+Novel claims, study design choices, statistical judgments, citations, and final
+manuscript edits remain the user's responsibility.
+
+Reviewer Agent can run against cloud or local API providers, including
+OpenAI-compatible endpoints, Ollama, LM Studio, and llama-server. Data is stored
+locally by default, while provider calls only happen when you configure a
+provider and run an LLM-backed action.
 
 Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
