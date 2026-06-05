@@ -19,7 +19,7 @@
   },
   "scripts": {
     "dev": "env -u TURBOPACK NODE_ENV=development PORT=${PORT:-3871} next dev --webpack --port ${PORT:-3871}",
-    "desktop:dev": "ELECTRON_START_URL=http://127.0.0.1:${PORT:-3871} concurrently -k \"npm run dev\" \"wait-on http://127.0.0.1:${PORT:-3871} && electron .\"",
+    "desktop:dev": "ELECTRON_START_URL=http://localhost:${PORT:-3871} concurrently -k \"npm run dev\" \"wait-on http://localhost:${PORT:-3871} && electron .\"",
     "desktop:pack": "npm run build && electron-builder --dir",
     "desktop:dist": "npm run build && electron-builder",
     "desktop:dist:win": "npm run build && electron-builder --win portable --x64 --publish never",
