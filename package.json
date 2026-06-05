@@ -7,7 +7,7 @@
   "main": "electron/main.cjs",
   "type": "module",
   "engines": {
-    "node": "22.x"
+    "node": "26.x"
   },
   "scripts": {
     "dev": "env -u TURBOPACK NODE_ENV=development PORT=${PORT:-3871} next dev --webpack --port ${PORT:-3871}",
@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test \"src/**/*.test.ts\"",
     "seed:demo": "tsx scripts/seed-diabetes-demo.ts",
+    "seed:methods-demo": "tsx scripts/seed-methods-workbench-demo.ts",
     "repair:native": "npm rebuild better-sqlite3"
   },
   "dependencies": {
@@ -40,7 +41,7 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-tooltip": "^1.2.3",
-    "better-sqlite3": "^11.9.1",
+    "better-sqlite3": "^12.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "diff": "^9.0.0",
@@ -64,13 +65,13 @@
     "@types/node": "^22.15.3",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "concurrently": "^9.1.2",
+    "electron": "^42.3.3",
+    "electron-builder": "^26.0.12",
     "eslint": "^9.25.1",
     "eslint-config-next": "^16.0.0",
     "tailwindcss": "^4.1.4",
     "tsx": "^4.21.0",
-    "concurrently": "^9.1.2",
-    "electron": "^35.2.0",
-    "electron-builder": "^26.0.12",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3"
   },

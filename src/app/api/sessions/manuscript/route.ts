@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getOrCreateManuscriptSession } from "@/server/sessionQueries";
-import { apiProviderSchema } from "@/server/apiAgent/providers";
+import {
+  apiProviderSchema,
+  providerFieldWasProvided,
+  resolveApiProvider,
+} from "@/server/apiAgent/providers";
 
 const postSchema = z.object({
   manuscript_id: z.string().min(1),
@@ -23,12 +27,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const session = await getOrCreateManuscriptSession(parsed.data.manuscript_id, {
-    provider: parsed.data.provider,
-    model: parsed.data.model?.trim() || null,
-    effort: parsed.data.effort ?? null,
-    mode: (parsed.data.mode?.trim() || null) as never,
-  });
+  try {
+    const session = await getOrCreateManuscriptSession(parsed.data.manuscript_id, {
+      provider: resolveApiProvider(
+        parsed.data.provider,
+        providerFieldWasProvided(body),
+      ),
+      model: parsed.data.model?.trim() || null,
+      effort: parsed.data.effort ?? null,
+      mode: (parsed.data.mode?.trim() || null) as never,
+    });
 
-  return NextResponse.json(session, { status: 200 });
+    return NextResponse.json(session, { status: 200 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Could not open session" },
+      { status: 400 },
+    );
+  }
 }

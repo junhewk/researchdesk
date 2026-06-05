@@ -5,9 +5,11 @@ import {
   createManuscript,
   autoProvisionProjectFolder,
 } from "@/server/manuscripts";
+import { getStudy } from "@/server/studies";
 import type { ManuscriptStatus } from "@/server/types";
 
 const createSchema = z.object({
+  study_id: z.string().optional().nullable(),
   title: z.string().min(1),
   content_md: z.string().min(1),
   original_file: z.string().optional(),
@@ -23,12 +25,14 @@ export async function GET(request: NextRequest) {
 
   const status = searchParams.get("status") as ManuscriptStatus | null;
   const domain = searchParams.get("domain") ?? undefined;
+  const studyId = searchParams.get("study_id") ?? undefined;
   const limit = searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined;
   const offset = searchParams.get("offset") ? Number(searchParams.get("offset")) : undefined;
 
   const manuscripts = listManuscripts({
     status: status ?? undefined,
     domain,
+    studyId,
     limit,
     offset,
   });
@@ -42,6 +46,9 @@ export async function POST(request: NextRequest) {
 
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  if (parsed.data.study_id && !getStudy(parsed.data.study_id)) {
+    return NextResponse.json({ error: "study not found" }, { status: 400 });
   }
 
   const manuscript = createManuscript(parsed.data);

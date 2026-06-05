@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import {
   getReadinessCheck,
   listReadinessItems,
@@ -18,7 +18,7 @@ export default async function ReadinessCheckPage({
 }) {
   const { id } = await params;
   const check = getReadinessCheck(id);
-  if (!check) notFound();
+  if (!check) redirect("/methods-workbench/readiness");
   const manuscript = getManuscript(check.manuscript_id);
   const comparedStudy = check.study_id ? getStudy(check.study_id) : undefined;
   const items = listReadinessItems(id);
@@ -65,7 +65,7 @@ export default async function ReadinessCheckPage({
           <p className="mt-1 text-[12px] text-[color:var(--color-on-surface-variant)]">
             compared against study:{" "}
             <Link
-              href={`/methods/${comparedStudy.id}`}
+              href={`/methods-workbench/${comparedStudy.id}`}
               className="underline underline-offset-2 hover:text-[color:var(--color-redink)]"
             >
               {comparedStudy.title}

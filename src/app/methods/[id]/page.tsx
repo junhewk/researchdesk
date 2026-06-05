@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getStudy } from "@/server/studies";
 import { StudyWorkspace } from "@/components/methods/StudyWorkspace";
 
@@ -11,6 +11,6 @@ export default async function StudyPage({
 }) {
   const { id } = await params;
   const study = getStudy(id);
-  if (!study) notFound();
+  if (!study) redirect("/methods-workbench/studies");
   return <StudyWorkspace studyId={id} initialStudy={study} />;
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import {
   getReviewerResponse,
   listResponseItems,
@@ -17,7 +17,7 @@ export default async function ReviewerResponsePage({
 }) {
   const { id } = await params;
   const response = getReviewerResponse(id);
-  if (!response) notFound();
+  if (!response) redirect("/methods-workbench/reviewer-responses");
   const manuscript = getManuscript(response.manuscript_id);
   const items = listResponseItems(id);
 

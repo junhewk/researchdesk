@@ -2,11 +2,13 @@ import Link from "next/link";
 import { listStudies } from "@/server/studies";
 import { getDb } from "@/server/db";
 import { formatDate } from "@/lib/utils";
+import { MethodsDemoSeedButton } from "@/components/MethodsDemoSeedButton";
 import type { ReadinessCheck, ReviewerResponse } from "@/server/types";
 
 export const dynamic = "force-dynamic";
 
 const MODE_LABEL: Record<string, string> = {
+  interventional: "AI-intervention trial",
   systematic_review: "systematic review",
   retrospective_observational: "retrospective observational",
 };
@@ -68,12 +70,15 @@ export default function MethodsWorkbenchPage() {
         >
           Methods Workbench
         </h1>
-        <Link
-          href="/methods/new"
-          className="text-[13px] text-[color:var(--color-ink)] hover:text-[color:var(--color-redink)]"
-        >
-          + Start a study
-        </Link>
+        <div className="flex flex-wrap items-start justify-end gap-2">
+          <MethodsDemoSeedButton />
+          <Link
+            href="/methods-workbench/new"
+            className="inline-flex items-center rounded px-4 py-2.5 text-[14px] font-medium bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] transition-colors"
+          >
+            + Start a study
+          </Link>
+        </div>
       </div>
       <p className="mb-12 max-w-2xl text-[14px] text-[color:var(--color-on-surface-variant)]">
         Form and audit research-design decisions <em>before</em> any document
@@ -88,7 +93,7 @@ export default function MethodsWorkbenchPage() {
             No studies yet.
           </p>
           <p className="mt-2 text-[13px]">
-            <Link href="/methods/new" className="underline underline-offset-4">
+            <Link href="/methods-workbench/new" className="underline underline-offset-4">
               Start a study design →
             </Link>
           </p>
@@ -97,7 +102,7 @@ export default function MethodsWorkbenchPage() {
         <ul className="divide-y divide-[color:var(--color-outline-variant)] border-t border-[color:var(--color-outline-variant)]">
           {studies.map((s) => (
             <li key={s.id}>
-              <Link href={`/methods/${s.id}`} className="block py-5 group">
+              <Link href={`/methods-workbench/${s.id}`} className="block py-5 group">
                 <div className="flex items-baseline gap-6">
                   <h3
                     className="font-display text-[22px] leading-tight flex-1 group-hover:text-[color:var(--color-primary)] transition-colors"
@@ -141,8 +146,8 @@ export default function MethodsWorkbenchPage() {
                 <Link
                   href={
                     item.kind === "readiness"
-                      ? `/methods/readiness/${item.id}`
-                      : `/methods/reviewer-responses/${item.id}`
+                      ? `/methods-workbench/readiness/${item.id}`
+                      : `/methods-workbench/reviewer-responses/${item.id}`
                   }
                   className="flex items-baseline gap-4 py-3 text-[13px] group"
                 >

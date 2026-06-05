@@ -1,4 +1,5 @@
 import { settingsSections } from "@/workspaces/settings";
+import { ProviderSettingsForm } from "@/components/ProviderSettingsForm";
 
 export default function SettingsPage() {
   return (
@@ -9,12 +10,11 @@ export default function SettingsPage() {
       </h1>
       <p className="mb-10 text-[14px] text-[color:var(--color-on-surface-variant)]">
         Provider configuration, confidentiality preferences, and data paths.
-        Values are read from environment variables — the fields here document
-        the keys, they don&apos;t edit them.
       </p>
 
       <div className="space-y-10">
-        {settingsSections.map((section) => (
+        <ProviderSettingsForm />
+        {settingsSections.slice(1).map((section) => (
           <ConfigSection key={section.title} {...section} />
         ))}
       </div>

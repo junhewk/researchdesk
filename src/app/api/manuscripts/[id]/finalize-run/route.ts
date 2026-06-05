@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/server/db";
 import { getOrCreateManuscriptSession } from "@/server/sessionQueries";
 import { getSupervisor } from "@/server/supervisor";
+import { getDefaultApiProvider } from "@/server/providerSettings";
 
 const FINALIZE_PROMPT = `/finalize
 
@@ -30,7 +31,7 @@ export async function POST(
   let session;
   try {
     session = await getOrCreateManuscriptSession(id, {
-      provider: "openai",
+      provider: getDefaultApiProvider(),
       mode: "finalize",
     });
   } catch (err) {

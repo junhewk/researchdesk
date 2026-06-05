@@ -133,6 +133,14 @@ export default function ManuscriptDetailPage() {
           {manuscript.research_domain && <span>{manuscript.research_domain}</span>}
           {manuscript.research_type && <span>· {manuscript.research_type.replace("-", " ")}</span>}
           {manuscript.journal_type && <span className="italic font-display">· for {manuscript.journal_type}</span>}
+          {manuscript.study_id && (
+            <Link
+              href={`/methods-workbench/${manuscript.study_id}`}
+              className="italic font-display underline-offset-2 hover:underline"
+            >
+              · source methods
+            </Link>
+          )}
           <span className="ml-auto font-mono tabular">
             {formatDate(manuscript.updated_at)}
           </span>

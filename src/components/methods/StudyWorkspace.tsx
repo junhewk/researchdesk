@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { SessionStream } from "@/components/SessionStream";
 import {
   DECISION_STATE_STYLES,
@@ -335,16 +336,44 @@ function Header({
   onLocalProviderChange: (provider: LocalProvider) => void;
   onJumpNext: () => void;
 }) {
+  const router = useRouter();
+  const [creatingArticle, setCreatingArticle] = useState(false);
+  const [articleError, setArticleError] = useState<string | null>(null);
   const MODE_LABEL: Record<string, string> = {
     systematic_review: "Systematic review",
     retrospective_observational: "Retrospective observational",
     interventional: "AI-intervention trial",
   };
+
+  async function createArticleDraft() {
+    setCreatingArticle(true);
+    setArticleError(null);
+    try {
+      const res = await fetch(`/api/studies/${study.id}/article`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reuse_existing: true }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { links?: { workspace?: string }; manuscript?: { id: string }; error?: string }
+        | null;
+      if (!res.ok || !data) {
+        throw new Error(data?.error || `article creation failed (${res.status})`);
+      }
+      router.push(data.links?.workspace ?? `/my-articles/${data.manuscript?.id}/workspace`);
+      router.refresh();
+    } catch (err) {
+      setArticleError(err instanceof Error ? err.message : "article creation failed");
+    } finally {
+      setCreatingArticle(false);
+    }
+  }
+
   return (
     <div className="border-b-2 border-[color:var(--color-ink)] pb-3 sticky top-0 z-30 bg-[color:var(--color-surface)]">
       <div className="flex items-baseline justify-between">
         <Link
-          href="/methods"
+          href="/methods-workbench"
           className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
         >
           ← Methods Workbench
@@ -383,14 +412,31 @@ function Header({
             </p>
           )}
         </div>
-        {inspector?.nextBestAction && (
-          <button
-            onClick={onJumpNext}
-            className="shrink-0 mb-1 px-3 py-1.5 text-[12px] border border-[color:var(--color-primary)] text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)] hover:text-[color:var(--color-on-primary)] transition-colors"
-          >
-            Next: {inspector.nextBestAction} →
-          </button>
-        )}
+        <div className="shrink-0 mb-1 flex flex-col items-end gap-1">
+          <div className="flex flex-wrap justify-end gap-2">
+            {inspector?.nextBestAction && (
+              <button
+                onClick={onJumpNext}
+                className="px-3 py-1.5 text-[12px] border border-[color:var(--color-primary)] text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)] hover:text-[color:var(--color-on-primary)] transition-colors"
+              >
+                Next: {inspector.nextBestAction} →
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={createArticleDraft}
+              disabled={creatingArticle}
+              className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] disabled:opacity-50 transition-colors"
+            >
+              {creatingArticle ? "Creating article..." : "Create Article Draft"}
+            </button>
+          </div>
+          {articleError && (
+            <span className="max-w-[280px] text-right text-[11px] leading-snug text-[color:var(--color-error)]">
+              {articleError}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1054,7 +1100,7 @@ function ArtifactBar({
         {artifacts.map((a) => (
           <div key={a.kind} className="border border-[color:var(--color-outline-variant)] rounded p-3">
             <Link
-              href={`/methods/${studyId}/artifact/${a.kind}`}
+              href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
               className="font-display text-[14px] leading-tight hover:text-[color:var(--color-redink)]"
             >
               {a.title}
@@ -1067,7 +1113,7 @@ function ArtifactBar({
             </div>
             <div className="mt-2 flex gap-2 text-[10px] font-mono uppercase">
               <Link
-                href={`/methods/${studyId}/artifact/${a.kind}`}
+                href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
                 className="hover:text-[color:var(--color-redink)]"
               >
                 view

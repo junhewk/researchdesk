@@ -6,6 +6,7 @@ import { Beaker, ClipboardCheck } from "lucide-react";
 
 interface Props {
   manuscriptId: string;
+  studyId?: string | null;
 }
 
 interface LetterCommentary {
@@ -17,7 +18,7 @@ interface ManuscriptVersion {
   id: string;
 }
 
-export function MethodsActions({ manuscriptId }: Props) {
+export function MethodsActions({ manuscriptId, studyId }: Props) {
   const router = useRouter();
   const [busy, startTransition] = useTransition();
   const [hasDecisionLetter, setHasDecisionLetter] = useState(false);
@@ -56,7 +57,7 @@ export function MethodsActions({ manuscriptId }: Props) {
       const res = await fetch(`/api/manuscripts/${manuscriptId}/readiness`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider: "openai" }),
+        body: JSON.stringify({ study_id: studyId ?? undefined }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -76,7 +77,7 @@ export function MethodsActions({ manuscriptId }: Props) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ provider: "openai", round: 1 }),
+          body: JSON.stringify({ round: 1 }),
         },
       );
       if (!res.ok) {
@@ -97,7 +98,9 @@ export function MethodsActions({ manuscriptId }: Props) {
         disabled={busy || !hasVersion}
         title={
           hasVersion
-            ? "Run readiness check"
+            ? studyId
+              ? "Run readiness check against the originating Methods study"
+              : "Run readiness check"
             : "Upload at least one manuscript version first"
         }
         className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] text-[color:var(--color-on-surface)] hover:border-[color:var(--color-outline)] disabled:opacity-40 transition-colors"

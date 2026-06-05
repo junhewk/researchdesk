@@ -14,6 +14,7 @@ import {
   apiProviderSchema,
   providerFieldWasProvided,
   requireLocalApiProvider,
+  resolveApiProvider,
 } from "@/server/apiAgent/providers";
 
 const bodySchema = z.object({
@@ -36,7 +37,10 @@ export async function POST(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  let provider: Provider = parsed.data.provider ?? "openai";
+  let provider: Provider = resolveApiProvider(
+    parsed.data.provider,
+    providerFieldWasProvided(body),
+  );
   if (study.confidentiality_mode === "local_only") {
     const local = requireLocalApiProvider(
       parsed.data.provider,

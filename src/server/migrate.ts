@@ -35,6 +35,41 @@ export function runMigrations(db: Database.Database): void {
   if (currentVersion < 19) migrateV19(db);
   if (currentVersion < 20) migrateV20(db);
   if (currentVersion < 21) migrateV21(db);
+  if (currentVersion < 22) migrateV22(db);
+  if (currentVersion < 23) migrateV23(db);
+}
+
+function migrateV23(db: Database.Database): void {
+  db.exec(`
+    ALTER TABLE manuscripts
+      ADD COLUMN study_id TEXT REFERENCES studies(id) ON DELETE SET NULL;
+
+    CREATE INDEX IF NOT EXISTS idx_manuscripts_study
+      ON manuscripts(study_id, updated_at);
+
+    INSERT INTO schema_version (version) VALUES (23);
+  `);
+}
+
+function migrateV22(db: Database.Database): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key         TEXT PRIMARY KEY,
+      value       TEXT,
+      updated_at  INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+
+    CREATE TABLE IF NOT EXISTS api_provider_settings (
+      provider    TEXT PRIMARY KEY
+                    CHECK (provider IN ('openai','gemini','deepseek','ollama','lmstudio','llama_server')),
+      model       TEXT,
+      api_key     TEXT,
+      base_url    TEXT,
+      updated_at  INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+
+    INSERT INTO schema_version (version) VALUES (22);
+  `);
 }
 
 function migrateV21(db: Database.Database): void {

@@ -6,6 +6,16 @@ import {
 } from "@/server/methods/evidence";
 import { getStudySupervisor } from "@/server/methods/studySessions";
 import type { Provider } from "@/server/types";
+import {
+  apiProviderSchema,
+  providerFieldWasProvided,
+  requireLocalApiProvider,
+  resolveApiProvider,
+} from "@/server/apiAgent/providers";
+
+const bodySchema = apiProviderSchema
+  .optional()
+  .transform((provider) => ({ provider }));
 
 export async function POST(
   request: NextRequest,
@@ -25,7 +35,29 @@ export async function POST(
   }
 
   // Free-form report: hand to the agent extraction pass.
-  const provider: Provider = "openai";
+  const body = await request.json().catch(() => ({}));
+  const parsed = bodySchema.safeParse(
+    body && typeof body === "object" && "provider" in body
+      ? (body as { provider?: unknown }).provider
+      : undefined,
+  );
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  let provider: Provider = resolveApiProvider(
+    parsed.data.provider,
+    providerFieldWasProvided(body),
+  );
+  if (study.confidentiality_mode === "local_only") {
+    const local = requireLocalApiProvider(
+      parsed.data.provider,
+      providerFieldWasProvided(body),
+    );
+    if (local.error || !local.provider) {
+      return NextResponse.json({ error: local.error }, { status: 400 });
+    }
+    provider = local.provider;
+  }
   const sup = getStudySupervisor();
   try {
     const session = sup.createSession({

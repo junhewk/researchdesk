@@ -2,8 +2,15 @@ import { z } from "zod";
 import { searchArticles } from "@/server/articleSearch";
 import { getChecklist, listChecklistItems, updateChecklistItem } from "@/server/reportingChecklists";
 import { appendReadinessItem, getReadinessCheck, listReadinessItems, updateReadinessCheck } from "@/server/readinessChecks";
+import { listCommentaries } from "@/server/commentaries";
 import { createReview } from "@/server/reviews";
 import { getManuscript } from "@/server/manuscripts";
+import {
+  getReviewerResponse,
+  listResponseItems,
+  updateResponse,
+  updateResponseItem,
+} from "@/server/reviewerResponses";
 import { clearRiskFindings, createFinding, getStudy, listDecisions } from "@/server/studies";
 import { getCardDef, getCardStage } from "@/server/methods/cardSchema";
 import { parseValue } from "@/server/methods/preflight";
@@ -62,6 +69,16 @@ const ReviewResultSchema = z.object({
     severity: z.enum(["minor", "major", "critical"]).nullable().default(null),
     section_ref: z.string().nullable().default(null),
     content_md: z.string().min(1),
+  })).default([]),
+  summary_md: z.string().min(1),
+});
+
+const ReviewerResponseDraftSchema = z.object({
+  items: z.array(z.object({
+    item_id: z.string().min(1),
+    response_md: z.string().min(1),
+    change_pointer_md: z.string().nullable().default(null),
+    status: z.enum(["drafting", "accepted", "declined"]).default("drafting"),
   })).default([]),
   summary_md: z.string().min(1),
 });
@@ -310,4 +327,73 @@ export async function runReviewAgent(opts: {
     created += 1;
   }
   return { created, summary_md: result.parsed.summary_md };
+}
+
+export async function runReviewerResponseAgent(opts: {
+  responseId: string;
+  config: ApiAgentConfig;
+}): Promise<{ updated: number; summary_md: string }> {
+  const response = getReviewerResponse(opts.responseId);
+  if (!response) throw new Error("reviewer response not found");
+
+  const items = listResponseItems(response.id);
+  if (items.length === 0) {
+    const summary =
+      "No reviewer-response items were available to draft. Add or upload reviewer comments first.";
+    updateResponse(response.id, { summary_md: summary });
+    return { updated: 0, summary_md: summary };
+  }
+
+  const itemIds = new Set(items.map((item) => item.id));
+  const letters = listCommentaries(response.manuscript_id).filter(
+    (commentary) =>
+      commentary.source === "decision_letter" ||
+      commentary.source === "reviewer_report" ||
+      commentary.source === "prior_response",
+  );
+
+  const result = await runStructured({
+    config: opts.config,
+    schema: ReviewerResponseDraftSchema,
+    schemaName: "ReviewerResponseDraft",
+    systemPrompt: `You are a response-to-reviewers drafting assistant.\n\n- ${CORE_RULES}\n- Never claim a manuscript change has already been made unless the supplied manuscript text already contains it.\n- When a revision is needed, draft the response as a proposed change and keep the item status as drafting.`,
+    userPrompt: [
+      manuscriptContext(response.manuscript_id),
+      "",
+      "Reviewer letters and prior responses:",
+      asJson(letters.map((letter) => ({
+        source: letter.source,
+        reviewer_label: letter.reviewer_label,
+        round: letter.round,
+        content_md: letter.content_md,
+      }))),
+      "",
+      "Response items to draft:",
+      asJson(items.map((item) => ({
+        item_id: item.id,
+        comment_excerpt: item.comment_excerpt,
+        current_response_md: item.response_md,
+        current_change_pointer_md: item.change_pointer_md,
+      }))),
+      "",
+      "For each item, draft a concise point-by-point response. Use change_pointer_md for the manuscript section that should be revised, or null when no manuscript change is needed.",
+    ].join("\n"),
+  });
+
+  let updated = 0;
+  for (const item of result.parsed.items) {
+    if (!itemIds.has(item.item_id)) continue;
+    const next = updateResponseItem(item.item_id, {
+      response_md: item.response_md,
+      change_pointer_md: item.change_pointer_md,
+      status: item.status,
+    });
+    if (next) updated += 1;
+  }
+  updateResponse(response.id, {
+    status: "drafting",
+    summary_md: result.parsed.summary_md,
+  });
+
+  return { updated, summary_md: result.parsed.summary_md };
 }

@@ -6,8 +6,11 @@ import {
   Plus,
 } from "lucide-react";
 import { getDb } from "@/server/db";
+import { DemoSeedButton } from "@/components/DemoSeedButton";
 import { MarkdownText } from "@/components/MarkdownText";
 import { relativeTime } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 interface SubmissionRow {
   id: string;
@@ -274,13 +277,16 @@ export default function ResearcherHubPage() {
                 {stats.reviews} review{stats.reviews === 1 ? "" : "s"}
               </p>
             </div>
-            <Link
-              href="/my-articles/new"
-              className="inline-flex items-center gap-2 rounded px-4 py-2.5 text-[14px] font-medium bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] transition-colors"
-            >
-              <Plus className="h-4 w-4" strokeWidth={2} />
-              New Submission
-            </Link>
+            <div className="flex flex-wrap items-start justify-end gap-2">
+              <DemoSeedButton />
+              <Link
+                href="/my-articles/new"
+                className="inline-flex items-center gap-2 rounded px-4 py-2.5 text-[14px] font-medium bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] transition-colors"
+              >
+                <Plus className="h-4 w-4" strokeWidth={2} />
+                New Submission
+              </Link>
+            </div>
           </header>
 
           {/* My Submissions */}

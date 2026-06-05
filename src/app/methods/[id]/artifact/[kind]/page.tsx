@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getStudy, listDecisions, getOrCreateArtifact } from "@/server/studies";
 import {
@@ -22,7 +22,8 @@ export default async function ArtifactDetailPage({
 }) {
   const { id, kind } = await params;
   const study = getStudy(id);
-  if (!study || !isKind(kind)) notFound();
+  if (!study) redirect("/methods-workbench/studies");
+  if (!isKind(kind)) notFound();
 
   const compiled = compileArtifact(study, listDecisions(id), kind);
   const stored = getOrCreateArtifact(id, kind);
@@ -32,7 +33,7 @@ export default async function ArtifactDetailPage({
     <div className="reveal max-w-3xl">
       <div className="border-b-2 border-[color:var(--color-ink)] pb-3">
         <Link
-          href={`/methods/${id}`}
+          href={`/methods-workbench/${id}`}
           className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
         >
           ← {study.title}

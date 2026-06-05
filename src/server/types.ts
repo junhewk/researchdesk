@@ -188,6 +188,7 @@ export type RevisionActionType =
 
 export interface Manuscript {
   id: string;
+  study_id: string | null;
   title: string;
   content_md: string;
   /** Snapshot of content_md at upload time. Frozen — used for original-vs-

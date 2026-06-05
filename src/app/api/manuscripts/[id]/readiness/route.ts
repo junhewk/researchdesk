@@ -12,6 +12,7 @@ import {
   apiAgentRequestSchema,
   providerFieldWasProvided,
   requireLocalApiProvider,
+  resolveApiProvider,
 } from "@/server/apiAgent/providers";
 import { runReadinessAgent } from "@/server/apiAgent/workflows";
 
@@ -80,7 +81,10 @@ export async function POST(
     );
   }
 
-  let provider = parsed.data.provider;
+  let provider = resolveApiProvider(
+    parsed.data.provider,
+    providerFieldWasProvided(body),
+  );
   if (study?.confidentiality_mode === "local_only") {
     const local = requireLocalApiProvider(
       parsed.data.provider,

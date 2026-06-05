@@ -235,6 +235,7 @@ export default function ManuscriptWorkspacePage() {
   const [manuscript, setManuscript] = useState<Manuscript | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("new");
+  const [sessionError, setSessionError] = useState<string | null>(null);
   const [revisions, setRevisions] = useState<Revision[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
 
@@ -289,18 +290,21 @@ export default function ManuscriptWorkspacePage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             manuscript_id: manuscriptId,
-            provider: "openai",
           }),
         });
+        if (cancelled) return;
         if (!sRes.ok) {
           const data = await sRes.json().catch(() => ({}));
-          throw new Error(
-            data.error?.formErrors?.join(", ") || "Could not open session",
+          setSessionError(
+            typeof data.error === "string"
+              ? data.error
+              : data.error?.formErrors?.join(", ") || "Could not open session",
           );
+          return;
         }
         const s = (await sRes.json()) as Session;
-        if (cancelled) return;
         setSession(s);
+        setSessionError(null);
         setSessionStatus(s.status);
         setProvider(s.provider);
         setModel(normalizeModelForProvider(s.provider, s.model ?? ""));
@@ -553,7 +557,16 @@ export default function ManuscriptWorkspacePage() {
             >
               <SettingsIcon className="h-4 w-4" strokeWidth={1.75} />
             </button>
-            <MethodsActions manuscriptId={manuscriptId} />
+            {manuscript.study_id && (
+              <Link
+                href={`/methods-workbench/${manuscript.study_id}`}
+                className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] text-[color:var(--color-on-surface)] hover:border-[color:var(--color-outline)] transition-colors"
+              >
+                <FileText className="h-3.5 w-3.5" strokeWidth={1.75} />
+                Source methods
+              </Link>
+            )}
+            <MethodsActions manuscriptId={manuscriptId} studyId={manuscript.study_id} />
             <Link
               href={`/my-articles/${manuscriptId}/upload-revision`}
               className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] text-[color:var(--color-on-surface)] hover:border-[color:var(--color-outline)] transition-colors"
@@ -681,8 +694,10 @@ export default function ManuscriptWorkspacePage() {
                   </div>
                 </details>
               ) : (
-                <div className="px-4 py-2 text-[12px] italic text-[color:var(--color-on-surface-variant)]">
-                  Opening manuscript thread…
+                <div className="px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)]">
+                  {sessionError
+                    ? `Manuscript thread unavailable: ${sessionError}`
+                    : "Opening manuscript thread..."}
                 </div>
               )}
 
@@ -727,7 +742,9 @@ export default function ManuscriptWorkspacePage() {
                   submitOnEnter
                   disabled={!session || isRunning || sending}
                   placeholder={
-                    isRunning
+                    sessionError
+                      ? "Manuscript chat unavailable"
+                      : isRunning
                       ? "Agent is working…"
                       : "Add a comment · type / for commands"
                   }
@@ -794,6 +811,17 @@ function DraftsPane({
           )}
           {manuscript.journal_type && (
             <span className="font-body italic">for {manuscript.journal_type}</span>
+          )}
+          {manuscript.study_id && (
+            <>
+              <span aria-hidden className="text-[color:var(--color-outline-variant)]">·</span>
+              <Link
+                href={`/methods-workbench/${manuscript.study_id}`}
+                className="font-body text-[color:var(--color-on-surface-variant)] underline-offset-2 hover:text-[color:var(--color-on-surface)] hover:underline"
+              >
+                Methods source
+              </Link>
+            </>
           )}
           <span className="ml-auto inline-flex items-center gap-1.5 label-sm text-[color:var(--color-on-surface-variant)]">
             <Clock className="h-3 w-3" strokeWidth={1.75} />

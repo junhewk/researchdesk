@@ -52,7 +52,7 @@ export default function NewStudyPage() {
       });
       if (!res.ok) throw new Error("could not create study");
       const study = await res.json();
-      router.push(`/methods/${study.id}`);
+      router.push(`/methods-workbench/${study.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "error");
       setBusy(false);

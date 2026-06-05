@@ -25,6 +25,6 @@ const methodsWorkbenchWorkspace: WorkspaceDefinition = {
 
 export const workspaceRegistry: WorkspaceDefinition[] = [
   dashboardWorkspace,
-  myArticlesWorkspace,
   methodsWorkbenchWorkspace,
+  myArticlesWorkspace,
 ];

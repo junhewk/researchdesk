@@ -4,6 +4,7 @@ import {
   apiAgentRequestSchema,
   providerFieldWasProvided,
   requireLocalApiProvider,
+  resolveApiProvider,
 } from "@/server/apiAgent/providers";
 import { runPreflightRiskAgent } from "@/server/apiAgent/workflows";
 
@@ -21,7 +22,10 @@ export async function POST(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  let provider = parsed.data.provider;
+  let provider = resolveApiProvider(
+    parsed.data.provider,
+    providerFieldWasProvided(body),
+  );
   if (study.confidentiality_mode === "local_only") {
     const local = requireLocalApiProvider(
       parsed.data.provider,

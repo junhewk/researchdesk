@@ -36,7 +36,7 @@ export function providerSupportsWorkflow(
   workflow: Workflow,
 ): boolean {
   void provider;
-  if (workflow === "revision" || workflow === "manuscript") return false;
+  if (workflow === "revision") return false;
   return true;
 }
 

@@ -1,9 +1,10 @@
 const http = require("node:http");
 const path = require("node:path");
+const { spawn } = require("node:child_process");
 const { app, BrowserWindow, shell } = require("electron");
-const next = require("next");
 
 let server = null;
+let serverProcess = null;
 
 function appRoot() {
   return app.isPackaged ? path.join(process.resourcesPath, "app") : path.join(__dirname, "..");
@@ -17,11 +18,8 @@ function ensureDesktopEnv() {
 
 async function startNextServer() {
   const root = appRoot();
-  const nextApp = next({
-    dev: !app.isPackaged && process.env.ELECTRON_DEV_NEXT !== "0",
-    dir: root,
-    hostname: "127.0.0.1",
-  });
+  const next = require("next");
+  const nextApp = next({ dev: false, dir: root, hostname: "127.0.0.1" });
   const handler = nextApp.getRequestHandler();
   await nextApp.prepare();
 
@@ -35,6 +33,59 @@ async function startNextServer() {
     throw new Error("could not bind local Next server");
   }
   return `http://127.0.0.1:${address.port}`;
+}
+
+function startNodeNextServer() {
+  const root = appRoot();
+  const nodeBinary = process.env.ELECTRON_NODE_BINARY || "node";
+  const serverScript = path.join(root, "electron", "next-server.cjs");
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(nodeBinary, [serverScript, root], {
+      cwd: root,
+      env: {
+        ...process.env,
+        NODE_ENV: process.env.NODE_ENV || "production",
+        ELECTRON_DEV_NEXT: process.env.ELECTRON_DEV_NEXT || "0",
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    serverProcess = child;
+    let settled = false;
+
+    child.stdout.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      process.stdout.write(chunk);
+      const readyLine = chunk
+        .split(/\r?\n/)
+        .find((line) => line.startsWith("READY "));
+      if (readyLine && !settled) {
+        settled = true;
+        resolve(readyLine.slice("READY ".length).trim());
+      }
+    });
+
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk) => {
+      process.stderr.write(chunk);
+    });
+
+    child.once("error", (err) => {
+      if (!settled) {
+        settled = true;
+        reject(err);
+      }
+    });
+
+    child.once("exit", (code, signal) => {
+      if (!settled) {
+        settled = true;
+        reject(new Error(`Next server exited before ready (${signal || code})`));
+      }
+      if (serverProcess === child) serverProcess = null;
+    });
+  });
 }
 
 function createWindow(url) {
@@ -61,7 +112,9 @@ function createWindow(url) {
 
 app.whenReady().then(async () => {
   ensureDesktopEnv();
-  const url = process.env.ELECTRON_START_URL || await startNextServer();
+  const url =
+    process.env.ELECTRON_START_URL ||
+    (app.isPackaged ? await startNextServer() : await startNodeNextServer());
   createWindow(url);
 
   app.on("activate", () => {
@@ -78,4 +131,8 @@ app.on("window-all-closed", () => {
 
 app.on("before-quit", () => {
   if (server) server.close();
+  if (serverProcess) {
+    serverProcess.kill();
+    serverProcess = null;
+  }
 });

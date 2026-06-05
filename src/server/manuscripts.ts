@@ -11,6 +11,7 @@ import type { Manuscript, ManuscriptStatus } from "./types";
 
 interface ManuscriptRow {
   id: string;
+  study_id: string | null;
   title: string;
   content_md: string;
   original_content_md: string | null;
@@ -38,6 +39,7 @@ function rowToManuscript(row: ManuscriptRow): Manuscript {
 export function listManuscripts(opts?: {
   status?: ManuscriptStatus;
   domain?: string;
+  studyId?: string;
   limit?: number;
   offset?: number;
 }): Manuscript[] {
@@ -52,6 +54,10 @@ export function listManuscripts(opts?: {
   if (opts?.domain) {
     clauses.push("research_domain = ?");
     params.push(opts.domain);
+  }
+  if (opts?.studyId) {
+    clauses.push("study_id = ?");
+    params.push(opts.studyId);
   }
 
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
@@ -71,6 +77,7 @@ export function getManuscript(id: string): Manuscript | undefined {
 }
 
 export function createManuscript(data: {
+  study_id?: string | null;
   title: string;
   content_md: string;
   original_file?: string;
@@ -86,6 +93,7 @@ export function createManuscript(data: {
 
   const m: Manuscript = {
     id,
+    study_id: data.study_id ?? null,
     title: data.title,
     content_md: data.content_md,
     original_content_md: data.content_md,
@@ -104,9 +112,27 @@ export function createManuscript(data: {
   };
 
   db.prepare(
-    `INSERT INTO manuscripts (id, title, content_md, original_content_md, original_file, file_format, journal_type, research_domain, research_type, review_request, status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  ).run(m.id, m.title, m.content_md, m.original_content_md, m.original_file, m.file_format, m.journal_type, m.research_domain, m.research_type, m.review_request, m.status, m.created_at, m.updated_at);
+    `INSERT INTO manuscripts
+       (id, study_id, title, content_md, original_content_md, original_file,
+        file_format, journal_type, research_domain, research_type,
+        review_request, status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(
+    m.id,
+    m.study_id,
+    m.title,
+    m.content_md,
+    m.original_content_md,
+    m.original_file,
+    m.file_format,
+    m.journal_type,
+    m.research_domain,
+    m.research_type,
+    m.review_request,
+    m.status,
+    m.created_at,
+    m.updated_at,
+  );
 
   insertInitialVersion({
     manuscriptId: m.id,
@@ -120,7 +146,7 @@ export function createManuscript(data: {
 
 export function updateManuscript(
   id: string,
-  data: Partial<Pick<Manuscript, "title" | "content_md" | "journal_type" | "research_domain" | "research_type" | "review_request" | "status">>,
+  data: Partial<Pick<Manuscript, "study_id" | "title" | "content_md" | "journal_type" | "research_domain" | "research_type" | "review_request" | "status">>,
 ): Manuscript | undefined {
   const db = getDb();
   const existing = getManuscript(id);
@@ -135,6 +161,35 @@ export function updateManuscript(
   params.push(now, id);
 
   db.prepare(`UPDATE manuscripts SET ${sets.join(", ")} WHERE id = ?`).run(...params);
+
+  const updated = getManuscript(id)!;
+  if (!updated.project_root) {
+    exportManuscript(updated);
+  }
+  return updated;
+}
+
+export function replaceUneditedGeneratedContent(
+  id: string,
+  content_md: string,
+): Manuscript | undefined {
+  const existing = getManuscript(id);
+  if (!existing) return undefined;
+  if (existing.content_md !== existing.original_content_md) return existing;
+
+  const now = nowUnix();
+  getDb()
+    .prepare(
+      `UPDATE manuscripts
+          SET content_md = ?, original_content_md = ?, updated_at = ?
+        WHERE id = ?`,
+    )
+    .run(content_md, content_md, now, id);
+
+  if (existing.project_root && existing.primary_file) {
+    const target = path.join(existing.project_root, existing.primary_file);
+    fs.writeFileSync(target, content_md, "utf-8");
+  }
 
   const updated = getManuscript(id)!;
   if (!updated.project_root) {
