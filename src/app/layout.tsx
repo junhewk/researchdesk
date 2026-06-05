@@ -9,6 +9,8 @@ import {
   Settings,
 } from "lucide-react";
 import { MobileNavDrawer, NavLink } from "@/components/NavLink";
+import { LanguageBootstrap } from "@/components/LanguageBootstrap";
+import { getAppLanguage, type AppLanguage } from "@/server/appLanguage";
 import { workspaceRegistry } from "@/workspaces/registry";
 import type { WorkspaceIcon } from "@/workspaces/types";
 import "./globals.css";
@@ -18,7 +20,48 @@ export const metadata: Metadata = {
   description: "Academic peer-review and revision workspace.",
 };
 
-function BrandBlock() {
+export const dynamic = "force-dynamic";
+
+const SHELL_COPY: Record<AppLanguage, {
+  ariaMain: string;
+  ariaAccount: string;
+  ariaPrimary: string;
+  tagline: string;
+  nav: Record<string, string>;
+}> = {
+  en: {
+    ariaMain: "Main",
+    ariaAccount: "Account",
+    ariaPrimary: "Primary navigation",
+    tagline: "Academic Revision",
+    nav: {
+      dashboard: "Dashboard",
+      methodsWorkbench: "Methods Workbench",
+      myArticles: "My Articles",
+      archives: "Archives",
+      settings: "Settings",
+      support: "Support",
+    },
+  },
+  ko: {
+    ariaMain: "주요 메뉴",
+    ariaAccount: "계정 메뉴",
+    ariaPrimary: "기본 탐색",
+    tagline: "학술 원고 수정",
+    nav: {
+      dashboard: "대시보드",
+      methodsWorkbench: "Methods Workbench",
+      myArticles: "My Articles",
+      archives: "아카이브",
+      settings: "설정",
+      support: "지원",
+    },
+  },
+};
+
+function BrandBlock({ language }: { language: AppLanguage }) {
+  const copy = SHELL_COPY[language];
+
   return (
     <Link
       href="/"
@@ -39,14 +82,15 @@ function BrandBlock() {
           reviewer-agent
         </div>
         <div className="label-sm mt-0.5 text-[color:var(--color-on-surface-variant)]">
-          Academic Revision
+          {copy.tagline}
         </div>
       </div>
     </Link>
   );
 }
 
-function PrimaryNav() {
+function PrimaryNav({ language }: { language: AppLanguage }) {
+  const copy = SHELL_COPY[language];
   const iconFor = (icon: WorkspaceIcon) => {
     switch (icon) {
       case "dashboard":
@@ -60,7 +104,7 @@ function PrimaryNav() {
 
   return (
     <nav
-      aria-label="Main"
+      aria-label={copy.ariaMain}
       className="flex-1 flex flex-col gap-0.5 py-3"
     >
       {workspaceRegistry.map((workspace) => (
@@ -70,36 +114,38 @@ function PrimaryNav() {
           icon={iconFor(workspace.icon)}
           matchPrefix={workspace.matchPrefix}
         >
-          {workspace.label}
+          {copy.nav[workspace.id] ?? workspace.label}
         </NavLink>
       ))}
       <NavLink
         href="/archives"
         icon={<Archive className="h-4 w-4" strokeWidth={1.75} />}
       >
-        Archives
+        {copy.nav.archives}
       </NavLink>
     </nav>
   );
 }
 
-function FooterNav() {
+function FooterNav({ language }: { language: AppLanguage }) {
+  const copy = SHELL_COPY[language];
+
   return (
     <nav
-      aria-label="Account"
+      aria-label={copy.ariaAccount}
       className="flex flex-col gap-0.5 py-3 border-t border-[color:var(--color-outline-variant)]"
     >
       <NavLink
         href="/settings"
         icon={<Settings className="h-4 w-4" strokeWidth={1.75} />}
       >
-        Settings
+        {copy.nav.settings}
       </NavLink>
       <NavLink
         href="/support"
         icon={<HelpCircle className="h-4 w-4" strokeWidth={1.75} />}
       >
-        Support
+        {copy.nav.support}
       </NavLink>
     </nav>
   );
@@ -110,18 +156,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const language = getAppLanguage();
+  const copy = SHELL_COPY[language];
+
   return (
-    <html lang="en">
+    <html lang={language}>
       <body className="antialiased">
+        <LanguageBootstrap language={language} />
         <div className="flex min-h-screen">
           {/* Desktop persistent rail */}
           <aside
-            aria-label="Primary navigation"
+            aria-label={copy.ariaPrimary}
             className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]"
           >
-            <BrandBlock />
-            <PrimaryNav />
-            <FooterNav />
+            <BrandBlock language={language} />
+            <PrimaryNav language={language} />
+            <FooterNav language={language} />
           </aside>
 
           {/* Main column */}
@@ -143,9 +193,9 @@ export default function RootLayout({
                 </span>
               </Link>
               <MobileNavDrawer>
-                <BrandBlock />
-                <PrimaryNav />
-                <FooterNav />
+                <BrandBlock language={language} />
+                <PrimaryNav language={language} />
+                <FooterNav language={language} />
               </MobileNavDrawer>
             </header>
 
