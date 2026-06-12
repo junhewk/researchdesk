@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useProviderHealth } from "@/lib/hooks/useProviderHealth";
+import { PROVIDER_INFO } from "@/lib/methodsLabels";
 import type { StudyMode } from "@/server/types";
 
 const TRIAGE: Array<{
@@ -25,6 +27,48 @@ const TRIAGE: Array<{
     sub: "You will randomize participants and test an AI/LLM tool against a comparator → interventional (AI) trial, mapped to SPIRIT-AI / CONSORT-AI.",
   },
 ];
+
+function LocalProviderStatus() {
+  const { allHealth, loading, refresh } = useProviderHealth();
+  const locals = allHealth.filter((h) => h.kind === "local");
+  const anyOk = locals.some((h) => h.ok);
+
+  return (
+    <div className="mt-3 ml-6 border-l-2 border-[color:var(--color-outline-variant)] pl-3 text-[12px] space-y-1">
+      {loading && locals.length === 0 ? (
+        <p className="italic text-[color:var(--color-on-surface-variant)]">
+          Checking for local AI apps…
+        </p>
+      ) : (
+        <>
+          {locals.map((h) => (
+            <p key={h.provider} className={h.ok ? "" : "text-[color:var(--color-on-surface-variant)]"}>
+              <span className="font-mono">{h.ok ? "✓" : "✗"}</span>{" "}
+              <span className="font-medium">
+                {PROVIDER_INFO[h.provider]?.label ?? h.provider}
+              </span>{" "}
+              — {h.detail}
+              {!h.ok && h.fix ? ` ${h.fix}` : ""}
+            </p>
+          ))}
+          {!anyOk && (
+            <p className="text-[color:var(--color-error)]">
+              No local AI app is running yet. You can still create the study and
+              fill cards by hand; the AI features will wait until one is up.
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={() => refresh()}
+            className="font-mono text-[11px] uppercase tracking-wide hover:text-[color:var(--color-redink)]"
+          >
+            Re-check
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function NewStudyPage() {
   const router = useRouter();
@@ -110,17 +154,26 @@ export default function NewStudyPage() {
         ))}
       </div>
 
-      <label className="flex items-center gap-2 mb-10 text-[13px] cursor-pointer">
-        <input
-          type="checkbox"
-          checked={localOnly}
-          onChange={(e) => setLocalOnly(e.target.checked)}
-        />
-        <span>
-          Local-only — confidential. All agent reasoning stays on the local
-          provider.
-        </span>
-      </label>
+      <div className="mb-10">
+        <label className="flex items-start gap-2 text-[13px] cursor-pointer">
+          <input
+            type="checkbox"
+            checked={localOnly}
+            onChange={(e) => setLocalOnly(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span>
+            <span className="font-medium">Keep this study private.</span>{" "}
+            <span className="text-[color:var(--color-on-surface-variant)]">
+              Nothing leaves this computer: the AI assistant runs on a local
+              model (Ollama, LM Studio, or llama-server) instead of a cloud
+              service. Requires one of those apps to be installed and running —
+              we check for you below.
+            </span>
+          </span>
+        </label>
+        {localOnly && <LocalProviderStatus />}
+      </div>
 
       {error && (
         <p className="mb-4 text-[13px] text-[color:var(--color-error)]">{error}</p>

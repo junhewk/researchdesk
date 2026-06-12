@@ -4,9 +4,26 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SessionStream } from "@/components/SessionStream";
+import { AgentStatusChip } from "@/components/methods/AgentStatusChip";
+import { CanvasIntro, CANVAS_INTRO_STORAGE_KEY } from "@/components/methods/CanvasIntro";
+import { ImportEvidenceModal } from "@/components/methods/ImportEvidenceModal";
+import { TermChip } from "@/components/methods/TermChip";
+import { InfoTip } from "@/components/ui/InfoTip";
+import { useProviderHealth, type ProviderHealthView } from "@/lib/hooks/useProviderHealth";
+import {
+  ARTIFACT_KIND_INFO,
+  ARTIFACT_READY_PCT_EXPLAIN,
+  CONFIDENTIALITY_INFO,
+  DECISION_STATE_INFO,
+  EVIDENCE_KIND_INFO,
+  GUIDELINE_INFO,
+  PREFLIGHT_SEVERITY_INFO,
+  READY_PCT_EXPLAIN,
+  STALE_CARD_EXPLAIN,
+  STUDY_MODE_INFO,
+} from "@/lib/methodsLabels";
 import {
   DECISION_STATE_STYLES,
-  DECISION_STATE_LABEL,
   PREFLIGHT_SEVERITY_STYLES,
   EVIDENCE_KIND_LABEL,
 } from "@/lib/styles";
@@ -105,6 +122,21 @@ const READY = new Set([
 ]);
 const isReady = (s: string) => READY.has(s);
 
+/** Render an API error payload with its recovery hint, when the server
+ * classified one ({ error, error_code, fix }). */
+export function formatApiError(
+  j: { error?: unknown; fix?: unknown },
+  fallback: string,
+): string {
+  const error =
+    typeof j.error === "string" && j.error
+      ? j.error
+      : j.error
+        ? JSON.stringify(j.error)
+        : fallback;
+  return typeof j.fix === "string" && j.fix ? `${error} — ${j.fix}` : error;
+}
+
 async function patch(url: string, body: unknown) {
   return fetch(url, {
     method: "PATCH",
@@ -156,6 +188,7 @@ export function StudyWorkspace({
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [highlight, setHighlight] = useState<string | null>(null);
   const [pending, setPending] = useState<{ cardType: string; value: string } | null>(null);
+  const [introOpen, setIntroOpen] = useState(false);
   const [localProvider, setLocalProvider] = useState<LocalProvider | null>(() => {
     if (typeof window === "undefined") return null;
     try {
@@ -169,6 +202,10 @@ export function StudyWorkspace({
 
   const base = `/api/studies/${studyId}`;
   const requiresLocalProvider = study.confidentiality_mode === "local_only";
+  // The provider agent passes will actually use: the chosen local provider
+  // for private studies, otherwise the default cloud provider.
+  const activeProvider = requiresLocalProvider ? localProvider : "openai";
+  const { health: agentHealth } = useProviderHealth(activeProvider);
 
   const chooseLocalProvider = useCallback((provider: LocalProvider) => {
     setLocalProvider(provider);
@@ -191,6 +228,17 @@ export function StudyWorkspace({
       initialized.current = true;
       const first = d.inspector?.nextBestActionCard;
       setExpanded(new Set(first ? [first] : []));
+      // First visit to an untouched study: show the canvas legend.
+      const fresh =
+        d.cards.every((c) => c.state === "not_started") &&
+        Object.keys(d.grouped).length === 0;
+      try {
+        if (fresh && window.localStorage.getItem(CANVAS_INTRO_STORAGE_KEY) !== "dismissed") {
+          setIntroOpen(true);
+        }
+      } catch {
+        /* ignore */
+      }
     }
   }, []);
 
@@ -244,10 +292,23 @@ export function StudyWorkspace({
         study={study}
         inspector={inspector}
         localProvider={localProvider}
+        activeProvider={activeProvider}
         onLocalProviderChange={chooseLocalProvider}
         onJumpNext={() =>
           inspector?.nextBestActionCard && scrollToCard(inspector.nextBestActionCard)
         }
+        onShowIntro={() => setIntroOpen(true)}
+      />
+      <CanvasIntro
+        open={introOpen}
+        onDismiss={() => {
+          setIntroOpen(false);
+          try {
+            window.localStorage.setItem(CANVAS_INTRO_STORAGE_KEY, "dismissed");
+          } catch {
+            /* ignore */
+          }
+        }}
       />
       <ProgressRail cards={cards} onJump={(card) => scrollToCard(card)} />
 
@@ -267,6 +328,7 @@ export function StudyWorkspace({
           pending={pending}
           requiresLocalProvider={requiresLocalProvider}
           localProvider={localProvider}
+          agentHealth={agentHealth}
           onToggle={toggleCard}
           onChange={refresh}
           onStream={setStream}
@@ -279,8 +341,9 @@ export function StudyWorkspace({
           cards={cards}
           requiresLocalProvider={requiresLocalProvider}
           localProvider={localProvider}
+          agentHealth={agentHealth}
           setNotice={setNotice}
-          onStream={setStream}
+          onChange={refresh}
           onJump={(card) => scrollToCard(card)}
         />
       </div>
@@ -295,10 +358,12 @@ export function StudyWorkspace({
       <DecisionLog log={log} />
 
       {importing && (
-        <ImportModal
+        <ImportEvidenceModal
           base={base}
+          requiresLocalProvider={requiresLocalProvider}
+          localProvider={localProvider}
+          agentHealth={agentHealth}
           onClose={() => setImporting(false)}
-          onStream={setStream}
           onDone={(msg) => {
             setImporting(false);
             setNotice(msg);
@@ -327,23 +392,22 @@ function Header({
   study,
   inspector,
   localProvider,
+  activeProvider,
   onLocalProviderChange,
   onJumpNext,
+  onShowIntro,
 }: {
   study: Study;
   inspector: Inspector | null;
   localProvider: LocalProvider | null;
+  activeProvider: string | null;
   onLocalProviderChange: (provider: LocalProvider) => void;
   onJumpNext: () => void;
+  onShowIntro: () => void;
 }) {
   const router = useRouter();
   const [creatingArticle, setCreatingArticle] = useState(false);
   const [articleError, setArticleError] = useState<string | null>(null);
-  const MODE_LABEL: Record<string, string> = {
-    systematic_review: "Systematic review",
-    retrospective_observational: "Retrospective observational",
-    interventional: "AI-intervention trial",
-  };
 
   async function createArticleDraft() {
     setCreatingArticle(true);
@@ -379,13 +443,25 @@ function Header({
           ← Methods Workbench
         </Link>
         <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-wide">
-          <span className="text-[color:var(--color-on-surface-variant)]">
-            {MODE_LABEL[study.mode] ?? study.mode}
-          </span>
+          <button
+            onClick={onShowIntro}
+            className="text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
+          >
+            How this works
+          </button>
+          <InfoTip
+            explain={STUDY_MODE_INFO[study.mode]?.explain ?? "The study design this canvas is set up for."}
+            underline={false}
+            className="text-[color:var(--color-on-surface-variant)]"
+          >
+            {STUDY_MODE_INFO[study.mode]?.label ?? study.mode}
+          </InfoTip>
           {study.confidentiality_mode === "local_only" && (
-            <span className="px-2 py-0.5 border border-[color:var(--color-tertiary)] text-[color:var(--color-tertiary)]">
-              local-only
-            </span>
+            <TermChip
+              info={CONFIDENTIALITY_INFO.local_only}
+              styleClass="text-[color:var(--color-tertiary)] border-[color:var(--color-tertiary)]"
+              className="px-2 text-[10px]"
+            />
           )}
           {study.confidentiality_mode === "local_only" && (
             <LocalProviderPicker
@@ -393,9 +469,12 @@ function Header({
               onChange={onLocalProviderChange}
             />
           )}
-          <span className="px-2 py-0.5 border border-[color:var(--color-ink)]">
-            {inspector?.readyPct ?? 0}% ready
-          </span>
+          {activeProvider && <AgentStatusChip provider={activeProvider} />}
+          <InfoTip explain={READY_PCT_EXPLAIN} underline={false}>
+            <span className="px-2 py-0.5 border border-[color:var(--color-ink)]">
+              {inspector?.readyPct ?? 0}% ready
+            </span>
+          </InfoTip>
         </div>
       </div>
       <div className="flex items-end justify-between gap-4">
@@ -561,16 +640,29 @@ function EvidenceTray({
         </button>
       </div>
       {kinds.length === 0 ? (
-        <p className="text-[12px] text-[color:var(--color-on-surface-variant)] italic">
-          No evidence yet. Import an MDR or RW snapshot to populate design-relevant
-          items, then drag them onto cards or use the + menu.
-        </p>
+        <button
+          onClick={onImport}
+          className="text-left text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
+        >
+          <span className="italic">
+            No evidence yet. Paste your background notes — prior studies,
+            populations, outcomes — and the assistant turns them into evidence
+            chips you can drag onto decisions.
+          </span>
+          <span className="mt-1 block underline">+ Add evidence</span>
+        </button>
       ) : (
         <div className="space-y-4">
           {kinds.map((kind) => (
             <div key={kind}>
               <div className="text-[10px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] mb-1">
-                {EVIDENCE_KIND_LABEL[kind] ?? kind}
+                {EVIDENCE_KIND_INFO[kind] ? (
+                  <InfoTip explain={EVIDENCE_KIND_INFO[kind].explain} underline={false}>
+                    {EVIDENCE_KIND_INFO[kind].label}
+                  </InfoTip>
+                ) : (
+                  EVIDENCE_KIND_LABEL[kind] ?? kind
+                )}
               </div>
               <div className="space-y-1">
                 {grouped[kind].map((item) => (
@@ -637,6 +729,7 @@ function Canvas({
   pending,
   requiresLocalProvider,
   localProvider,
+  agentHealth,
   onToggle,
   onChange,
   onStream,
@@ -651,6 +744,7 @@ function Canvas({
   pending: { cardType: string; value: string } | null;
   requiresLocalProvider: boolean;
   localProvider: LocalProvider | null;
+  agentHealth: ProviderHealthView | null;
   onToggle: (cardType: string) => void;
   onChange: () => void;
   onStream: (s: StreamTarget) => void;
@@ -701,6 +795,7 @@ function Canvas({
                   }
                   requiresLocalProvider={requiresLocalProvider}
                   localProvider={localProvider}
+                  agentHealth={agentHealth}
                   onToggle={() => onToggle(card.card_type)}
                   onChange={onChange}
                   onStream={onStream}
@@ -725,6 +820,7 @@ function CardItem({
   pendingValue,
   requiresLocalProvider,
   localProvider,
+  agentHealth,
   onToggle,
   onChange,
   onStream,
@@ -739,6 +835,7 @@ function CardItem({
   pendingValue: string | null;
   requiresLocalProvider: boolean;
   localProvider: LocalProvider | null;
+  agentHealth: ProviderHealthView | null;
   onToggle: () => void;
   onChange: () => void;
   onStream: (s: StreamTarget) => void;
@@ -750,6 +847,8 @@ function CardItem({
   const [dragOver, setDragOver] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [askingQuestion, setAskingQuestion] = useState(false);
+  const [questionDraft, setQuestionDraft] = useState("");
 
   useEffect(() => {
     setValue(card.value.value ?? "");
@@ -785,7 +884,13 @@ function CardItem({
   }
   async function propose() {
     if (requiresLocalProvider && !localProvider) {
-      setNotice("Choose a local provider before starting an agent pass.");
+      setNotice("Pick where the AI runs first — choose Ollama, LM Studio, or llama-server in the header above.");
+      return;
+    }
+    if (agentHealth && !agentHealth.ok) {
+      setNotice(
+        `${agentHealth.detail}${agentHealth.fix ? ` — ${agentHealth.fix}` : ""}`,
+      );
       return;
     }
     const r = await post(
@@ -795,9 +900,11 @@ function CardItem({
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.session_id) {
       setNotice(null);
-      onStream({ id: j.session_id, title: `Proposals — ${card.label}`, cardType: card.card_type });
+      onStream({ id: j.session_id, title: `Options for: ${card.label}`, cardType: card.card_type });
     } else {
-      setNotice(`Could not start proposals: ${j.error ?? "no provider"}`);
+      setNotice(
+        `Could not ask for options: ${formatApiError(j, "the AI assistant did not respond")}`,
+      );
     }
   }
 
@@ -837,13 +944,20 @@ function CardItem({
         </span>
         <h3 className="font-display text-[16px] flex-1">{card.label}</h3>
         {card.stale && (
-          <span className="px-1.5 py-0.5 text-[9px] font-mono uppercase border border-[color:var(--color-tertiary)] text-[color:var(--color-tertiary)]">
-            re-check
-          </span>
+          <TermChip
+            info={{ label: "re-check", explain: STALE_CARD_EXPLAIN }}
+            styleClass="text-[color:var(--color-tertiary)] border-[color:var(--color-tertiary)]"
+          />
         )}
-        <span className={`px-1.5 py-0.5 text-[9px] font-mono uppercase border ${stateStyle}`}>
-          {DECISION_STATE_LABEL[card.state] ?? card.state}
-        </span>
+        <TermChip
+          info={
+            DECISION_STATE_INFO[card.state] ?? {
+              label: card.state.replace(/_/g, " "),
+              explain: "Current state of this decision.",
+            }
+          }
+          styleClass={stateStyle}
+        />
       </button>
 
       {/* Collapsed summary */}
@@ -913,28 +1027,67 @@ function CardItem({
               </>
             )}
             <span className="text-[color:var(--color-outline-variant)]">·</span>
-            <button onClick={propose} className="hover:text-[color:var(--color-redink)]">
-              Propose options
-            </button>
-            <button
-              onClick={() => {
-                const q = prompt("What's the open question? (marks needs-input)");
-                if (q) setState("needs_input", q);
-              }}
-              className="hover:text-[color:var(--color-redink)]"
-            >
-              Mark unknown
-            </button>
-            {card.state !== "locked" ? (
-              <button onClick={() => setState("locked")} className="hover:text-[color:var(--color-redink)]">
-                Lock
+            <InfoTip explain="The assistant suggests 2–4 evidence-grounded options for this decision — you pick or refine; it never decides for you." underline={false}>
+              <button onClick={propose} className="hover:text-[color:var(--color-redink)]">
+                Ask for options
               </button>
+            </InfoTip>
+            <InfoTip explain="Record the open question so it's tracked instead of guessed — you can answer it later." underline={false}>
+              <button
+                onClick={() => setAskingQuestion(true)}
+                className="hover:text-[color:var(--color-redink)]"
+              >
+                I don&apos;t know yet
+              </button>
+            </InfoTip>
+            {card.state !== "locked" ? (
+              <InfoTip explain="Mark this decision as final — it stops counting as open work and won't change until you unlock it." underline={false}>
+                <button onClick={() => setState("locked")} className="hover:text-[color:var(--color-redink)]">
+                  Lock
+                </button>
+              </InfoTip>
             ) : (
               <button onClick={() => setState("drafted")} className="hover:text-[color:var(--color-redink)]">
                 Unlock
               </button>
             )}
           </div>
+          {askingQuestion && (
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                autoFocus
+                value={questionDraft}
+                onChange={(e) => setQuestionDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && questionDraft.trim()) {
+                    setState("needs_input", questionDraft.trim());
+                    setAskingQuestion(false);
+                    setQuestionDraft("");
+                  }
+                  if (e.key === "Escape") setAskingQuestion(false);
+                }}
+                placeholder="What needs answering before you can decide? (e.g. ask the statistician about…)"
+                className="flex-1 bg-transparent border-b border-[color:var(--color-outline-variant)] py-1 text-[12px] focus:outline-none focus:border-[color:var(--color-primary)]"
+              />
+              <button
+                disabled={!questionDraft.trim()}
+                onClick={() => {
+                  setState("needs_input", questionDraft.trim());
+                  setAskingQuestion(false);
+                  setQuestionDraft("");
+                }}
+                className="text-[11px] hover:text-[color:var(--color-redink)] disabled:opacity-40"
+              >
+                Save question
+              </button>
+              <button
+                onClick={() => setAskingQuestion(false)}
+                className="text-[11px] text-[color:var(--color-on-surface-variant)]"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -947,8 +1100,9 @@ function InspectorPanel({
   cards,
   requiresLocalProvider,
   localProvider,
+  agentHealth,
   setNotice,
-  onStream,
+  onChange,
   onJump,
 }: {
   base: string;
@@ -956,25 +1110,41 @@ function InspectorPanel({
   cards: CardView[];
   requiresLocalProvider: boolean;
   localProvider: LocalProvider | null;
+  agentHealth: ProviderHealthView | null;
   setNotice: (s: string | null) => void;
-  onStream: (s: StreamTarget) => void;
+  onChange: () => void;
   onJump: (cardType: string) => void;
 }) {
+  const [riskRunning, setRiskRunning] = useState(false);
+
   async function runRisk() {
     if (requiresLocalProvider && !localProvider) {
-      setNotice("Choose a local provider before starting an agent pass.");
+      setNotice("Pick where the AI runs first — choose Ollama, LM Studio, or llama-server in the header above.");
       return;
     }
+    if (agentHealth && !agentHealth.ok) {
+      setNotice(
+        `${agentHealth.detail}${agentHealth.fix ? ` — ${agentHealth.fix}` : ""}`,
+      );
+      return;
+    }
+    setRiskRunning(true);
+    setNotice("Checking your design for methodological risks — this can take a minute or two…");
     const r = await post(
       `${base}/preflight/run-risk`,
       requiresLocalProvider ? { provider: localProvider } : {},
     );
     const j = await r.json().catch(() => ({}));
-    if (r.ok && j.session_id) {
-      setNotice(null);
-      onStream({ id: j.session_id, title: "Methodological risk pass" });
+    setRiskRunning(false);
+    if (r.ok) {
+      setNotice(
+        `Risk check complete — ${j.created ?? 0} finding(s); they appear under Blocking / Important below.`,
+      );
+      onChange();
     } else {
-      setNotice(`Could not start risk pass: ${j.error ?? "no provider"}`);
+      setNotice(
+        `The risk check could not run: ${formatApiError(j, "the AI assistant did not respond")}`,
+      );
     }
   }
   if (!inspector) return <aside />;
@@ -989,15 +1159,19 @@ function InspectorPanel({
   ];
   return (
     <aside className="border-l border-[color:var(--color-outline-variant)] pl-4 max-h-[72vh] overflow-y-auto sticky top-[96px]">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="label">Preflight</h2>
+      <div className="flex items-baseline justify-between mb-1">
+        <h2 className="label">Checks</h2>
         <button
           onClick={runRisk}
-          className="text-[11px] text-[color:var(--color-ink)] hover:text-[color:var(--color-redink)]"
+          disabled={riskRunning}
+          className="text-[11px] text-[color:var(--color-ink)] hover:text-[color:var(--color-redink)] disabled:opacity-40 disabled:cursor-wait"
         >
-          Run risk check
+          {riskRunning ? "Checking…" : "Run risk check"}
         </button>
       </div>
+      <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mb-3">
+        Automatic checks on your design. Clear the blocking items first.
+      </p>
 
       {inspector.nextBestAction && (
         <button
@@ -1011,16 +1185,45 @@ function InspectorPanel({
         </button>
       )}
 
-      <FindingGroup title={`Blocking (${blocking.length})`} findings={blocking} byType={byType} onJump={onJump} />
-      <FindingGroup title={`Important (${important.length})`} findings={important} byType={byType} onJump={onJump} />
+      {blocking.length === 0 && important.length === 0 && (
+        <p className="mb-4 text-[12px] italic text-[color:var(--color-on-surface-variant)]">
+          No issues found so far — findings appear here as you fill in cards
+          and run risk checks.
+        </p>
+      )}
+      <FindingGroup
+        title={`Blocking (${blocking.length})`}
+        explain={PREFLIGHT_SEVERITY_INFO.blocking.explain}
+        findings={blocking}
+        byType={byType}
+        onJump={onJump}
+      />
+      <FindingGroup
+        title={`Important (${important.length})`}
+        explain={PREFLIGHT_SEVERITY_INFO.important.explain}
+        findings={important}
+        byType={byType}
+        onJump={onJump}
+      />
 
       <div className="mt-4">
         <div className="font-mono text-[10px] uppercase text-[color:var(--color-on-surface-variant)] mb-1">
-          Guideline map
+          <InfoTip
+            explain="How much of each reporting guideline your decisions already cover — ready sections out of total."
+            underline={false}
+          >
+            Guideline coverage
+          </InfoTip>
         </div>
         {inspector.mapping.map((m) => (
           <div key={m.guideline} className="text-[12px] flex justify-between">
-            <span>{m.guideline}</span>
+            {GUIDELINE_INFO[m.guideline] ? (
+              <InfoTip explain={GUIDELINE_INFO[m.guideline].explain}>
+                {m.guideline}
+              </InfoTip>
+            ) : (
+              <span>{m.guideline}</span>
+            )}
             <span className="font-mono tabular">
               {m.ready}/{m.total}
             </span>
@@ -1033,11 +1236,13 @@ function InspectorPanel({
 
 function FindingGroup({
   title,
+  explain,
   findings,
   byType,
   onJump,
 }: {
   title: string;
+  explain: string;
   findings: { severity: string; card_type?: string | null; title: string; detail_md?: string | null }[];
   byType: Map<string, CardView>;
   onJump: (cardType: string) => void;
@@ -1046,7 +1251,9 @@ function FindingGroup({
   return (
     <div className="mb-4">
       <div className="font-mono text-[10px] uppercase text-[color:var(--color-on-surface-variant)] mb-1">
-        {title}
+        <InfoTip explain={explain} underline={false}>
+          {title}
+        </InfoTip>
       </div>
       <ul className="space-y-2">
         {findings.map((f, i) => {
@@ -1095,18 +1302,35 @@ function ArtifactBar({
 }) {
   return (
     <section className="mt-8 border-t border-[color:var(--color-outline-variant)] pt-4">
-      <h2 className="label mb-3">Artifacts</h2>
+      <h2 className="label mb-1">Documents</h2>
+      <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mb-3">
+        These compile automatically from your decisions — open one to read or
+        export it.
+      </p>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {artifacts.map((a) => (
           <div key={a.kind} className="border border-[color:var(--color-outline-variant)] rounded p-3">
-            <Link
-              href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
-              className="font-display text-[14px] leading-tight hover:text-[color:var(--color-redink)]"
-            >
-              {a.title}
-            </Link>
+            {ARTIFACT_KIND_INFO[a.kind] ? (
+              <InfoTip explain={ARTIFACT_KIND_INFO[a.kind].explain} underline={false}>
+                <Link
+                  href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
+                  className="font-display text-[14px] leading-tight hover:text-[color:var(--color-redink)]"
+                >
+                  {a.title}
+                </Link>
+              </InfoTip>
+            ) : (
+              <Link
+                href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
+                className="font-display text-[14px] leading-tight hover:text-[color:var(--color-redink)]"
+              >
+                {a.title}
+              </Link>
+            )}
             <div className="mt-1 text-[11px] font-mono text-[color:var(--color-on-surface-variant)]">
-              {a.ready_pct}% ready
+              <InfoTip explain={ARTIFACT_READY_PCT_EXPLAIN} underline={false}>
+                {a.ready_pct}% ready
+              </InfoTip>
             </div>
             <div className="mt-2 h-1 bg-[color:var(--color-outline-variant)] rounded">
               <div className="h-1 bg-[color:var(--color-primary)] rounded" style={{ width: `${a.ready_pct}%` }} />
@@ -1118,10 +1342,17 @@ function ArtifactBar({
               >
                 view
               </Link>
-              {["md", "csv", "json"].map((fmt) => (
+              {(
+                [
+                  { fmt: "md", title: "Download as Markdown text" },
+                  { fmt: "csv", title: "Download as a spreadsheet (CSV)" },
+                  { fmt: "json", title: "Download as structured data (JSON)" },
+                ] as const
+              ).map(({ fmt, title }) => (
                 <a
                   key={fmt}
                   href={`${base}/artifacts/${a.kind}/export?format=${fmt}`}
+                  title={title}
                   className="hover:text-[color:var(--color-redink)]"
                 >
                   {fmt}
@@ -1142,6 +1373,12 @@ function DecisionLog({ log }: { log: LogEntry[] }) {
       <button onClick={() => setOpen((o) => !o)} className="label flex items-center gap-2">
         Decision log ({log.length}) {open ? "▾" : "▸"}
       </button>
+      {open && log.length === 0 && (
+        <p className="mt-3 text-[12px] italic text-[color:var(--color-on-surface-variant)]">
+          Every save, lock, and accepted option is recorded here — an audit
+          trail of how the design took shape.
+        </p>
+      )}
       {open && (
         <ul className="mt-3 space-y-2">
           {log.map((e) => (
@@ -1214,7 +1451,7 @@ function StreamModal({
     if (r.ok) setReply("");
     else {
       const j = await r.json().catch(() => ({}));
-      setErr(j.error ?? "could not send");
+      setErr(formatApiError(j, "could not send the reply — try again"));
     }
   }
 
@@ -1296,96 +1533,3 @@ function StreamModal({
   );
 }
 
-function ImportModal({
-  base,
-  onClose,
-  onDone,
-  onStream,
-}: {
-  base: string;
-  onClose: () => void;
-  onDone: (msg: string) => void;
-  onStream: (s: StreamTarget) => void;
-}) {
-  const [source, setSource] = useState<"mdr" | "rw">("mdr");
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function submit() {
-    setBusy(true);
-    setError(null);
-    let data: unknown;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      setError("Payload must be valid JSON.");
-      setBusy(false);
-      return;
-    }
-    const r = await post(`${base}/snapshots`, { source, data });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      setError(j.error ? JSON.stringify(j.error) : "import failed");
-      setBusy(false);
-      return;
-    }
-    if (j.has_digest) {
-      onDone(`Imported ${source.toUpperCase()} snapshot — extracted ${j.extracted} evidence items.`);
-      return;
-    }
-    const ex = await post(`${base}/snapshots/${j.snapshot.id}/extract`, {});
-    const exj = await ex.json().catch(() => ({}));
-    if (ex.ok && exj.session_id) {
-      onStream({ id: exj.session_id, title: `Extracting ${source.toUpperCase()} evidence` });
-    }
-    onDone(
-      ex.ok && exj.session_id
-        ? `Imported ${source.toUpperCase()} snapshot — running agent extraction…`
-        : `Imported ${source.toUpperCase()} snapshot (no digest; extraction unavailable: ${exj.error ?? "no provider"}).`,
-    );
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-[color:var(--color-surface)] border border-[color:var(--color-ink)] rounded p-5 w-[560px] max-w-[90vw]">
-        <h2 className="font-display text-[20px] mb-3">Import evidence snapshot</h2>
-        <div className="flex gap-3 mb-3 text-[12px]">
-          {(["mdr", "rw"] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSource(s)}
-              className={`px-3 py-1 border rounded font-mono uppercase ${
-                source === s
-                  ? "border-[color:var(--color-primary)] text-[color:var(--color-primary)]"
-                  : "border-[color:var(--color-outline-variant)]"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={10}
-          placeholder='Paste the snapshot JSON. A {"digest": {...}} block is extracted automatically; otherwise the agent extraction pass runs.'
-          className="w-full bg-transparent border border-[color:var(--color-outline-variant)] rounded p-2 text-[12px] font-mono focus:outline-none focus:border-[color:var(--color-primary)]"
-        />
-        {error && <p className="mt-2 text-[12px] text-[color:var(--color-error)]">{error}</p>}
-        <div className="mt-3 flex gap-3 justify-end text-[12px]">
-          <button onClick={onClose} className="text-[color:var(--color-on-surface-variant)]">
-            Cancel
-          </button>
-          <button
-            onClick={submit}
-            disabled={busy || !text.trim()}
-            className="px-4 py-1.5 border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-surface)] disabled:opacity-40 font-mono uppercase"
-          >
-            {busy ? "Importing…" : "Import"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}

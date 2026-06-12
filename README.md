@@ -56,6 +56,10 @@ preparation:
 - reporting checklist setup
 - manuscript-readiness checks linked to My Articles
 
+A first-run setup panel and an in-canvas guide orient newcomers, and technical
+terms carry plain-language explanations on hover, so a researcher without a
+software background can work the canvas unaided.
+
 ### My Articles
 
 Upload your own manuscript and use the agent for:
@@ -74,6 +78,11 @@ Open `Settings` -> `API Providers`.
 Set the default provider, model, API key, and base URL. These settings power
 real LLM-backed actions such as manuscript review, readiness checks, reviewer
 responses, and manuscript chat.
+
+The Settings page and the Methods Workbench setup panel show a live status for
+every provider — what is reachable, what is missing an API key, and the exact
+step to fix it — so configuration problems surface immediately instead of after
+a long timeout. The same check is available at `GET /api/providers/health`.
 
 Use `Settings` -> `Language` to switch the app shell and settings pane between
 English and Korean.
@@ -95,8 +104,11 @@ reporting checklist.
 
 Inside a study:
 
-1. Fill the decision cards.
-2. Import evidence snapshots if needed.
+1. Fill the decision cards. Ask for evidence-grounded options whenever you are
+   unsure — the assistant proposes, you decide.
+2. Add evidence — paste plain background notes (the assistant extracts evidence
+   items such as populations, outcomes, and confounders) or import a structured
+   snapshot.
 3. Use proposal and preflight actions to identify missing or inconsistent
    design choices.
 4. Review generated artifacts:

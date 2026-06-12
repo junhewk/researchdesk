@@ -4,18 +4,14 @@ import {
   extractFromSnapshot,
   snapshotHasDigest,
 } from "@/server/methods/evidence";
-import { getStudySupervisor } from "@/server/methods/studySessions";
-import type { Provider } from "@/server/types";
 import {
-  apiProviderSchema,
+  apiAgentRequestSchema,
   providerFieldWasProvided,
   requireLocalApiProvider,
   resolveApiProvider,
 } from "@/server/apiAgent/providers";
-
-const bodySchema = apiProviderSchema
-  .optional()
-  .transform((provider) => ({ provider }));
+import { runEvidenceExtractionAgent } from "@/server/apiAgent/workflows";
+import { classifyAgentError } from "@/server/providerHealth";
 
 export async function POST(
   request: NextRequest,
@@ -34,17 +30,12 @@ export async function POST(
     return NextResponse.json({ mode: "deterministic", extracted: items.length });
   }
 
-  // Free-form report: hand to the agent extraction pass.
   const body = await request.json().catch(() => ({}));
-  const parsed = bodySchema.safeParse(
-    body && typeof body === "object" && "provider" in body
-      ? (body as { provider?: unknown }).provider
-      : undefined,
-  );
+  const parsed = apiAgentRequestSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  let provider: Provider = resolveApiProvider(
+  let provider = resolveApiProvider(
     parsed.data.provider,
     providerFieldWasProvided(body),
   );
@@ -58,19 +49,28 @@ export async function POST(
     }
     provider = local.provider;
   }
-  const sup = getStudySupervisor();
+
+  // Free-form notes / report: synchronous structured extraction pass.
   try {
-    const session = sup.createSession({
-      studyId: id,
-      pass: "evidence_extraction",
-      provider,
+    const result = await runEvidenceExtractionAgent({
+      snapshotId: sid,
+      config: {
+        provider,
+        model: parsed.data.model,
+        apiKey: parsed.data.api_key,
+        baseUrl: parsed.data.base_url,
+        timeoutMs: parsed.data.timeout_ms,
+      },
     });
-    const apiBaseUrl = process.env.REVIEWER_API_URL || request.nextUrl.origin;
-    await sup.startPass(session.id, { apiBaseUrl, snapshotId: sid });
-    return NextResponse.json({ mode: "agent", session_id: session.id }, { status: 201 });
+    return NextResponse.json({
+      mode: "agent",
+      extracted: result.created,
+      summary_md: result.summary_md,
+    });
   } catch (err) {
+    const classified = classifyAgentError(err, provider);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "could not start extraction" },
+      { error: classified.message, error_code: classified.code, fix: classified.fix },
       { status: 400 },
     );
   }

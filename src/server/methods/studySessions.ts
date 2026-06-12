@@ -183,6 +183,9 @@ class StudySupervisor {
         model: session.model,
         effort: session.effort,
         initialMessage: "Begin.",
+        pass: session.mode as StudyPass,
+        targetCardType: opts?.targetCardType,
+        snapshotId: opts?.snapshotId,
       });
     } catch (err) {
       this.setStatus(sessionId, "crashed");

@@ -3,16 +3,16 @@ import type { SettingsSection } from "./types";
 
 export const settingsSections: SettingsSection[] = [
   {
-    title: "API agent providers",
+    title: "AI providers",
     caption:
-      "Structured-output review, checklist, readiness, and preflight agents powered by LangChain chat providers.",
+      "The assistants behind reviews, checklists, readiness checks, and the Methods Workbench. Cloud providers (OpenAI, Gemini, DeepSeek) are easiest but send text off this computer and need an API key. Local providers (Ollama, LM Studio, llama-server) run models on this machine — private and free, and required for local-only studies. Set the variables in the .env file next to the app, then restart it; the AI-status list above shows what's currently working.",
     fields: [
-      { label: "OpenAI", placeholder: "Set OPENAI_API_KEY and OPENAI_MODEL" },
-      { label: "Gemini", placeholder: "Set GEMINI_API_KEY and GEMINI_MODEL" },
-      { label: "DeepSeek", placeholder: "Set DEEPSEEK_API_KEY and DEEPSEEK_MODEL" },
-      { label: "Ollama", placeholder: "Set OLLAMA_BASE_URL and OLLAMA_MODEL" },
-      { label: "LM Studio", placeholder: "Set LMSTUDIO_BASE_URL and LMSTUDIO_MODEL" },
-      { label: "llama-server", placeholder: "Set LLAMA_SERVER_BASE_URL and LLAMA_SERVER_MODEL" },
+      { label: "OpenAI — cloud", placeholder: "Set OPENAI_API_KEY and OPENAI_MODEL" },
+      { label: "Gemini — cloud", placeholder: "Set GEMINI_API_KEY and GEMINI_MODEL" },
+      { label: "DeepSeek — cloud", placeholder: "Set DEEPSEEK_API_KEY and DEEPSEEK_MODEL" },
+      { label: "Ollama — on this computer", placeholder: "Set OLLAMA_BASE_URL and OLLAMA_MODEL (defaults work if Ollama is installed)" },
+      { label: "LM Studio — on this computer", placeholder: "Set LMSTUDIO_BASE_URL and LMSTUDIO_MODEL (defaults work with the LM Studio server)" },
+      { label: "llama-server — on this computer", placeholder: "Set LLAMA_SERVER_BASE_URL and LLAMA_SERVER_MODEL" },
     ],
   },
   {

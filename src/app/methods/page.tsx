@@ -3,15 +3,12 @@ import { listStudies } from "@/server/studies";
 import { getDb } from "@/server/db";
 import { formatDate } from "@/lib/utils";
 import { MethodsDemoSeedButton } from "@/components/MethodsDemoSeedButton";
+import { SetupPanel } from "@/components/methods/SetupPanel";
+import { TermChip } from "@/components/methods/TermChip";
+import { CONFIDENTIALITY_INFO, STUDY_MODE_INFO } from "@/lib/methodsLabels";
 import type { ReadinessCheck, ReviewerResponse } from "@/server/types";
 
 export const dynamic = "force-dynamic";
-
-const MODE_LABEL: Record<string, string> = {
-  interventional: "AI-intervention trial",
-  systematic_review: "systematic review",
-  retrospective_observational: "retrospective observational",
-};
 
 interface CrossWorkRow {
   kind: "readiness" | "reviewer_response";
@@ -81,10 +78,14 @@ export default function MethodsWorkbenchPage() {
         </div>
       </div>
       <p className="mb-12 max-w-2xl text-[14px] text-[color:var(--color-on-surface-variant)]">
-        Form and audit research-design decisions <em>before</em> any document
-        exists. Import evidence, work the decision canvas, watch the preflight
-        inspector, then compile protocol / SAP / checklist artifacts.
+        Design your study <em>before</em> any document exists: answer the
+        methodological questions one decision at a time, with your own evidence
+        and an AI assistant that proposes options but never decides for you.
+        The protocol, statistical analysis plan, and reporting checklist
+        compile themselves as you go.
       </p>
+
+      <SetupPanel />
 
       <h2 className="label mb-4">Studies</h2>
       {studies.length === 0 ? (
@@ -92,7 +93,12 @@ export default function MethodsWorkbenchPage() {
           <p className="font-display italic text-[18px] text-[color:var(--color-on-surface-variant)]">
             No studies yet.
           </p>
-          <p className="mt-2 text-[13px]">
+          <p className="mt-2 max-w-md mx-auto text-[13px] text-[color:var(--color-on-surface-variant)]">
+            A study takes about a minute to set up: a working title, your
+            research question, and what kind of study it is. Everything else is
+            refined on the canvas.
+          </p>
+          <p className="mt-3 text-[13px]">
             <Link href="/methods-workbench/new" className="underline underline-offset-4">
               Start a study design →
             </Link>
@@ -110,13 +116,21 @@ export default function MethodsWorkbenchPage() {
                   >
                     {s.title}
                   </h3>
-                  <span className="shrink-0 px-2 py-0.5 text-[10px] tracking-wide uppercase font-mono border border-[color:var(--color-outline-variant)] text-[color:var(--color-on-surface-variant)]">
-                    {MODE_LABEL[s.mode] ?? s.mode}
-                  </span>
+                  <TermChip
+                    info={
+                      STUDY_MODE_INFO[s.mode] ?? {
+                        label: s.mode,
+                        explain: "Study design type.",
+                      }
+                    }
+                    className="shrink-0 px-2 text-[10px]"
+                  />
                   {s.confidentiality_mode === "local_only" && (
-                    <span className="shrink-0 px-2 py-0.5 text-[10px] tracking-wide uppercase font-mono border border-[color:var(--color-tertiary)] text-[color:var(--color-tertiary)]">
-                      local-only
-                    </span>
+                    <TermChip
+                      info={CONFIDENTIALITY_INFO.local_only}
+                      styleClass="text-[color:var(--color-tertiary)] border-[color:var(--color-tertiary)]"
+                      className="shrink-0 px-2 text-[10px]"
+                    />
                   )}
                   <span className="shrink-0 w-20 text-right font-mono text-[11px] text-[color:var(--color-on-surface-variant)] tabular">
                     {formatDate(s.updated_at)}

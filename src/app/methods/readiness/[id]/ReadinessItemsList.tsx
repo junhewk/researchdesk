@@ -2,6 +2,13 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { TermChip } from "@/components/methods/TermChip";
+import { InfoTip } from "@/components/ui/InfoTip";
+import {
+  AUTO_DETECTED_EXPLAIN,
+  READINESS_SEVERITY_INFO,
+  gateInfo,
+} from "@/lib/methodsLabels";
 import type { ReadinessCheckItem } from "@/server/types";
 
 const SEVERITY_STYLE: Record<string, string> = {
@@ -10,6 +17,12 @@ const SEVERITY_STYLE: Record<string, string> = {
     "border-[color:var(--color-tertiary)] text-[color:var(--color-tertiary)]",
   minor:
     "border-[color:var(--color-outline-variant)] text-[color:var(--color-on-surface-variant)]",
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  open: "open",
+  accepted: "accepted — will fix",
+  dismissed: "dismissed",
 };
 
 interface Props {
@@ -24,7 +37,9 @@ export function ReadinessItemsList({ checkId, items }: Props) {
   if (items.length === 0) {
     return (
       <p className="text-[13px] text-[color:var(--color-on-surface-variant)] italic">
-        No items yet — the agent appends gates as it identifies them.
+        No findings — the automatic scans found nothing to flag. If you expected
+        AI findings too, check the AI status in Settings and re-run the
+        readiness check from the manuscript&apos;s workspace.
       </p>
     );
   }
@@ -49,24 +64,31 @@ export function ReadinessItemsList({ checkId, items }: Props) {
         >
           <div className="flex items-baseline gap-3 mb-2">
             <span className="shrink-0 font-mono text-[11px] uppercase tracking-wide">
-              {item.gate.replace(/_/g, " ")}
+              <InfoTip explain={gateInfo(item.gate).explain} underline={false}>
+                {gateInfo(item.gate).label}
+              </InfoTip>
             </span>
             {item.severity && (
-              <span
-                className={`shrink-0 px-2 py-0.5 text-[10px] tracking-wide uppercase font-mono border ${
-                  SEVERITY_STYLE[item.severity] ?? ""
-                }`}
-              >
-                {item.severity}
-              </span>
+              <TermChip
+                info={
+                  READINESS_SEVERITY_INFO[item.severity] ?? {
+                    label: item.severity,
+                    explain: "How serious this finding is for submission.",
+                  }
+                }
+                styleClass={SEVERITY_STYLE[item.severity]}
+                className="px-2 text-[10px]"
+              />
             )}
             {item.auto_detected && (
               <span className="shrink-0 font-mono text-[10px] uppercase text-[color:var(--color-on-surface-variant)]">
-                auto-detected
+                <InfoTip explain={AUTO_DETECTED_EXPLAIN} underline={false}>
+                  auto-detected
+                </InfoTip>
               </span>
             )}
             <span className="ml-auto text-[11px] font-mono text-[color:var(--color-on-surface-variant)]">
-              {item.status}
+              {STATUS_LABEL[item.status] ?? item.status}
             </span>
           </div>
           <p className="text-[14px] leading-snug whitespace-pre-wrap">

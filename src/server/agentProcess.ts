@@ -11,6 +11,11 @@ export interface StartOptions {
   effort?: AgentEffort | null;
   initialMessage?: string;
   cwd?: string;
+  /** Methods-pass context (workflow "methods"): which structured study pass
+   * to run, plus its target. manuscriptId carries the study id. */
+  pass?: "card_proposal" | "evidence_extraction" | "preflight_risk";
+  targetCardType?: string;
+  snapshotId?: string;
 }
 
 export interface AgentProcessEvents {

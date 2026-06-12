@@ -2,6 +2,7 @@ import { settingsSections } from "@/workspaces/settings";
 import { getAppLanguage, type AppLanguage } from "@/server/appLanguage";
 import { LanguageSettingsForm } from "@/components/LanguageSettingsForm";
 import { ProviderSettingsForm } from "@/components/ProviderSettingsForm";
+import { ProviderHealthPanel } from "@/components/ProviderHealthPanel";
 
 const SETTINGS_COPY: Record<AppLanguage, {
   title: string;
@@ -69,6 +70,10 @@ export default function SettingsPage() {
       <p className="mb-10 text-[14px] text-[color:var(--color-on-surface-variant)]">
         {copy.caption}
       </p>
+
+      <div className="mb-10 border-y border-[color:var(--color-outline-variant)] py-5">
+        <ProviderHealthPanel />
+      </div>
 
       <div className="space-y-10">
         <LanguageSettingsForm initialLanguage={language} />

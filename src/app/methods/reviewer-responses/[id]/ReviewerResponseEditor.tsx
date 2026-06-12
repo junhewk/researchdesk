@@ -4,6 +4,12 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { ReviewerResponseItem } from "@/server/types";
 
+const STATUS_LABEL: Record<string, string> = {
+  drafting: "draft",
+  accepted: "finished",
+  declined: "skipped",
+};
+
 interface Props {
   responseId: string;
   items: ReviewerResponseItem[];
@@ -47,45 +53,48 @@ function Row({ item, responseId, onSaved }: RowProps) {
           type="text"
           value={pointer}
           onChange={(e) => setPointer(e.target.value)}
-          placeholder="Change pointer (e.g. §3.2, p. 7 lines 14-22)"
+          placeholder="Where in the manuscript did you change something? (e.g. §3.2, p. 7 lines 14–22)"
           className="w-full text-[12px] font-mono border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-2 py-1"
         />
         <textarea
           value={response}
           onChange={(e) => setResponse(e.target.value)}
-          placeholder="Drafted response. Acknowledge the concern, state what you changed, give the rationale."
+          placeholder="Your reply to this reviewer comment: acknowledge the concern, state what you changed, give the rationale."
           rows={5}
           className="w-full text-[13px] border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-2 py-1.5 resize-y"
         />
       </div>
       <div className="mt-2 flex gap-2 flex-wrap items-center">
         <span className="text-[11px] font-mono uppercase text-[color:var(--color-on-surface-variant)]">
-          {item.status}
+          {STATUS_LABEL[item.status] ?? item.status}
         </span>
         <div className="ml-auto flex gap-2">
           <button
             type="button"
             onClick={() => save("drafting")}
             disabled={busy}
+            title="Save this draft and keep working on it"
             className="text-[11px] font-mono uppercase tracking-wide border border-[color:var(--color-outline-variant)] px-2 py-0.5 hover:bg-[color:var(--color-surface-container)]"
           >
-            Save
+            Save draft
           </button>
           <button
             type="button"
             onClick={() => save("accepted")}
             disabled={busy}
+            title="Mark this reply as finished — it will go into the compiled letter"
             className="text-[11px] font-mono uppercase tracking-wide bg-[color:var(--color-secondary)] text-[color:var(--color-on-secondary)] px-2 py-0.5"
           >
-            Accept
+            Mark finished
           </button>
           <button
             type="button"
             onClick={() => save("declined")}
             disabled={busy}
+            title="Skip this comment — it won't be included in the letter"
             className="text-[11px] font-mono uppercase tracking-wide border border-[color:var(--color-outline-variant)] px-2 py-0.5"
           >
-            Decline
+            Skip
           </button>
         </div>
       </div>
@@ -113,7 +122,8 @@ export function ReviewerResponseEditor({
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(body.error || `failed (${res.status})`);
+        const fix = typeof body.fix === "string" ? ` — ${body.fix}` : "";
+        setError((body.error || `failed (${res.status})`) + fix);
         return;
       }
       refresh();
@@ -123,8 +133,10 @@ export function ReviewerResponseEditor({
   if (items.length === 0) {
     return (
       <p className="text-[13px] text-[color:var(--color-on-surface-variant)] italic">
-        No items yet. The seeder reads reviewer reports and decision letters
-        via the letters API — upload one to seed items.
+        No reviewer comments found yet. Comments are read from the decision
+        letter and reviewer reports attached to the manuscript — upload one in
+        the manuscript&apos;s workspace (My Articles → open the manuscript),
+        then start a new response round.
       </p>
     );
   }
@@ -149,14 +161,18 @@ export function ReviewerResponseEditor({
           disabled={busy}
           className="inline-flex items-center justify-center rounded bg-[color:var(--color-primary)] px-4 py-2 text-[13px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
         >
-          {compiled ? "Re-compile letter" : "Compile to response letter"}
+          {compiled ? "Re-compile letter" : "Compile response letter"}
         </button>
+        <span className="text-[11px] text-[color:var(--color-on-surface-variant)]">
+          Combines every finished reply into one letter, attached to the
+          manuscript.
+        </span>
         {compiled && (
           <a
             href={`/my-articles/${manuscriptId}/workspace`}
             className="text-[12px] underline underline-offset-2"
           >
-            View attached asset →
+            Open the letter in the manuscript workspace →
           </a>
         )}
         {error && (

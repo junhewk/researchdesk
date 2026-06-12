@@ -7,6 +7,8 @@ import {
 import { getManuscript } from "@/server/manuscripts";
 import { getStudy } from "@/server/studies";
 import { formatDate } from "@/lib/utils";
+import { InfoTip } from "@/components/ui/InfoTip";
+import { CONFIDENTIALITY_INFO, READINESS_SEVERITY_INFO } from "@/lib/methodsLabels";
 import { ReadinessItemsList } from "./ReadinessItemsList";
 
 export const dynamic = "force-dynamic";
@@ -51,15 +53,36 @@ export default async function ReadinessCheckPage({
         >
           Readiness check
         </h1>
+        <p className="mt-1 text-[13px] text-[color:var(--color-on-surface-variant)]">
+          Pre-submission checks on this manuscript: automatic text scans plus,
+          when available, an AI read-through. Accept the findings you&apos;ll
+          fix; dismiss the ones that don&apos;t apply.
+        </p>
         <p className="mt-2 text-[12px] font-mono tabular text-[color:var(--color-on-surface-variant)]">
-          {[
-            `status: ${check.status}`,
-            check.overall_score != null ? `score: ${check.overall_score}` : null,
-            `confidentiality: ${check.effective_confidentiality}`,
-            `started ${formatDate(check.created_at)}`,
-          ]
-            .filter(Boolean)
-            .join("  ·  ")}
+          {check.status}
+          {check.overall_score != null && (
+            <>
+              {"  ·  "}
+              <InfoTip
+                explain="A 0–100 readiness estimate from the assistant — a guide, not a verdict."
+                underline={false}
+              >
+                score {check.overall_score}/100
+              </InfoTip>
+            </>
+          )}
+          {"  ·  "}
+          <InfoTip
+            explain={
+              CONFIDENTIALITY_INFO[check.effective_confidentiality]?.explain ??
+              "How manuscript text was allowed to be processed."
+            }
+            underline={false}
+          >
+            {CONFIDENTIALITY_INFO[check.effective_confidentiality]?.label ??
+              check.effective_confidentiality}
+          </InfoTip>
+          {"  ·  "}started {formatDate(check.created_at)}
         </p>
         {comparedStudy && (
           <p className="mt-1 text-[12px] text-[color:var(--color-on-surface-variant)]">
@@ -75,9 +98,15 @@ export default async function ReadinessCheckPage({
       </header>
 
       <section className="mb-8 flex flex-wrap gap-4 text-[12px] font-mono">
-        <span>critical: {counts.critical ?? 0}</span>
-        <span>major: {counts.major ?? 0}</span>
-        <span>minor: {counts.minor ?? 0}</span>
+        <InfoTip explain={READINESS_SEVERITY_INFO.critical.explain} underline={false}>
+          <span>critical: {counts.critical ?? 0}</span>
+        </InfoTip>
+        <InfoTip explain={READINESS_SEVERITY_INFO.major.explain} underline={false}>
+          <span>major: {counts.major ?? 0}</span>
+        </InfoTip>
+        <InfoTip explain={READINESS_SEVERITY_INFO.minor.explain} underline={false}>
+          <span>minor: {counts.minor ?? 0}</span>
+        </InfoTip>
         <span>total: {items.length}</span>
       </section>
 

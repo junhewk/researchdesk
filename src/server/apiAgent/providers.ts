@@ -182,3 +182,101 @@ export async function createApiChatModel(
     },
   }) as ApiChatModel;
 }
+
+/** A provider's fully resolved runtime configuration — explicit overrides,
+ * then saved app settings (which already fall back to the API-key env var),
+ * then other env vars, then defaults. Used by the health checker
+ * (src/server/providerHealth.ts) so its probes match what createApiChatModel
+ * would actually run. */
+export interface ResolvedProviderConfig {
+  provider: ApiProvider;
+  kind: "cloud" | "local";
+  model: string;
+  /** Endpoint the provider is called at (local base URL or cloud API base). */
+  baseUrl: string;
+  apiKey: string | null;
+  /** Env var that supplies the API key, for cloud providers. */
+  keyEnvVar: string | null;
+  /** Env var that sets the endpoint, for local providers. */
+  baseUrlEnvVar: string | null;
+}
+
+export function resolveProviderConfig(
+  provider: ApiProvider,
+  overrides?: { model?: string | null; apiKey?: string | null; baseUrl?: string | null },
+): ResolvedProviderConfig {
+  const saved = getProviderRuntimeSetting(provider as ApiProviderKey);
+  const model = overrides?.model || saved.model || undefined;
+  // saved.apiKey already includes the provider's API-key env var fallback.
+  const apiKey = overrides?.apiKey || saved.apiKey || undefined;
+  const baseUrl = overrides?.baseUrl || saved.baseUrl || undefined;
+
+  switch (provider) {
+    case "gemini":
+      return {
+        provider,
+        kind: "cloud",
+        model: model || env("GEMINI_MODEL") || "gemini-2.5-pro",
+        baseUrl: "https://generativelanguage.googleapis.com/v1beta",
+        apiKey: apiKey || env("GEMINI_API_KEY") || null,
+        keyEnvVar: "GEMINI_API_KEY",
+        baseUrlEnvVar: null,
+      };
+    case "deepseek":
+      return {
+        provider,
+        kind: "cloud",
+        model: model || env("DEEPSEEK_MODEL") || "deepseek-chat",
+        baseUrl: "https://api.deepseek.com",
+        apiKey: apiKey || env("DEEPSEEK_API_KEY") || null,
+        keyEnvVar: "DEEPSEEK_API_KEY",
+        baseUrlEnvVar: null,
+      };
+    case "ollama":
+      return {
+        provider,
+        kind: "local",
+        model: model || env("OLLAMA_MODEL") || "qwen3.6",
+        baseUrl: baseUrl || env("OLLAMA_BASE_URL") || "http://127.0.0.1:11434",
+        apiKey: null,
+        keyEnvVar: null,
+        baseUrlEnvVar: "OLLAMA_BASE_URL",
+      };
+    case "lmstudio":
+      return {
+        provider,
+        kind: "local",
+        model: model || env("LMSTUDIO_MODEL") || "local-model",
+        baseUrl:
+          openAiCompatibleUrl(baseUrl || env("LMSTUDIO_BASE_URL")) ||
+          "http://127.0.0.1:1234/v1",
+        apiKey: apiKey || env("LMSTUDIO_API_KEY") || "lm-studio",
+        keyEnvVar: null,
+        baseUrlEnvVar: "LMSTUDIO_BASE_URL",
+      };
+    case "llama_server":
+      return {
+        provider,
+        kind: "local",
+        model: model || env("LLAMA_SERVER_MODEL") || "local-model",
+        baseUrl:
+          openAiCompatibleUrl(baseUrl || env("LLAMA_SERVER_BASE_URL")) ||
+          "http://127.0.0.1:8091/v1",
+        apiKey: apiKey || env("LLAMA_SERVER_API_KEY") || "llama-server",
+        keyEnvVar: null,
+        baseUrlEnvVar: "LLAMA_SERVER_BASE_URL",
+      };
+    default:
+      return {
+        provider: "openai",
+        kind: "cloud",
+        model: model || env("OPENAI_MODEL") || env("OPENAI_AGENT_MODEL") || "gpt-5.4",
+        baseUrl:
+          openAiCompatibleUrl(baseUrl || env("OPENAI_BASE_URL")) ||
+          "https://api.openai.com/v1",
+        apiKey: apiKey || env("OPENAI_API_KEY") || null,
+        keyEnvVar: "OPENAI_API_KEY",
+        baseUrlEnvVar: "OPENAI_BASE_URL",
+      };
+  }
+}

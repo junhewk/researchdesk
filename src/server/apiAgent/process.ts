@@ -2,12 +2,18 @@ import { EventEmitter } from "node:events";
 import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import type { AgentProcess, AgentProcessEvents, StartOptions } from "@/server/agentProcess";
 import type { AgentEvent, Provider } from "@/server/types";
-import { runReviewAgent } from "./workflows";
+import {
+  runCardProposalAgent,
+  runEvidenceExtractionAgent,
+  runPreflightRiskAgent,
+  runReviewAgent,
+} from "./workflows";
 import {
   createApiChatModel,
   type ApiChatModel,
   type ApiProvider,
 } from "./providers";
+import { classifyAgentError } from "@/server/providerHealth";
 
 function contentToText(content: unknown): string {
   if (typeof content === "string") return content;
@@ -157,6 +163,44 @@ export class ApiAgentProcess extends EventEmitter implements AgentProcess {
     return text;
   }
 
+  // Methods Workbench study passes. manuscriptId carries the study id (see
+  // studySessions.ts). Each pass runs a structured workflow rather than a
+  // free chat turn.
+  private async runMethodsTurn(
+    opts: StartOptions,
+    content: string,
+  ): Promise<string> {
+    const config = {
+      provider: this.provider,
+      model: opts.model,
+      timeoutMs: Number(process.env.API_AGENT_TIMEOUT_MS || 180_000),
+    };
+    const studyId = opts.manuscriptId;
+    const isFollowUp = content.trim() !== (opts.initialMessage ?? "").trim();
+
+    if (opts.pass === "card_proposal") {
+      if (!opts.targetCardType) throw new Error("proposal pass is missing its target card");
+      const result = await runCardProposalAgent({
+        studyId,
+        cardType: opts.targetCardType,
+        sessionId: this.id,
+        userReply: isFollowUp ? content : null,
+        config,
+      });
+      return `${result.summary_md}\n\n${result.created} option(s) ready above — pick one with "Use this", reply here to refine them, or close and edit the card directly.`;
+    }
+    if (opts.pass === "evidence_extraction") {
+      if (!opts.snapshotId) throw new Error("extraction pass is missing its snapshot");
+      const result = await runEvidenceExtractionAgent({ snapshotId: opts.snapshotId, config });
+      return `${result.summary_md}\n\nAdded ${result.created} evidence item(s) to the tray.`;
+    }
+    if (opts.pass === "preflight_risk") {
+      const result = await runPreflightRiskAgent({ studyId, config, sessionId: this.id });
+      return `${result.summary_md}\n\nRecorded ${result.created} risk finding(s) in the Checks panel.`;
+    }
+    throw new Error(`unsupported methods pass: ${opts.pass ?? "(none)"}`);
+  }
+
   private async runTurn(opts: StartOptions, content: string): Promise<void> {
     this.running = true;
     const startedAt = Date.now();
@@ -167,24 +211,23 @@ export class ApiAgentProcess extends EventEmitter implements AgentProcess {
     });
 
     try {
-      if (opts.workflow !== "review" && opts.workflow !== "manuscript") {
+      let text: string;
+      if (opts.workflow === "methods") {
+        text = await this.runMethodsTurn(opts, content);
+      } else if (opts.workflow === "review" || opts.workflow === "manuscript") {
+        const command = slashCommandOf(content);
+        text =
+          opts.workflow === "review" || command === "review"
+            ? await this.runReviewTurn(opts)
+            : await this.runChatTurn(opts, content);
+      } else {
         throw new Error(
-          "Desktop API sessions support review and manuscript workflows. Use checklist/readiness/preflight run endpoints for methods checks.",
+          "Desktop API sessions support review, manuscript, and methods workflows. Use checklist/readiness run endpoints for manuscript checks.",
         );
       }
-      const command = slashCommandOf(content);
-      const text =
-        opts.workflow === "review" || command === "review"
-          ? await this.runReviewTurn(opts)
-          : await this.runChatTurn(opts, content);
       this.emitAgentEvent({
         type: "assistant",
-        message: {
-          content: [{
-            type: "text",
-            text,
-          }],
-        },
+        message: { content: [{ type: "text", text }] },
         provider: this.provider as Provider,
       });
       this.emitAgentEvent({
@@ -194,12 +237,28 @@ export class ApiAgentProcess extends EventEmitter implements AgentProcess {
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      this.emitTyped("error", new Error(message));
-      this.emitAgentEvent({
-        type: "assistant",
-        message: { content: [{ type: "text", text: `Agent error: ${message}` }] },
-        provider: this.provider as Provider,
-      });
+      if (opts.workflow === "methods") {
+        // Keep the methods session alive so the user can retry or rephrase;
+        // surface a classified, plain-language message instead of crashing.
+        const classified = classifyAgentError(err, this.provider);
+        this.emitAgentEvent({
+          type: "assistant",
+          message: {
+            content: [{
+              type: "text",
+              text: `Something went wrong: ${classified.message}\n\n${classified.fix}`,
+            }],
+          },
+          provider: this.provider as Provider,
+        });
+      } else {
+        this.emitTyped("error", new Error(message));
+        this.emitAgentEvent({
+          type: "assistant",
+          message: { content: [{ type: "text", text: `Agent error: ${message}` }] },
+          provider: this.provider as Provider,
+        });
+      }
       this.emitAgentEvent({
         type: "result",
         duration_ms: Math.max(Date.now() - startedAt, 0),

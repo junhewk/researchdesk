@@ -7,6 +7,7 @@ import {
   resolveApiProvider,
 } from "@/server/apiAgent/providers";
 import { runPreflightRiskAgent } from "@/server/apiAgent/workflows";
+import { classifyAgentError } from "@/server/providerHealth";
 
 export async function POST(
   request: NextRequest,
@@ -50,8 +51,9 @@ export async function POST(
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
+    const classified = classifyAgentError(err, provider);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "could not start risk pass" },
+      { error: classified.message, error_code: classified.code, fix: classified.fix },
       { status: 400 },
     );
   }

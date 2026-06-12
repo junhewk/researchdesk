@@ -5,6 +5,7 @@ import {
   resolveApiProvider,
 } from "@/server/apiAgent/providers";
 import { runChecklistAgent } from "@/server/apiAgent/workflows";
+import { classifyAgentError } from "@/server/providerHealth";
 import { getChecklist } from "@/server/reportingChecklists";
 
 export async function POST(
@@ -38,8 +39,9 @@ export async function POST(
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
+    const classified = classifyAgentError(err, parsed.data.provider);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "checklist agent failed" },
+      { error: classified.message, error_code: classified.code, fix: classified.fix },
       { status: 400 },
     );
   }

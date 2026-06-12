@@ -51,17 +51,37 @@ export function MethodsActions({ manuscriptId, studyId }: Props) {
     };
   }, [manuscriptId]);
 
+  // Use whichever AI provider is actually working right now, instead of
+  // assuming OpenAI is configured. Returns null when none is healthy.
+  const findWorkingProvider = async (): Promise<string | null> => {
+    try {
+      const res = await fetch("/api/providers/health");
+      if (!res.ok) return null;
+      const body = (await res.json()) as {
+        providers?: Array<{ provider: string; ok: boolean }>;
+      };
+      return body.providers?.find((p) => p.ok)?.provider ?? null;
+    } catch {
+      return null;
+    }
+  };
+
   const runReadiness = () => {
     setError(null);
     startTransition(async () => {
+      const provider = await findWorkingProvider();
       const res = await fetch(`/api/manuscripts/${manuscriptId}/readiness`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ study_id: studyId ?? undefined }),
+        body: JSON.stringify({
+          study_id: studyId ?? undefined,
+          ...(provider ? { provider } : { skip_agent: true }),
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(body.error || `failed (${res.status})`);
+        const fix = typeof body.fix === "string" ? ` — ${body.fix}` : "";
+        setError((body.error || `failed (${res.status})`) + fix);
         return;
       }
       const created = (await res.json()) as { id: string };
@@ -72,17 +92,23 @@ export function MethodsActions({ manuscriptId, studyId }: Props) {
   const draftResponse = () => {
     setError(null);
     startTransition(async () => {
+      const provider = await findWorkingProvider();
       const res = await fetch(
         `/api/manuscripts/${manuscriptId}/reviewer-responses`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ round: 1 }),
+          body: JSON.stringify(
+            provider
+              ? { provider, round: 1 }
+              : { skip_agent: true, round: 1 },
+          ),
         },
       );
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(body.error || `failed (${res.status})`);
+        const fix = typeof body.fix === "string" ? ` — ${body.fix}` : "";
+        setError((body.error || `failed (${res.status})`) + fix);
         return;
       }
       const created = (await res.json()) as { id: string };
