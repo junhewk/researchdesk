@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/utils";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { CONFIDENTIALITY_INFO, READINESS_SEVERITY_INFO } from "@/lib/methodsLabels";
 import { ReadinessItemsList } from "./ReadinessItemsList";
+import { DraftingBriefPanel } from "./DraftingBriefPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -118,6 +119,11 @@ export default async function ReadinessCheckPage({
       )}
 
       <ReadinessItemsList checkId={id} items={items} />
+
+      <DraftingBriefPanel
+        checkId={id}
+        openCount={items.filter((it) => it.status === "open").length}
+      />
     </div>
   );
 }

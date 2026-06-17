@@ -118,6 +118,20 @@ export function exportRevision(r: Revision): void {
   void fs.promises.writeFile(path.join(dir, `${r.id}.md`), content, "utf-8");
 }
 
+export function exportDraftingBrief(
+  manuscriptId: string,
+  files: { agentsMd: string; briefMd: string },
+): void {
+  const dir = manuscriptDir(manuscriptId);
+  ensureDir(dir);
+  void fs.promises.writeFile(path.join(dir, "AGENTS.md"), files.agentsMd, "utf-8");
+  void fs.promises.writeFile(
+    path.join(dir, "drafting-brief.md"),
+    files.briefMd,
+    "utf-8",
+  );
+}
+
 export function exportReview(r: Review): void {
   const dir = path.join(manuscriptDir(r.manuscript_id), "reviews");
   ensureDir(dir);

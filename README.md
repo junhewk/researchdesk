@@ -68,6 +68,9 @@ Upload your own manuscript and use the agent for:
 - pre-submission manuscript review
 - manuscript readiness checks
 - reviewer-response drafting
+- drafting briefs — turn a reconciled readiness check into ready-to-use,
+  self-contained prompts for drafting the outline, introduction, and methodology
+  with any AI (browser chat or CLI agent)
 
 ## Step-by-step App Flow
 
@@ -145,6 +148,14 @@ If the article was created from Methods Workbench, readiness automatically
 compares the manuscript against the originating study design. Use this to catch
 drift such as outcome timepoint mismatches, missing eligibility criteria,
 missing reporting checklist items, or claims not supported by the protocol.
+
+After reconciling the findings (accept the ones you will fix, dismiss the rest),
+use `Generate drafting brief` to compile a self-contained prompt set for drafting
+the outline, introduction, and methodology. The brief is grounded only in your
+own material — the manuscript text, the findings you accepted, and the recorded
+study design — and instructs the AI to assemble existing material rather than
+invent. Copy a combined or per-section prompt into any browser-based AI, or
+download `AGENTS.md` / `drafting-brief.md` for an agentic tool.
 
 ### 7. Add reviewer material
 
