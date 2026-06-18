@@ -54,6 +54,9 @@ preparation:
 - SAP drafting
 - data dictionary editing/import/export
 - reporting checklist setup
+- drafting prompts — generate self-contained prompts for drafting the article's
+  outline, introduction, and methodology from the recorded design (beside
+  "Create Article Draft")
 - manuscript-readiness checks linked to My Articles
 
 A first-run setup panel and an in-canvas guide orient newcomers, and technical
@@ -68,9 +71,9 @@ Upload your own manuscript and use the agent for:
 - pre-submission manuscript review
 - manuscript readiness checks
 - reviewer-response drafting
-- drafting briefs — turn a reconciled readiness check into ready-to-use,
-  self-contained prompts for drafting the outline, introduction, and methodology
-  with any AI (browser chat or CLI agent)
+- revision harness — turn a reconciled readiness check into a self-contained
+  prompt set that drives any AI (browser chat or CLI agent) to revise the
+  manuscript and close the accepted findings
 
 ## Step-by-step App Flow
 
@@ -129,6 +132,13 @@ This creates a linked article in `My Articles` from the Methods decisions. It
 also attaches the compiled Methods artifacts as manuscript appendices. Repeated
 clicks reopen the existing linked article instead of creating duplicates.
 
+Next to this button, `Drafting prompts` compiles ready-to-use, self-contained
+prompts for drafting the article's outline, introduction, and methodology from
+the recorded design. Copy a combined or per-section prompt into any browser-based
+AI, or download `AGENTS.md` / `drafting-prompts.md` for an agentic tool. The
+prompts draft only from your recorded decisions and instruct the AI not to
+invent.
+
 ### 5. Continue in My Articles
 
 Open the generated article workspace.
@@ -150,12 +160,13 @@ drift such as outcome timepoint mismatches, missing eligibility criteria,
 missing reporting checklist items, or claims not supported by the protocol.
 
 After reconciling the findings (accept the ones you will fix, dismiss the rest),
-use `Generate drafting brief` to compile a self-contained prompt set for drafting
-the outline, introduction, and methodology. The brief is grounded only in your
-own material — the manuscript text, the findings you accepted, and the recorded
-study design — and instructs the AI to assemble existing material rather than
-invent. Copy a combined or per-section prompt into any browser-based AI, or
-download `AGENTS.md` / `drafting-brief.md` for an agentic tool.
+use `Generate revision harness` to compile a self-contained prompt that drives an
+AI to revise the manuscript and close the accepted findings — making small,
+focused, reversible edits, giving revised text with section pointers, and ending
+with a revision table. You get one holistic prompt plus a per-finding prompt for
+each accepted finding. Copy into any browser-based AI, or download `AGENTS.md` /
+`revision-harness.md` for an agentic tool. It is grounded only in your manuscript
+and findings and instructs the AI not to invent.
 
 ### 7. Add reviewer material
 

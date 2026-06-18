@@ -3,17 +3,15 @@
 import { useState } from "react";
 import { Copy, Check, Download, Sparkles } from "lucide-react";
 
-interface TaskPrompts {
-  outline: string;
-  introduction: string;
-  methodology: string;
+interface FindingPrompt {
+  gateLabel: string;
+  prompt: string;
 }
 
-interface BriefResponse {
-  combinedPrompt: string;
-  taskPrompts: TaskPrompts;
+interface HarnessResponse {
+  harnessPrompt: string;
+  findingPrompts: FindingPrompt[];
   openCount: number;
-  hasStudy: boolean;
 }
 
 interface Props {
@@ -21,14 +19,8 @@ interface Props {
   openCount: number;
 }
 
-const TASK_LABEL: Record<keyof TaskPrompts, string> = {
-  outline: "Outline",
-  introduction: "Introduction",
-  methodology: "Methodology",
-};
-
-export function DraftingBriefPanel({ checkId, openCount }: Props) {
-  const [data, setData] = useState<BriefResponse | null>(null);
+export function RevisionHarnessPanel({ checkId, openCount }: Props) {
+  const [data, setData] = useState<HarnessResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
@@ -37,7 +29,7 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`/api/readiness/${checkId}/brief`, {
+      const res = await fetch(`/api/readiness/${checkId}/revision-harness`, {
         method: "POST",
       });
       if (!res.ok) {
@@ -45,7 +37,7 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
         setError(body.error || `failed (${res.status})`);
         return;
       }
-      setData((await res.json()) as BriefResponse);
+      setData((await res.json()) as HarnessResponse);
     } catch (e) {
       setError(e instanceof Error ? e.message : "failed");
     } finally {
@@ -57,10 +49,7 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(key);
-      window.setTimeout(
-        () => setCopied((c) => (c === key ? null : c)),
-        1500,
-      );
+      window.setTimeout(() => setCopied((c) => (c === key ? null : c)), 1500);
     } catch {
       setError("could not copy to clipboard");
     }
@@ -69,7 +58,7 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
   const download = async (format: "agents" | "md", filename: string) => {
     try {
       const res = await fetch(
-        `/api/readiness/${checkId}/brief/download?format=${format}`,
+        `/api/readiness/${checkId}/revision-harness/download?format=${format}`,
       );
       if (!res.ok) {
         setError(`download failed (${res.status})`);
@@ -91,11 +80,12 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
 
   return (
     <section className="mt-10 border-t-2 border-[color:var(--color-on-surface)] pt-5">
-      <h2 className="label mb-1">Drafting brief</h2>
+      <h2 className="label mb-1">Revision harness</h2>
       <p className="text-[13px] text-[color:var(--color-on-surface-variant)]">
-        Turn this reconciled check into a ready-to-use prompt for drafting the
-        outline, introduction, and methodology. Paste a prompt into ChatGPT /
-        Claude / Gemini, or download a file for an agentic tool — every prompt is
+        Turn this reconciled check into a prompt that drives an AI to revise the
+        manuscript and close the findings you accepted — small, focused edits with
+        section pointers and a revision table. Paste into ChatGPT / Claude /
+        Gemini, or download a file for an agentic tool. Every prompt is
         self-contained.
       </p>
 
@@ -103,7 +93,7 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
         <p className="mt-3 text-[12px] text-[color:var(--color-tertiary)]">
           {openCount} finding{openCount === 1 ? " is" : "s are"} still open —
           accept or dismiss {openCount === 1 ? "it" : "them"} above first for an
-          accurate brief.
+          accurate harness.
         </p>
       )}
 
@@ -116,44 +106,42 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
             className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] hover:border-[color:var(--color-outline)] disabled:opacity-40 transition-colors"
           >
             <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
-            {busy ? "Generating…" : "Generate drafting brief"}
+            {busy ? "Generating…" : "Generate revision harness"}
           </button>
         </div>
       )}
 
       {error && (
-        <p className="mt-3 text-[12px] text-[color:var(--color-error)]">
-          {error}
-        </p>
+        <p className="mt-3 text-[12px] text-[color:var(--color-error)]">{error}</p>
       )}
 
       {data && (
         <div className="mt-5 space-y-6">
           <PromptBlock
-            label="Full prompt — outline + introduction + methodology"
-            copyKey="combined"
-            text={data.combinedPrompt}
+            label="Revision harness — close all accepted findings"
+            copyKey="harness"
+            text={data.harnessPrompt}
             copied={copied}
             onCopy={copy}
           />
 
-          <div>
-            <h3 className="label mb-2">Per-section prompts</h3>
-            <div className="space-y-4">
-              {(Object.keys(data.taskPrompts) as Array<keyof TaskPrompts>).map(
-                (task) => (
+          {data.findingPrompts.length > 0 && (
+            <div>
+              <h3 className="label mb-2">Per-finding prompts</h3>
+              <div className="space-y-4">
+                {data.findingPrompts.map((f, i) => (
                   <PromptBlock
-                    key={task}
-                    label={TASK_LABEL[task]}
-                    copyKey={task}
-                    text={data.taskPrompts[task]}
+                    key={`${f.gateLabel}-${i}`}
+                    label={f.gateLabel}
+                    copyKey={`finding-${i}`}
+                    text={f.prompt}
                     copied={copied}
                     onCopy={copy}
                   />
-                ),
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <h3 className="label mb-2">Download a file</h3>
@@ -168,17 +156,18 @@ export function DraftingBriefPanel({ checkId, openCount }: Props) {
               </button>
               <button
                 type="button"
-                onClick={() => download("md", "drafting-brief.md")}
+                onClick={() => download("md", "revision-harness.md")}
                 className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[12px] font-mono hover:border-[color:var(--color-outline)] transition-colors"
               >
                 <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
-                drafting-brief.md
+                revision-harness.md
               </button>
             </div>
             <p className="mt-2 text-[11px] text-[color:var(--color-on-surface-variant)]">
               <span className="font-mono">AGENTS.md</span> is auto-read by Codex
-              and similar agents; <span className="font-mono">drafting-brief.md</span>{" "}
-              is a plain document to attach or upload anywhere.
+              and similar agents;{" "}
+              <span className="font-mono">revision-harness.md</span> is a plain
+              document to attach or upload anywhere.
             </p>
           </div>
         </div>

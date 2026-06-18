@@ -108,3 +108,13 @@ export function exportStudyArtifact(
     "utf-8",
   );
 }
+
+export function exportStudyDraftingPrompts(
+  studyId: string,
+  files: { agentsMd: string; draftMd: string },
+): void {
+  const dir = studyDir(studyId);
+  ensureDir(dir);
+  fs.writeFileSync(path.join(dir, "AGENTS.md"), files.agentsMd, "utf-8");
+  fs.writeFileSync(path.join(dir, "drafting-prompts.md"), files.draftMd, "utf-8");
+}

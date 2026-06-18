@@ -7,6 +7,7 @@ import { SessionStream } from "@/components/SessionStream";
 import { AgentStatusChip } from "@/components/methods/AgentStatusChip";
 import { CanvasIntro, CANVAS_INTRO_STORAGE_KEY } from "@/components/methods/CanvasIntro";
 import { ImportEvidenceModal } from "@/components/methods/ImportEvidenceModal";
+import { StudyDraftingPromptsPanel } from "@/components/methods/StudyDraftingPromptsPanel";
 import { TermChip } from "@/components/methods/TermChip";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { useProviderHealth, type ProviderHealthView } from "@/lib/hooks/useProviderHealth";
@@ -408,6 +409,7 @@ function Header({
   const router = useRouter();
   const [creatingArticle, setCreatingArticle] = useState(false);
   const [articleError, setArticleError] = useState<string | null>(null);
+  const [showDraftingPrompts, setShowDraftingPrompts] = useState(false);
 
   async function createArticleDraft() {
     setCreatingArticle(true);
@@ -503,6 +505,13 @@ function Header({
             )}
             <button
               type="button"
+              onClick={() => setShowDraftingPrompts(true)}
+              className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
+            >
+              Drafting prompts
+            </button>
+            <button
+              type="button"
               onClick={createArticleDraft}
               disabled={creatingArticle}
               className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] disabled:opacity-50 transition-colors"
@@ -517,6 +526,12 @@ function Header({
           )}
         </div>
       </div>
+      {showDraftingPrompts && (
+        <StudyDraftingPromptsPanel
+          studyId={study.id}
+          onClose={() => setShowDraftingPrompts(false)}
+        />
+      )}
     </div>
   );
 }

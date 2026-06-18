@@ -118,16 +118,16 @@ export function exportRevision(r: Revision): void {
   void fs.promises.writeFile(path.join(dir, `${r.id}.md`), content, "utf-8");
 }
 
-export function exportDraftingBrief(
+export function exportRevisionHarness(
   manuscriptId: string,
-  files: { agentsMd: string; briefMd: string },
+  files: { agentsMd: string; harnessMd: string },
 ): void {
   const dir = manuscriptDir(manuscriptId);
   ensureDir(dir);
   void fs.promises.writeFile(path.join(dir, "AGENTS.md"), files.agentsMd, "utf-8");
   void fs.promises.writeFile(
-    path.join(dir, "drafting-brief.md"),
-    files.briefMd,
+    path.join(dir, "revision-harness.md"),
+    files.harnessMd,
     "utf-8",
   );
 }
