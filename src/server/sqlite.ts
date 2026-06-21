@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-
 type RawSqliteModule = {
   DatabaseSync: new (location: string) => RawDatabase;
 };
@@ -44,8 +42,13 @@ export class AppDatabase {
   private readonly db: RawDatabase;
 
   constructor(location: string) {
-    const require = createRequire(import.meta.url);
-    const { DatabaseSync } = require("node:sqlite") as RawSqliteModule;
+    // Use process.getBuiltinModule rather than require("node:sqlite"): the latter
+    // (via createRequire(import.meta.url)) cannot be externalized by Next's
+    // production webpack bundle ("Unsupported external type Url for commonjs
+    // reference"), which breaks `next start` and packaged builds. getBuiltinModule
+    // is a plain runtime property access bundlers leave untouched. (Node 22.3+.)
+    const { DatabaseSync } =
+      process.getBuiltinModule("node:sqlite") as unknown as RawSqliteModule;
     this.db = new DatabaseSync(location);
   }
 
