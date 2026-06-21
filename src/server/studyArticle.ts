@@ -37,12 +37,14 @@ export interface StudyArticleResult {
 
 const MODE_RESEARCH_TYPE: Record<Study["mode"], string> = {
   systematic_review: "systematic-review",
+  scoping_review: "scoping-review",
   retrospective_observational: "retrospective-observational",
   interventional: "randomized-trial",
 };
 
 const MODE_DOMAIN: Record<Study["mode"], string> = {
   systematic_review: "evidence synthesis",
+  scoping_review: "evidence synthesis",
   retrospective_observational: "clinical epidemiology",
   interventional: "clinical trial",
 };
@@ -75,6 +77,9 @@ function trimSentence(value: string): string {
 function draftTitle(study: Study): string {
   if (study.mode === "systematic_review") {
     return `${study.title.replace(/\s*\([^)]*\)\s*$/, "")}: systematic review protocol`;
+  }
+  if (study.mode === "scoping_review") {
+    return `${study.title.replace(/\s*\([^)]*\)\s*$/, "")}: scoping review protocol`;
   }
   if (study.mode === "retrospective_observational") {
     return `${study.title}: retrospective cohort study`;

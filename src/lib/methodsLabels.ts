@@ -279,6 +279,10 @@ export const STUDY_MODE_INFO: Record<string, TermInfo> = {
     label: "Systematic review",
     explain: "Synthesizing existing studies on a question, with or without meta-analysis.",
   },
+  scoping_review: {
+    label: "Scoping review",
+    explain: "Mapping the breadth of evidence on a topic (PCC framing) → PRISMA-ScR.",
+  },
   retrospective_observational: {
     label: "Retrospective observational",
     explain: "Analyzing patient-level data that already exists (registries, EHR, cohorts).",

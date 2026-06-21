@@ -17,6 +17,11 @@ const TRIAGE: Array<{
     sub: "You will search, screen, and combine published evidence → systematic review / meta-analysis.",
   },
   {
+    mode: "scoping_review",
+    q: "Mapping the literature",
+    sub: "You will search, screen, and chart the breadth of evidence on a topic (PCC framing) → scoping review, mapped to PRISMA-ScR. Import your search + screening CSVs.",
+  },
+  {
     mode: "retrospective_observational",
     q: "Analyzing patient-level data",
     sub: "You have (or will obtain) routinely-collected records and no control over treatment allocation → retrospective observational study.",
@@ -96,7 +101,11 @@ export default function NewStudyPage() {
       });
       if (!res.ok) throw new Error("could not create study");
       const study = await res.json();
-      router.push(`/methods-workbench/${study.id}`);
+      router.push(
+        mode === "scoping_review"
+          ? `/methods-workbench/${study.id}/corpus`
+          : `/methods-workbench/${study.id}`,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "error");
       setBusy(false);

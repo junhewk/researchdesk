@@ -72,6 +72,42 @@ export const DECISION_STATE_LABEL: Record<string, string> = {
   locked: "locked",
 };
 
+// Scoping/systematic-review screening. The user-confirmed inclusion decision
+// and the imported AI screening signals (tier / confidence). Outlined chips,
+// small-caps, consistent with the rest of the system.
+export const SCREENING_DECISION_STYLES: Record<string, string> = {
+  include:
+    "text-[color:var(--color-on-secondary-container)] border-[color:var(--color-on-secondary-container)]",
+  exclude:
+    "text-[color:var(--color-error)] border-[color:var(--color-error)]",
+  maybe:
+    "text-[color:var(--color-tertiary-container)] border-[color:var(--color-tertiary-container)]",
+  unscreened:
+    "text-[color:var(--color-on-surface-variant)] border-[color:var(--color-outline-variant)]",
+};
+
+export const SCREENING_DECISION_LABEL: Record<string, string> = {
+  include: "include",
+  exclude: "exclude",
+  maybe: "maybe",
+  unscreened: "unscreened",
+};
+
+export const SCREEN_TIER_STYLES: Record<string, string> = {
+  primary:
+    "text-[color:var(--color-primary)] border-[color:var(--color-primary)]",
+  secondary:
+    "text-[color:var(--color-on-surface-variant)] border-[color:var(--color-outline-variant)]",
+  unclear:
+    "text-[color:var(--color-tertiary)] border-[color:var(--color-tertiary)] italic",
+};
+
+export const SCREEN_CONFIDENCE_STYLES: Record<string, string> = {
+  high: "text-[color:var(--color-primary)] border-[color:var(--color-primary)]",
+  med: "text-[color:var(--color-on-surface-variant)] border-[color:var(--color-outline-variant)]",
+  low: "text-[color:var(--color-on-surface-variant)] border-[color:var(--color-outline-variant)] italic",
+};
+
 // Preflight finding severities.
 export const PREFLIGHT_SEVERITY_STYLES: Record<string, string> = {
   blocking: "text-[color:var(--color-error)] border-[color:var(--color-error)]",

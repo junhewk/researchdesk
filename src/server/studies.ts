@@ -64,9 +64,13 @@ export function listStudies(opts?: {
 
 export function getStudy(id: string): Study | undefined {
   const db = getDb();
-  return db.prepare("SELECT * FROM studies WHERE id = ?").get(id) as
+  const row = db.prepare("SELECT * FROM studies WHERE id = ?").get(id) as
     | Study
     | undefined;
+  // node:sqlite returns rows with a null prototype; spread into a plain object
+  // so the row can cross the Server→Client component boundary (RSC rejects
+  // null-prototype objects).
+  return row ? { ...row } : undefined;
 }
 
 export function createStudy(data: {

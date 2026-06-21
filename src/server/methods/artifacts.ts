@@ -41,6 +41,9 @@ const SAP_CARDS: Record<StudyMode, string[]> = {
     "sensitivity_analyses",
     "certainty",
   ],
+  // Scoping reviews map, rather than statistically synthesize — the "analysis"
+  // is the charting + presentation plan.
+  scoping_review: ["data_charting", "synthesis"],
   retrospective_observational: [
     "outcome",
     "effect_measure",
@@ -60,6 +63,7 @@ const SAP_CARDS: Record<StudyMode, string[]> = {
 
 const DATA_DICTIONARY_CARDS: Record<StudyMode, string[]> = {
   systematic_review: ["data_extraction"],
+  scoping_review: ["data_charting"],
   retrospective_observational: ["exposure", "comparator", "outcome", "confounders"],
   interventional: ["ai_intervention", "comparator", "primary_outcome", "secondary_outcomes"],
 };
@@ -72,6 +76,15 @@ const REGISTRATION_CARDS: Record<StudyMode, string[]> = {
     "search_strategy",
     "risk_of_bias",
     "synthesis_plan",
+    "registration",
+  ],
+  scoping_review: [
+    "review_question",
+    "eligibility_criteria",
+    "information_sources",
+    "search_strategy",
+    "selection_process",
+    "data_charting",
     "registration",
   ],
   retrospective_observational: ["clinical_question", "data_source", "ethics", "reporting"],

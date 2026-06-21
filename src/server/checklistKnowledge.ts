@@ -35,6 +35,31 @@ const PRISMA_P_ITEMS: GuidelineItem[] = [
   { item_key: "PRISMA-P-15", section: "Methods", prompt: "Planned synthesis approach (narrative vs meta-analysis) and rationale." },
 ];
 
+// PRISMA-ScR (Tricco et al. 2018) — scoping-review extension. Representative
+// subset of the 20-item checklist; the PCC/search/selection/charting items are
+// the ones the design canvas maps against (see cardSchema scoping cards).
+const PRISMA_SCR_ITEMS: GuidelineItem[] = [
+  { item_key: "PRISMA-ScR-1", section: "Title", prompt: "Identify the report as a scoping review.", detect_regex: /scoping review/i },
+  { item_key: "PRISMA-ScR-2", section: "Abstract", prompt: "Structured summary (background, objectives, eligibility, sources, charting, results, conclusions)." },
+  { item_key: "PRISMA-ScR-3", section: "Introduction", prompt: "Rationale for the review in the context of what is already known." },
+  { item_key: "PRISMA-ScR-4", section: "Introduction", prompt: "Objectives / questions stated with the PCC (Population, Concept, Context) frame.", detect_regex: /population|concept|context/i },
+  { item_key: "PRISMA-ScR-5", section: "Methods", prompt: "Protocol and registration — whether a protocol exists and where it can be accessed.", detect_regex: /protocol|registered|osf/i },
+  { item_key: "PRISMA-ScR-6", section: "Methods", prompt: "Eligibility criteria and rationale (PCC, years, sources, evidence types)." },
+  { item_key: "PRISMA-ScR-7", section: "Methods", prompt: "Information sources described, with the date of the last search." },
+  { item_key: "PRISMA-ScR-8", section: "Methods", prompt: "Full electronic search strategy for at least one database, including limits.", detect_regex: /search\s+strategy/i },
+  { item_key: "PRISMA-ScR-9", section: "Methods", prompt: "Selection of sources of evidence — the screening process (duplication, conflicts)." },
+  { item_key: "PRISMA-ScR-10", section: "Methods", prompt: "Data charting process (independent/duplicate, iterative refinement)." },
+  { item_key: "PRISMA-ScR-11", section: "Methods", prompt: "Data items charted from each source of evidence." },
+  { item_key: "PRISMA-ScR-12", section: "Methods", prompt: "Critical appraisal of sources of evidence (optional in scoping reviews)." },
+  { item_key: "PRISMA-ScR-13", section: "Methods", prompt: "Methods of summarizing/synthesizing the charted data." },
+  { item_key: "PRISMA-ScR-14", section: "Results", prompt: "Numbers of sources screened/included with a flow diagram (PRISMA-ScR flow)." },
+  { item_key: "PRISMA-ScR-15", section: "Results", prompt: "Characteristics of the sources of evidence (charting table)." },
+  { item_key: "PRISMA-ScR-18", section: "Results", prompt: "Results synthesized in relation to the review objectives/questions." },
+  { item_key: "PRISMA-ScR-20", section: "Discussion", prompt: "Summary of the main results relative to the objectives." },
+  { item_key: "PRISMA-ScR-21", section: "Discussion", prompt: "Limitations of the scoping process." },
+  { item_key: "PRISMA-ScR-22", section: "Funding", prompt: "Sources of funding and role of funders." },
+];
+
 const STROBE_ITEMS: GuidelineItem[] = [
   { item_key: "STROBE-1a", section: "Title/Abstract", prompt: "Indicate the study's design in the title or abstract." },
   { item_key: "STROBE-1b", section: "Title/Abstract", prompt: "Informative, balanced summary in the abstract." },
@@ -223,6 +248,13 @@ export const GUIDELINES: Record<ReportingGuideline, GuidelineTemplate> = {
     source_url: "https://www.equator-network.org/reporting-guidelines/prisma-protocols/",
     items: PRISMA_P_ITEMS,
   },
+  "PRISMA-ScR": {
+    id: "PRISMA-ScR",
+    version: "2018",
+    subject_type: "manuscript",
+    source_url: "https://www.equator-network.org/reporting-guidelines/prisma-scr/",
+    items: PRISMA_SCR_ITEMS,
+  },
   STROBE: {
     id: "STROBE",
     version: "2007",
@@ -346,8 +378,10 @@ export function suggestGuidelines(
         if (tpl.id === "STROBE") out.push(tpl.id);
         break;
       case "systematic_review":
-      case "scoping_review":
         if (tpl.id === "PRISMA") out.push(tpl.id);
+        break;
+      case "scoping_review":
+        if (tpl.id === "PRISMA-ScR") out.push(tpl.id);
         break;
       case "diagnostic_accuracy":
         if (tpl.id === "STARD") out.push(tpl.id);
