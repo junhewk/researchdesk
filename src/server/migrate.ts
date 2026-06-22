@@ -37,6 +37,151 @@ export function runMigrations(db: AppDatabase): void {
   if (currentVersion < 21) migrateV21(db);
   if (currentVersion < 22) migrateV22(db);
   if (currentVersion < 23) migrateV23(db);
+  if (currentVersion < 24) migrateV24(db);
+  if (currentVersion < 25) migrateV25(db);
+}
+
+function migrateV25(db: AppDatabase): void {
+  // ===================================================================
+  // Widen studies.mode to allow 'scoping_review'. studies.mode carries a
+  // CHECK constraint SQLite cannot ALTER in place, so the table is rebuilt
+  // with the same foreign_keys=OFF + transaction + rename idiom as V21.
+  // studies has no secondary indexes, so none need recreating.
+  // ===================================================================
+  const foreignKeys = db.pragma("foreign_keys", { simple: true }) as number;
+  db.pragma("foreign_keys = OFF");
+  try {
+    db.transaction(() => {
+      db.exec(`
+        DROP TABLE IF EXISTS studies_v25;
+        CREATE TABLE studies_v25 (
+          id                    TEXT PRIMARY KEY,
+          title                 TEXT NOT NULL,
+          mode                  TEXT NOT NULL
+                                  CHECK (mode IN ('systematic_review','scoping_review','retrospective_observational','interventional')),
+          research_question     TEXT,
+          confidentiality_mode  TEXT NOT NULL DEFAULT 'cloud_default'
+                                  CHECK (confidentiality_mode IN ('cloud_default','local_only')),
+          cloud_consent_at      INTEGER,
+          status                TEXT NOT NULL DEFAULT 'draft'
+                                  CHECK (status IN ('draft','active','archived')),
+          created_at            INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at            INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        INSERT INTO studies_v25
+          (id, title, mode, research_question, confidentiality_mode,
+           cloud_consent_at, status, created_at, updated_at)
+        SELECT id, title, mode, research_question, confidentiality_mode,
+               cloud_consent_at, status, created_at, updated_at
+        FROM studies;
+        DROP TABLE studies;
+        ALTER TABLE studies_v25 RENAME TO studies;
+
+        INSERT INTO schema_version (version) VALUES (25);
+      `);
+    })();
+  } finally {
+    db.pragma(`foreign_keys = ${foreignKeys ? "ON" : "OFF"}`);
+  }
+}
+
+function migrateV24(db: AppDatabase): void {
+  // ===================================================================
+  // Scoping/systematic review corpus: a per-database search-yield table
+  // and a screened-record table, both populated by CSV import. Also
+  // widens reporting_checklists.guideline to accept 'PRISMA-ScR' so the
+  // manuscript-readiness flow can use the scoping-review checklist.
+  // ===================================================================
+  const foreignKeys = db.pragma("foreign_keys", { simple: true }) as number;
+  db.pragma("foreign_keys = OFF");
+  try {
+    db.transaction(() => {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS review_searches (
+          id           TEXT PRIMARY KEY,
+          study_id     TEXT NOT NULL REFERENCES studies(id) ON DELETE CASCADE,
+          database     TEXT NOT NULL,
+          query_text   TEXT,
+          yield_count  INTEGER NOT NULL DEFAULT 0,
+          search_date  TEXT,
+          position     INTEGER NOT NULL DEFAULT 0,
+          created_at   INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        CREATE INDEX IF NOT EXISTS idx_review_searches_study
+          ON review_searches(study_id, position);
+
+        CREATE TABLE IF NOT EXISTS review_records (
+          id                TEXT PRIMARY KEY,
+          study_id          TEXT NOT NULL REFERENCES studies(id) ON DELETE CASCADE,
+          external_id       TEXT,
+          title             TEXT NOT NULL DEFAULT '',
+          authors           TEXT,
+          year              INTEGER,
+          journal           TEXT,
+          volume            TEXT,
+          issue             TEXT,
+          pages             TEXT,
+          doi               TEXT,
+          pmid              TEXT,
+          other_ids_json    TEXT,
+          abstract          TEXT,
+          keywords          TEXT,
+          language          TEXT,
+          url               TEXT,
+          source_databases  TEXT,
+          screen_stage      TEXT,
+          screen_tier       TEXT,
+          screen_reason     TEXT,
+          screen_confidence TEXT,
+          needs_review      INTEGER NOT NULL DEFAULT 0 CHECK (needs_review IN (0,1)),
+          ai_final          TEXT,
+          ai_final_reason   TEXT,
+          decision          TEXT NOT NULL DEFAULT 'unscreened'
+                              CHECK (decision IN ('include','exclude','maybe','unscreened')),
+          decision_reason   TEXT,
+          user_confirmed    INTEGER NOT NULL DEFAULT 0 CHECK (user_confirmed IN (0,1)),
+          charting_json     TEXT,
+          dedupe_key        TEXT,
+          position          INTEGER NOT NULL DEFAULT 0,
+          created_at        INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at        INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        CREATE INDEX IF NOT EXISTS idx_review_records_study
+          ON review_records(study_id, position);
+        CREATE INDEX IF NOT EXISTS idx_review_records_decision
+          ON review_records(study_id, decision);
+
+        -- Widen reporting_checklists.guideline CHECK to include PRISMA-ScR.
+        DROP TABLE IF EXISTS reporting_checklists_v24;
+        CREATE TABLE reporting_checklists_v24 (
+          id            TEXT PRIMARY KEY,
+          subject_type  TEXT NOT NULL CHECK (subject_type IN ('protocol','manuscript')),
+          subject_id    TEXT NOT NULL,
+          guideline     TEXT NOT NULL
+                          CHECK (guideline IN (
+                            'PRISMA','PRISMA-P','PRISMA-ScR','STROBE','CONSORT','SPIRIT',
+                            'STARD','TRIPOD','CARE','SRQR','COREQ','ARRIVE',
+                            'RECORD','SPIRIT-AI','CONSORT-AI'
+                          )),
+          version       TEXT,
+          created_at    INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at    INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        INSERT INTO reporting_checklists_v24
+          (id, subject_type, subject_id, guideline, version, created_at, updated_at)
+        SELECT id, subject_type, subject_id, guideline, version, created_at, updated_at
+        FROM reporting_checklists;
+        DROP TABLE reporting_checklists;
+        ALTER TABLE reporting_checklists_v24 RENAME TO reporting_checklists;
+        CREATE INDEX IF NOT EXISTS idx_reporting_checklists_subject
+          ON reporting_checklists(subject_type, subject_id);
+
+        INSERT INTO schema_version (version) VALUES (24);
+      `);
+    })();
+  } finally {
+    db.pragma(`foreign_keys = ${foreignKeys ? "ON" : "OFF"}`);
+  }
 }
 
 function migrateV23(db: AppDatabase): void {

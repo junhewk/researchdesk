@@ -5,7 +5,12 @@ import type { StudyMode, StudyStatus } from "@/server/types";
 
 const createSchema = z.object({
   title: z.string().min(1),
-  mode: z.enum(["systematic_review", "retrospective_observational", "interventional"]),
+  mode: z.enum([
+    "systematic_review",
+    "scoping_review",
+    "retrospective_observational",
+    "interventional",
+  ]),
   research_question: z.string().optional(),
   confidentiality_mode: z.enum(["cloud_default", "local_only"]).optional(),
 });

@@ -3,22 +3,30 @@
 import { useEffect, useState } from "react";
 import { Copy, Check, Download, X } from "lucide-react";
 
-interface TaskPrompts {
-  outline: string;
-  introduction: string;
-  methodology: string;
-}
+type DraftTask =
+  | "outline"
+  | "introduction"
+  | "methodology"
+  | "results"
+  | "discussion"
+  | "abstract";
+
+type TaskPrompts = Partial<Record<DraftTask, string>>;
 
 interface DraftResponse {
   combinedPrompt: string;
   taskPrompts: TaskPrompts;
   hasDesign: boolean;
+  hasCorpus?: boolean;
 }
 
-const TASK_LABEL: Record<keyof TaskPrompts, string> = {
+const TASK_LABEL: Record<DraftTask, string> = {
   outline: "Outline",
   introduction: "Introduction",
   methodology: "Methodology",
+  results: "Results",
+  discussion: "Discussion",
+  abstract: "Abstract",
 };
 
 export function StudyDraftingPromptsPanel({
@@ -111,10 +119,10 @@ export function StudyDraftingPromptsPanel({
 
         <h2 className="label mb-1">Drafting prompts</h2>
         <p className="text-[13px] text-[color:var(--color-on-surface-variant)]">
-          Ready-to-use prompts for drafting the article&apos;s outline,
-          introduction, and methodology from this study&apos;s recorded design.
-          Paste into ChatGPT / Claude / Gemini, or download a file for an agentic
-          tool — every prompt is self-contained.
+          Ready-to-use prompts for drafting the article&apos;s sections from this
+          study&apos;s recorded design — and, for reviews, the screened corpus and
+          PRISMA flow. Paste into ChatGPT / Claude / Gemini, or download a file
+          for an agentic tool — every prompt is self-contained.
         </p>
 
         {busy && (
@@ -138,7 +146,7 @@ export function StudyDraftingPromptsPanel({
             )}
 
             <PromptBlock
-              label="Full prompt — outline + introduction + methodology"
+              label="Full prompt — all sections"
               copyKey="combined"
               text={data.combinedPrompt}
               copied={copied}
@@ -148,18 +156,16 @@ export function StudyDraftingPromptsPanel({
             <div>
               <h3 className="label mb-2">Per-section prompts</h3>
               <div className="space-y-4">
-                {(Object.keys(data.taskPrompts) as Array<keyof TaskPrompts>).map(
-                  (task) => (
-                    <PromptBlock
-                      key={task}
-                      label={TASK_LABEL[task]}
-                      copyKey={task}
-                      text={data.taskPrompts[task]}
-                      copied={copied}
-                      onCopy={copy}
-                    />
-                  ),
-                )}
+                {(Object.keys(data.taskPrompts) as DraftTask[]).map((task) => (
+                  <PromptBlock
+                    key={task}
+                    label={TASK_LABEL[task] ?? task}
+                    copyKey={task}
+                    text={data.taskPrompts[task] ?? ""}
+                    copied={copied}
+                    onCopy={copy}
+                  />
+                ))}
               </div>
             </div>
 

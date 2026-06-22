@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 const MODE_LABEL: Record<string, string> = {
   interventional: "interventional",
   systematic_review: "systematic review",
+  scoping_review: "scoping review",
   retrospective_observational: "retrospective observational",
 };
 

@@ -617,8 +617,121 @@ const TRIAL_SCHEMA: ModeSchema = {
   ],
 };
 
+// --------------------------------------------------------------------------
+// Scoping review → PRISMA-ScR. PCC framing (Population / Concept / Context)
+// instead of PICO; no mandatory risk-of-bias / effect-measure synthesis. The
+// search yields and the screened-record corpus live in review_searches /
+// review_records (populated by CSV import); these cards capture the design
+// decisions those data realize.
+// --------------------------------------------------------------------------
+
+const SCOPING_SCHEMA: ModeSchema = {
+  mode: "scoping_review",
+  label: "Scoping review",
+  guidelines: ["PRISMA-ScR"],
+  cards: [
+    {
+      key: "review_question",
+      label: "Review question & objectives",
+      help: "State the objective(s) using the PCC frame.",
+      requiredFields: [
+        { id: "population", label: "Population" },
+        { id: "concept", label: "Concept" },
+        { id: "context", label: "Context" },
+      ],
+      dependsOn: [],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-4"] },
+      evidenceKinds: ["population", "other"],
+    },
+    {
+      key: "eligibility_criteria",
+      label: "Eligibility criteria",
+      help: "Inclusion/exclusion criteria, including eligible sources/evidence types.",
+      requiredFields: [
+        { id: "inclusion", label: "Inclusion criteria" },
+        { id: "exclusion", label: "Exclusion criteria" },
+        { id: "sources", label: "Eligible source / evidence types" },
+      ],
+      dependsOn: ["review_question"],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-6"] },
+      evidenceKinds: ["population", "prior_design"],
+    },
+    {
+      key: "information_sources",
+      label: "Information sources",
+      help: "Databases / registers / grey-literature sources and the last search date.",
+      requiredFields: [
+        { id: "databases", label: "Databases / sources" },
+        { id: "date", label: "Search / last-search date" },
+      ],
+      dependsOn: ["review_question"],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-7"] },
+      evidenceKinds: ["other"],
+    },
+    {
+      key: "search_strategy",
+      label: "Search strategy",
+      help: "Full search strategy for each database (imported from the search CSV).",
+      requiredFields: [
+        { id: "strategy", label: "Search strategy / concept blocks" },
+        { id: "limits", label: "Language / date limits + justification" },
+      ],
+      dependsOn: ["review_question", "eligibility_criteria", "information_sources"],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-8"] },
+      evidenceKinds: ["other"],
+    },
+    {
+      key: "selection_process",
+      label: "Selection of sources",
+      help: "How records are screened (independent duplication, conflict resolution).",
+      requiredFields: [
+        { id: "process", label: "Screening process" },
+        { id: "reviewers", label: "Number of reviewers / duplication" },
+      ],
+      dependsOn: ["eligibility_criteria"],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-9", "PRISMA-ScR-14"] },
+      evidenceKinds: [],
+    },
+    {
+      key: "data_charting",
+      label: "Data charting",
+      help: "What is charted from each source and how (the charting form / data items).",
+      requiredFields: [
+        { id: "items", label: "Data items to chart" },
+        { id: "process", label: "Charting process (duplication, iterative)" },
+      ],
+      dependsOn: ["review_question"],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-10", "PRISMA-ScR-11", "PRISMA-ScR-15"] },
+      evidenceKinds: ["measure", "outcome", "other"],
+    },
+    {
+      key: "synthesis",
+      label: "Synthesis & presentation",
+      help: "How charted results are summarized and presented (mapping, narrative, tables).",
+      requiredFields: [
+        { id: "approach", label: "Synthesis / presentation approach" },
+      ],
+      dependsOn: ["data_charting"],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-13", "PRISMA-ScR-18", "PRISMA-ScR-20"] },
+      evidenceKinds: [],
+    },
+    {
+      key: "registration",
+      label: "Registration & protocol",
+      help: "Protocol availability and registration (e.g. OSF) plus reporting commitment.",
+      requiredFields: [
+        { id: "registry", label: "Protocol / registration (or planned)" },
+      ],
+      dependsOn: [],
+      guidelineItems: { "PRISMA-ScR": ["PRISMA-ScR-5"] },
+      evidenceKinds: [],
+    },
+  ],
+};
+
 const SCHEMAS: Record<StudyMode, ModeSchema> = {
   systematic_review: SR_SCHEMA,
+  scoping_review: SCOPING_SCHEMA,
   retrospective_observational: OBS_SCHEMA,
   interventional: TRIAL_SCHEMA,
 };
@@ -650,6 +763,13 @@ const STAGE_GROUPS: Record<StudyMode, StageGroup[]> = {
         "certainty",
       ],
     },
+    { label: "Registration", cards: ["registration"] },
+  ],
+  scoping_review: [
+    { label: "Question & scope", cards: ["review_question", "eligibility_criteria"] },
+    { label: "Search", cards: ["information_sources", "search_strategy"] },
+    { label: "Selection & charting", cards: ["selection_process", "data_charting"] },
+    { label: "Synthesis", cards: ["synthesis"] },
     { label: "Registration", cards: ["registration"] },
   ],
   retrospective_observational: [

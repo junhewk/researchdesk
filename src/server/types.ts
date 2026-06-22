@@ -757,6 +757,7 @@ export interface DataDictionaryField {
 export type ReportingGuideline =
   | "PRISMA"
   | "PRISMA-P"
+  | "PRISMA-ScR"
   | "STROBE"
   | "CONSORT"
   | "SPIRIT"
@@ -887,6 +888,7 @@ export interface ReviewerResponseItem {
 
 export type StudyMode =
   | "systematic_review"
+  | "scoping_review"
   | "retrospective_observational"
   | "interventional";
 export type StudyStatus = "draft" | "active" | "archived";
@@ -1045,4 +1047,84 @@ export interface StudyArtifact {
   override_md: string | null;
   ready_pct: number;
   updated_at: number;
+}
+
+// ===========================================================================
+// Scoping/systematic review corpus — search yields + a screened-record table.
+// Populated by CSV import (src/server/methods/reviewCorpus.ts); the user
+// confirms a final inclusion decision per record. Only the `scoping_review`
+// mode surfaces these in the UI, but the model is mode-agnostic.
+// ===========================================================================
+
+/** One database search row — backs the PRISMA "identification" count. */
+export interface ReviewSearch {
+  id: string;
+  study_id: string;
+  database: string;
+  query_text: string | null;
+  yield_count: number;
+  search_date: string | null;
+  position: number;
+  created_at: number;
+}
+
+/** AI screening tier carried verbatim from the import. */
+export type ScreenTier = "primary" | "secondary" | "unclear" | string;
+export type ScreenConfidence = "high" | "med" | "low" | string;
+
+/** The user-confirmed inclusion decision (distinct from the imported AI
+ * columns, which are preserved untouched in `ai_final`/`screen_*`). */
+export type ScreeningDecision = "include" | "exclude" | "maybe" | "unscreened";
+
+export interface ReviewRecord {
+  id: string;
+  study_id: string;
+  external_id: string | null;
+  title: string;
+  authors: string | null;
+  year: number | null;
+  journal: string | null;
+  volume: string | null;
+  issue: string | null;
+  pages: string | null;
+  doi: string | null;
+  pmid: string | null;
+  /** scopus_eid / wos_uid / cinahl_an and any other source identifiers. */
+  other_ids_json: string | null;
+  abstract: string | null;
+  keywords: string | null;
+  language: string | null;
+  url: string | null;
+  source_databases: string | null;
+  // Imported AI screening (verbatim, read-only):
+  screen_stage: string | null;
+  screen_tier: ScreenTier | null;
+  screen_reason: string | null;
+  screen_confidence: ScreenConfidence | null;
+  needs_review: boolean;
+  ai_final: string | null;
+  ai_final_reason: string | null;
+  // User curation:
+  decision: ScreeningDecision;
+  decision_reason: string | null;
+  user_confirmed: boolean;
+  /** Data-charting / extraction fields for included sources (key→value). */
+  charting_json: string | null;
+  dedupe_key: string | null;
+  position: number;
+  created_at: number;
+  updated_at: number;
+}
+
+/** Derived PRISMA-ScR flow counts, computed from searches + records. */
+export interface PrismaFlow {
+  identified: number;
+  duplicates_removed: number;
+  screened: number;
+  included: number;
+  excluded: number;
+  maybe: number;
+  pending: number;
+  confirmed: number;
+  per_database: Array<{ database: string; yield_count: number }>;
 }

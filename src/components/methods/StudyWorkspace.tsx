@@ -495,6 +495,22 @@ function Header({
         </div>
         <div className="shrink-0 mb-1 flex flex-col items-end gap-1">
           <div className="flex flex-wrap justify-end gap-2">
+            {study.mode === "scoping_review" && (
+              <>
+                <Link
+                  href={`/methods-workbench/${study.id}/corpus`}
+                  className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
+                >
+                  Corpus & screening
+                </Link>
+                <Link
+                  href={`/methods-workbench/${study.id}/prisma`}
+                  className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
+                >
+                  PRISMA flow
+                </Link>
+              </>
+            )}
             {inspector?.nextBestAction && (
               <button
                 onClick={onJumpNext}
