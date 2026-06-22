@@ -87,6 +87,8 @@ REVIEWER_APP_TOKEN = "<same token as the app>"
 
 ## 5. Tools
 
+**Corpus & drafting**
+
 | Tool                   | Wraps                                              | Use                                                         |
 | ---------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
 | `list_studies`         | `GET /api/studies`                                 | find an existing study id (`st_…`)                          |
@@ -96,11 +98,43 @@ REVIEWER_APP_TOKEN = "<same token as the app>"
 | `export_corpus`        | `GET …/records/export`                             | round-trip records CSV, or characteristics table (csv/md)  |
 | `build_drafting_brief` | `POST …/drafting-prompts`                          | self-contained brief / `AGENTS.md` for any section(s)      |
 
+**Intake & give-and-take** (read the design, surface gaps, record the author's answers)
+
+| Tool                   | Wraps                                              | Use                                                         |
+| ---------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
+| `get_design`           | `GET …/cards`                                       | the decision cards: state, required fields, values, open questions |
+| `analyze_gaps`         | `GET …/preflight`                                   | completeness/consistency/risk findings, guideline coverage, readiness %, next-best action |
+| `checklist_coverage`   | `GET …/artifacts/checklist_map`                     | reporting-guideline items: covered / uncovered + source cards |
+| `update_card`          | `PATCH …/cards/{type}`                              | record the author's decision on a card (value/fields/state/open question) |
+| `update_study`         | `PATCH …/{id}`                                       | record the author's research question / title / status     |
+| `record_gap`           | `POST …/preflight/findings`                         | persist a gap/need as a finding the author sees in the app |
+| `list_records`         | `GET …/records`                                     | records with internal id + screen reason (drive screening review) |
+| `set_record_decision`  | `PATCH …/records/{rid}`                              | record the author's include/exclude/maybe decision         |
+
 `build_drafting_brief` accepts `sections` (any of
 `outline, introduction, methodology, results, discussion, abstract`) and/or a
 freeform `task`. Results/Discussion are grounded in the screened corpus + PRISMA
 counts; every prompt instructs the model to use only the recorded material and
 never invent findings.
+
+## 5a. Prompts (give-and-take playbooks)
+
+The server also exposes MCP **prompts** — reusable playbooks the calling agent
+loads (Claude Code shows them as `/mcp__reviewer-agent__<name>`). They encode the
+back-and-forth loop and the hard **no-invent rule**: the agent *facilitates*, the
+author *decides*; the agent never fabricates research content.
+
+- **`methods_intake(study_id)`** — read the recorded design (`get_design`,
+  `analyze_gaps`, `checklist_coverage`), summarise what's missing / underspecified
+  / conflicting and which guideline items are uncovered, **ask the author** (the
+  agent uses its own AskUserQuestion), and record their answers with `update_card`
+  / `update_study`; loop until ready.
+- **`screening_review(study_id)`** — walk the author through the records the
+  imported AI screening flagged (`list_records` needs_review), ask for each
+  decision, and record it with `set_record_decision`.
+
+This is the intended flow after the author imports their files: import → run
+`methods_intake` to fill gaps and tighten the design through Q&A → `build_drafting_brief`.
 
 ## 6. Example workflow
 

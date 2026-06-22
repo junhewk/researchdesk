@@ -235,6 +235,315 @@ tool(
 );
 
 // ---------------------------------------------------------------------------
+// Intake & give-and-take. The CONVERSATION is the calling agent's job — it asks
+// the author (e.g. via its own AskUserQuestion tool) and reasons. These tools
+// give it the material (current design, computed gaps, guideline coverage) and
+// the write path (record the author's answers). Per the app's hard rule the
+// agent must NEVER invent research content; it elicits the author's own
+// decisions and records them. The `methods_intake` prompt scaffolds the loop.
+// ---------------------------------------------------------------------------
+
+const CARD_STATES = [
+  "not_started",
+  "drafted",
+  "underspecified",
+  "conflicting",
+  "evidence_supported",
+  "needs_input",
+  "unknown",
+  "assumed",
+  "locked",
+];
+
+tool(
+  "get_design",
+  {
+    title: "Get study design",
+    description:
+      "Read the study's decision cards — for each: type, label, state, the fields it requires, the author's current values, any recorded open question, and the help text. Use this to see what is recorded and what each card still needs before asking the author.",
+    inputSchema: { study_id: z.string().describe("study id (st_…)") },
+  },
+  async ({ study_id }) => {
+    const data = await apiJson(`/api/studies/${study_id}/cards`);
+    const cards = (data.cards ?? []).map((c) => ({
+      card_type: c.card_type,
+      label: c.label,
+      state: c.state,
+      stale: c.stale,
+      required_fields: (c.requiredFields ?? []).map((f) => f.id),
+      value: c.value,
+      open_question_md: c.open_question_md ?? null,
+      help: c.help,
+    }));
+    return json({ study: data.study, cards });
+  },
+);
+
+tool(
+  "analyze_gaps",
+  {
+    title: "Analyze gaps & needs",
+    description:
+      "Run the deterministic preflight inspector: completeness/consistency findings, recorded risk findings, reporting-guideline coverage counts, overall readiness %, and the single next-best action. This is the 'what's missing / what's wrong / what to do next' analysis — surface it to the author and turn each finding into a question. No content is invented.",
+    inputSchema: { study_id: z.string().describe("study id (st_…)") },
+  },
+  async ({ study_id }) => {
+    const v = await apiJson(`/api/studies/${study_id}/preflight`);
+    return json({
+      readyPct: v.readyPct,
+      blockingCount: v.blockingCount,
+      importantCount: v.importantCount,
+      nextBestAction: v.nextBestAction,
+      nextBestActionCard: v.nextBestActionCard,
+      staleCards: v.staleCards,
+      findings: v.findings,
+      riskFindings: v.riskFindings,
+      guidelineCoverage: v.mapping,
+    });
+  },
+);
+
+tool(
+  "checklist_coverage",
+  {
+    title: "Reporting-guideline checklist coverage",
+    description:
+      "Return the compiled reporting-guideline checklist map (e.g. PRISMA-ScR): each item with whether it is covered and which design cards feed it. Use the uncovered items to drive questions to the author about the guideline — do not fill them in yourself.",
+    inputSchema: { study_id: z.string().describe("study id (st_…)") },
+  },
+  async ({ study_id }) => {
+    const data = await apiJson(
+      `/api/studies/${study_id}/artifacts/checklist_map`,
+    );
+    const sections = (data.compiled?.sections ?? []).map((s) => ({
+      item: s.heading,
+      covered: s.ready,
+      source_cards: s.source_cards,
+      body_md: s.body_md,
+    }));
+    return json({
+      title: data.compiled?.title,
+      ready_pct: data.compiled?.ready_pct,
+      uncovered: sections.filter((s) => !s.covered).map((s) => s.item),
+      sections,
+    });
+  },
+);
+
+tool(
+  "update_card",
+  {
+    title: "Update a design card",
+    description:
+      "Record the AUTHOR'S decision on one design card. Write only content the author has provided or confirmed — never invent research substance. Set `state` to reflect reality (e.g. 'drafted' once filled, 'needs_input' when still open). Use `open_question_md` to park something the author wants to revisit, and `reason_md` to capture their rationale.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      card_type: z
+        .string()
+        .describe("card type, e.g. review_question, eligibility_criteria"),
+      value: z.string().optional().describe("free-text value for the card"),
+      fields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe("structured field values, keyed by required-field id"),
+      state: z.enum(CARD_STATES).optional(),
+      open_question_md: z.string().nullable().optional(),
+      reason_md: z.string().nullable().optional(),
+    },
+  },
+  async ({ study_id, card_type, ...patch }) => {
+    const updated = await apiJson(
+      `/api/studies/${study_id}/cards/${card_type}`,
+      { method: "PATCH", body: patch },
+    );
+    return json(updated);
+  },
+);
+
+tool(
+  "update_study",
+  {
+    title: "Update study fields",
+    description:
+      "Update the study's title, research question, or status. Use this to record the author's research question once they have stated or confirmed it.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      title: z.string().optional(),
+      research_question: z.string().optional(),
+      status: z.enum(["draft", "active", "archived"]).optional(),
+    },
+  },
+  async ({ study_id, ...patch }) => {
+    const updated = await apiJson(`/api/studies/${study_id}`, {
+      method: "PATCH",
+      body: patch,
+    });
+    return json(updated);
+  },
+);
+
+tool(
+  "record_gap",
+  {
+    title: "Record a gap / need as a finding",
+    description:
+      "Persist a gap or need so it shows up in the app's Preflight Inspector for the author. Use this for issues the author wants to track rather than resolve now (e.g. a missing protocol registration, an unresolved eligibility ambiguity). Title states the gap; detail_md explains it.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      title: z.string().describe("short statement of the gap/need"),
+      severity: z.enum(["blocking", "important", "minor"]).default("important"),
+      card_type: z.string().optional().describe("related card, if any"),
+      detail_md: z.string().optional(),
+      layer: z
+        .enum(["completeness", "consistency", "risk"])
+        .default("completeness"),
+    },
+  },
+  async ({ study_id, ...finding }) => {
+    const created = await apiJson(
+      `/api/studies/${study_id}/preflight/findings`,
+      { method: "POST", body: finding },
+    );
+    return json(created);
+  },
+);
+
+tool(
+  "list_records",
+  {
+    title: "List screened records",
+    description:
+      "List records in the corpus with their internal id (rc_…), decision, imported screen tier/reason/confidence and abstract. Filter to drive the screening review (e.g. needs_review=true, or decision='unscreened'). Use the returned `id` with set_record_decision.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      decision: z.enum(["include", "exclude", "maybe", "unscreened"]).optional(),
+      tier: z.string().optional(),
+      confidence: z.string().optional(),
+      needs_review: z.boolean().optional(),
+      q: z.string().optional().describe("free-text filter over title/abstract"),
+      limit: z.number().optional(),
+      offset: z.number().optional(),
+    },
+  },
+  async ({ study_id, ...f }) => {
+    const qs = new URLSearchParams();
+    if (f.decision) qs.set("decision", f.decision);
+    if (f.tier) qs.set("tier", f.tier);
+    if (f.confidence) qs.set("confidence", f.confidence);
+    if (f.needs_review) qs.set("needs_review", "1");
+    if (f.q) qs.set("q", f.q);
+    qs.set("limit", String(f.limit ?? 25));
+    if (f.offset) qs.set("offset", String(f.offset));
+    const data = await apiJson(`/api/studies/${study_id}/records?${qs}`);
+    const records = (data.records ?? []).map((r) => ({
+      id: r.id,
+      external_id: r.external_id,
+      title: r.title,
+      authors: r.authors,
+      year: r.year,
+      decision: r.decision,
+      screen_tier: r.screen_tier,
+      screen_reason: r.screen_reason,
+      screen_confidence: r.screen_confidence,
+      needs_review: r.needs_review,
+      user_confirmed: r.user_confirmed,
+      abstract: r.abstract,
+    }));
+    return json({ total: data.total, stats: data.stats, records });
+  },
+);
+
+tool(
+  "set_record_decision",
+  {
+    title: "Set a record's screening decision",
+    description:
+      "Record the AUTHOR'S screening decision on one record (by internal id rc_…). Use only the decision the author gave — do not re-screen or decide for them. Set user_confirmed=true once they confirm it.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      record_id: z.string().describe("internal record id (rc_…) from list_records"),
+      decision: z.enum(["include", "exclude", "maybe", "unscreened"]),
+      decision_reason: z.string().nullable().optional(),
+      user_confirmed: z.boolean().optional(),
+    },
+  },
+  async ({ study_id, record_id, ...patch }) => {
+    const updated = await apiJson(
+      `/api/studies/${study_id}/records/${record_id}`,
+      { method: "PATCH", body: patch },
+    );
+    return json(updated);
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Prompts — reusable playbooks the calling agent can load (Claude Code surfaces
+// these as slash commands). They encode the give-and-take loop and the hard
+// no-invent rule so the agent runs the intake consistently.
+// ---------------------------------------------------------------------------
+
+const NO_INVENT =
+  "Follow the app's hard rule: NEVER invent research content — questions, eligibility criteria, methods, counts, findings, or citations. Elicit the author's own decisions and record them. If the author cannot answer, leave it as an explicit open question rather than filling it in.";
+
+server.registerPrompt(
+  "methods_intake",
+  {
+    title: "Methods intake review (give-and-take)",
+    description:
+      "Run a back-and-forth review of a study design: read the recorded design, surface gaps and uncovered guideline items, ask the author, and record their answers.",
+    argsSchema: { study_id: z.string().describe("study id (st_…)") },
+  },
+  ({ study_id }) => ({
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `Run a methods-intake review for Reviewer-Agent study ${study_id} using the reviewer-agent MCP tools. You facilitate; the author decides. ${NO_INVENT}`,
+            "",
+            "Loop until the design is as complete as the author can make it:",
+            "1. Read state: call `get_design` and `analyze_gaps` (and `checklist_coverage` for reporting-guideline items).",
+            "2. Summarise for the author: what is recorded, what is missing / underspecified / conflicting / stale, and which guideline items are not yet covered. Lead with `analyze_gaps.nextBestAction` and any blocking findings.",
+            "3. For each gap, ask the author a focused question — use your own AskUserQuestion tool when available, otherwise ask in plain text. Offer options framed as questions, drawn only from what they already provided or standard methodological choices; do not assert an answer. You may point out inconsistencies in content they already wrote and propose a normalisation for their confirmation.",
+            "4. Record their answer with `update_card` (value/fields/state/open_question_md/reason_md) or `update_study` (research_question). Set `state` to reflect reality. Park anything to revisit with `open_question_md` or `record_gap`.",
+            "5. Re-run `analyze_gaps` and repeat. Finish with a short status: readyPct, remaining open questions, and uncovered guideline items.",
+          ].join("\n"),
+        },
+      },
+    ],
+  }),
+);
+
+server.registerPrompt(
+  "screening_review",
+  {
+    title: "Screening review (confirm imported decisions)",
+    description:
+      "Walk the author through the records the imported AI screening flagged for review, and record their confirmed decisions.",
+    argsSchema: { study_id: z.string().describe("study id (st_…)") },
+  },
+  ({ study_id }) => ({
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `Help the author finalise screening for Reviewer-Agent study ${study_id} using the reviewer-agent MCP tools. ${NO_INVENT} The imported screening decisions are the author's own AI-assisted output; your job is to help them confirm or change each, not to re-screen.`,
+            "",
+            "1. Call `corpus_overview` to report totals (included/excluded/maybe/unscreened, confirmed, needs-review) and the PRISMA flow.",
+            "2. Call `list_records` with needs_review=true (then decision='unscreened') to fetch the records that need the author's attention. Present each with its title, abstract, and the imported screen reason.",
+            "3. Ask the author for the decision on each (include / exclude / maybe), and why if they wish — do not decide for them.",
+            "4. Record each answer with `set_record_decision` (use the record's internal id, set user_confirmed=true). Re-check with `corpus_overview` and summarise what still needs the author's confirmation.",
+          ].join("\n"),
+        },
+      },
+    ],
+  }),
+);
+
+// ---------------------------------------------------------------------------
 
 async function main() {
   const transport = new StdioServerTransport();
