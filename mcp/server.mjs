@@ -52,6 +52,17 @@ const json = (data) => ({
 });
 const text = (s) => ({ content: [{ type: "text", text: s }] });
 
+// Return data plus a separate cue line. The cue rides in every tool result, so
+// the agent is nudged into the give-and-take loop (ask the author, then record)
+// even when the user never loaded the methods_intake prompt. Advisory, not
+// enforced — the agent can still ignore it.
+const jsonCue = (data, cue) => ({
+  content: [
+    { type: "text", text: JSON.stringify(data, null, 2) },
+    { type: "text", text: `→ NEXT: ${cue}` },
+  ],
+});
+
 // ---------------------------------------------------------------------------
 // Studies
 // ---------------------------------------------------------------------------
@@ -275,7 +286,17 @@ tool(
       open_question_md: c.open_question_md ?? null,
       help: c.help,
     }));
-    return json({ study: data.study, cards });
+    const needInput = cards
+      .filter((c) =>
+        ["not_started", "underspecified", "needs_input", "conflicting", "unknown"].includes(
+          c.state,
+        ),
+      )
+      .map((c) => c.card_type);
+    const cue = needInput.length
+      ? `These cards need the author's input: ${needInput.join(", ")}. Ask the author about each (use AskUserQuestion if available) before recording with update_card — never invent the content.`
+      : `All cards are filled. Confirm anything you assumed with the author, then run analyze_gaps.`;
+    return jsonCue({ study: data.study, cards }, cue);
   },
 );
 
@@ -289,7 +310,7 @@ tool(
   },
   async ({ study_id }) => {
     const v = await apiJson(`/api/studies/${study_id}/preflight`);
-    return json({
+    const out = {
       readyPct: v.readyPct,
       blockingCount: v.blockingCount,
       importantCount: v.importantCount,
@@ -299,7 +320,13 @@ tool(
       findings: v.findings,
       riskFindings: v.riskFindings,
       guidelineCoverage: v.mapping,
-    });
+    };
+    const openCount =
+      (v.findings?.length ?? 0) + (v.riskFindings?.length ?? 0);
+    const cue = openCount
+      ? `Do NOT fill these in yourself. For each finding above (start with "${v.nextBestAction}"), ask the author a focused question — use AskUserQuestion if available — then record their answer with update_card or update_study. Re-run analyze_gaps after writing. Never invent research content.`
+      : `No open findings (readyPct ${v.readyPct}). You can proceed (e.g. build_drafting_brief), but confirm anything you assumed with the author first.`;
+    return jsonCue(out, cue);
   },
 );
 
@@ -321,12 +348,19 @@ tool(
       source_cards: s.source_cards,
       body_md: s.body_md,
     }));
-    return json({
-      title: data.compiled?.title,
-      ready_pct: data.compiled?.ready_pct,
-      uncovered: sections.filter((s) => !s.covered).map((s) => s.item),
-      sections,
-    });
+    const uncovered = sections.filter((s) => !s.covered).map((s) => s.item);
+    const cue = uncovered.length
+      ? `${uncovered.length} guideline item(s) not yet covered. For each, ask the author what to record — do not write guideline content yourself — then capture their answer with update_card on the relevant source card.`
+      : `All reporting-guideline items are covered.`;
+    return jsonCue(
+      {
+        title: data.compiled?.title,
+        ready_pct: data.compiled?.ready_pct,
+        uncovered,
+        sections,
+      },
+      cue,
+    );
   },
 );
 
@@ -356,7 +390,10 @@ tool(
       `/api/studies/${study_id}/cards/${card_type}`,
       { method: "PATCH", body: patch },
     );
-    return json(updated);
+    return jsonCue(
+      updated,
+      `Recorded ${card_type} (state: ${updated.state ?? "?"}). This must be the author's own content — if you inferred any of it, confirm with them. Run analyze_gaps to see what's still open.`,
+    );
   },
 );
 
@@ -378,7 +415,10 @@ tool(
       method: "PATCH",
       body: patch,
     });
-    return json(updated);
+    return jsonCue(
+      updated,
+      `Recorded. Continue the intake loop — run analyze_gaps for the next gap to raise with the author.`,
+    );
   },
 );
 
@@ -404,7 +444,10 @@ tool(
       `/api/studies/${study_id}/preflight/findings`,
       { method: "POST", body: finding },
     );
-    return json(created);
+    return jsonCue(
+      created,
+      `Logged for the author — it now appears in analyze_gaps and the app's Preflight Inspector.`,
+    );
   },
 );
 
@@ -449,7 +492,10 @@ tool(
       user_confirmed: r.user_confirmed,
       abstract: r.abstract,
     }));
-    return json({ total: data.total, stats: data.stats, records });
+    const cue = records.length
+      ? `Ask the author for the decision on each record above (include / exclude / maybe) — do not re-screen or decide for them — then record each with set_record_decision (user_confirmed=true).`
+      : `No records matched this filter.`;
+    return jsonCue({ total: data.total, stats: data.stats, records }, cue);
   },
 );
 
@@ -472,7 +518,10 @@ tool(
       `/api/studies/${study_id}/records/${record_id}`,
       { method: "PATCH", body: patch },
     );
-    return json(updated);
+    return jsonCue(
+      updated,
+      `Recorded "${updated.decision}". Fetch the next records with list_records (needs_review=true), or check progress with corpus_overview.`,
+    );
   },
 );
 

@@ -136,6 +136,14 @@ author *decides*; the agent never fabricates research content.
 This is the intended flow after the author imports their files: import → run
 `methods_intake` to fill gaps and tighten the design through Q&A → `build_drafting_brief`.
 
+**Cues without the prompt.** The MCP server can't call the agent's
+AskUserQuestion itself, so the intake/screening tools append a `→ NEXT:` cue to
+every result (e.g. `analyze_gaps` → *"ask the author each finding, then record
+with update_card"*). These fire on every call even when the user never loaded a
+prompt — they nudge the agent into the ask-then-record loop. They're advisory,
+not enforced; a server-enforced ask needs MCP *elicitation* (client support
+required), which this version does not use.
+
 ## 6. Example workflow
 
 In Claude Code, with the two CSVs on disk:
