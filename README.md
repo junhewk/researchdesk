@@ -40,8 +40,10 @@ review material to a cloud provider unless you have the right to do so.
 
 The Electron desktop app binds its server to `127.0.0.1` and protects local
 `/api/*` requests with a short-lived app token injected by the Electron main
-process. Direct `npm run dev` / `npm run start` is developer browser mode; do
-not expose it to a network.
+process. `npm run start:server` runs the same app headless on loopback; set
+`REVIEWER_APP_TOKEN` to authenticate `/api/*` (required when an MCP client or
+anything else can reach the port). Direct `npm run dev` / `npm run start` is
+developer browser mode; do not expose any of these to a network.
 
 ## Workspaces
 
@@ -54,9 +56,13 @@ preparation:
 - SAP drafting
 - data dictionary editing/import/export
 - reporting checklist setup
-- drafting prompts — generate self-contained prompts for drafting the article's
-  outline, introduction, and methodology from the recorded design (beside
-  "Create Article Draft")
+- scoping reviews — import the search-process and screened-record CSVs, confirm
+  the imported screening decisions, and compile PRISMA-ScR flow counts, the
+  PRISMA-ScR checklist, a characteristics-of-sources table, and a round-trip CSV
+- drafting prompts — generate self-contained prompts for drafting any article
+  section (outline, introduction, methodology, and — for reviews — results and
+  discussion grounded in the screened corpus and PRISMA flow) from the recorded
+  design (beside "Create Article Draft")
 - manuscript-readiness checks linked to My Articles
 
 A first-run setup panel and an in-canvas guide orient newcomers, and technical
@@ -133,11 +139,11 @@ also attaches the compiled Methods artifacts as manuscript appendices. Repeated
 clicks reopen the existing linked article instead of creating duplicates.
 
 Next to this button, `Drafting prompts` compiles ready-to-use, self-contained
-prompts for drafting the article's outline, introduction, and methodology from
-the recorded design. Copy a combined or per-section prompt into any browser-based
-AI, or download `AGENTS.md` / `drafting-prompts.md` for an agentic tool. The
-prompts draft only from your recorded decisions and instruct the AI not to
-invent.
+prompts for drafting any article section — outline, introduction, methodology,
+and, for review studies, results and discussion grounded in the screened corpus
+and PRISMA flow. Copy a combined or per-section prompt into any browser-based AI,
+or download `AGENTS.md` / `drafting-prompts.md` for an agentic tool. The prompts
+draft only from your recorded decisions and instruct the AI not to invent.
 
 ### 5. Continue in My Articles
 
@@ -196,6 +202,32 @@ The main workflow is:
 Methods Workbench -> Create Article Draft -> My Articles -> Readiness / Review / Response / Finalize
 ```
 
+## MCP server (Claude Code / Codex)
+
+Reviewer Agent ships an MCP server (`mcp/server.mjs`) that lets a CLI agent such
+as Claude Code or Codex drive the app. It is a stdio bridge to the app's local
+REST API — no business logic of its own — and exposes tools to find/create a
+study, import the scoping-review CSVs by path, inspect the corpus and PRISMA
+flow, and build a self-contained drafting brief / `AGENTS.md` for any section.
+
+It also exposes an **intake give-and-take**: tools to read the recorded design,
+surface gaps and uncovered reporting-guideline items, and record the author's
+answers, plus `methods_intake` / `screening_review` prompts that walk the agent
+through the back-and-forth. The agent facilitates and the author decides — it
+never invents research content.
+
+Run the app headless first, then point the MCP server at it:
+
+```bash
+npm run build
+export REVIEWER_APP_TOKEN=$(openssl rand -hex 32)   # authenticates /api/*
+npm run start:server                                 # binds 127.0.0.1
+```
+
+See [`docs/MCP.md`](docs/MCP.md) for the headless runbook and the Claude Code /
+Codex registration snippets. The headless server is local-only; keep it on
+loopback and set `REVIEWER_APP_TOKEN` so `/api/*` is authenticated.
+
 ## Quick Start
 
 ```bash
@@ -211,6 +243,8 @@ Open `http://localhost:3871`.
 ```bash
 npm run dev
 npm run build
+npm run start:server   # headless production server bound to 127.0.0.1
+npm run mcp            # MCP stdio server (bridges to a running app)
 npm run typecheck
 npm run lint
 npm test
