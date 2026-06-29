@@ -15,17 +15,19 @@ Novel claims, study design choices, statistical judgments, citations, and final
 manuscript edits remain the user's responsibility.
 
 Reviewer Agent can run against cloud or local API providers, including
-OpenAI-compatible endpoints, Ollama, LM Studio, and llama-server. Data is stored
-locally by default, while provider calls only happen when you configure a
-provider and run an LLM-backed action.
+OpenAI-compatible endpoints, Ollama, LM Studio, and llama-server. Local
+llama-server / LM Studio endpoints are driven with grammar-constrained
+(JSON-schema) decoding, so small local models such as Qwen3 return reliable
+structured output. Data is stored locally by default, while provider calls only
+happen when you configure a provider and run an LLM-backed action.
 
 Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
 ## Status
 
-This is a pre-0.1.0 closed-beta research-assistance app. The only distributed
-binary for this prerelease is the Windows x64 portable `.exe` attached to the
-`v0.1.0-beta.0` GitHub prerelease.
+This is the `v0.1.0` release of a research-assistance app. The distributed
+binary is the Windows x64 portable `.exe` attached to the `v0.1.0` GitHub
+release.
 
 Use it as an editorial and methods-checking workspace, not as medical, legal,
 regulatory, or statistical advice. Verify all LLM output, citations,
@@ -74,7 +76,14 @@ software background can work the canvas unaided.
 Upload your own manuscript and use the agent for:
 
 - revision from reviewer commentaries
-- pre-submission manuscript review
+- pre-submission manuscript review — a **context-grounded ensemble**: several
+  grounded reviewers run and a neutral merge consolidates them (no persona
+  role-play). It is grounded in your prior reviews, scholarly search, and
+  deterministic checks the model cannot do on its own — citation/DOI and
+  retraction validation, statistical-possibility (GRIM) screening, and
+  protocol-drift comparison against a linked Methods study. Press **Run review**
+  in the workspace; advanced controls (provider, model, ensemble size) live
+  behind the Advanced drawer.
 - manuscript readiness checks
 - reviewer-response drafting
 - revision harness — turn a reconciled readiness check into a self-contained
@@ -215,6 +224,11 @@ surface gaps and uncovered reporting-guideline items, and record the author's
 answers, plus `methods_intake` / `screening_review` prompts that walk the agent
 through the back-and-forth. The agent facilitates and the author decides — it
 never invents research content.
+
+For manuscripts it exposes `list_manuscripts`, `review_manuscript` (runs the
+context-grounded ensemble review), and `get_reviews`, plus a `manuscript_review`
+prompt that runs the review and walks the author through the findings. So a CLI
+agent can review a manuscript end to end without the desktop UI.
 
 Run the app headless first, then point the MCP server at it:
 
