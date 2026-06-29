@@ -1,0 +1,163 @@
+{
+  "schema": "review-manifest/v1",
+  "meta": {
+    "phase": "B-2",
+    "note": "stat-impossibility battery (GRIM/statcheck) + tortured-phrase/AI-tell lexicon; grounding pack is COMPUTED by lib/integrity.mjs"
+  },
+  "instruction": "Create review findings for substantive problems in this manuscript. Each finding must include the problem, why it matters, and a concrete suggested action. Return JSON with `items` (each: category one of mechanical|rewrite|structural|evidence; severity one of minor|major|critical; section_ref; content_md) and a short `summary_md`.",
+  "arms": {
+    "naive": {
+      "grounding": false,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "single",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "persona": {
+      "grounding": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "statistician",
+          "system": "You are a journal-article review assistant.\n\n- You are a biostatistician. Review strictly from a statistical lens — design, power, analysis assumptions, multiplicity, effect sizes, CIs, missing data, honest reporting of uncertainty.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "methodologist",
+          "system": "You are a journal-article review assistant.\n\n- You are a research-methodology specialist. Review strictly from a methods lens — validity, bias, protocol adherence, eligibility/comparator/outcome specification, reporting-guideline conformance.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "domain_expert",
+          "system": "You are a journal-article review assistant.\n\n- You are a senior domain expert in the manuscript's field. Review strictly from a substantive lens — plausibility, clinical relevance, consistency with established evidence, whether conclusions are warranted.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "writer_editor",
+          "system": "You are a journal-article review assistant.\n\n- You are a scientific writer/editor. Review strictly from a communication lens — structure, clarity, internal consistency, citation/reporting mechanics, precision of claims.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "ensemble": {
+      "grounding": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "reviewer_1",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_2",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_3",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_4",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "grounded": {
+      "grounding": true,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "grounded",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- You are ALSO given a VERIFIED INTEGRITY REPORT below: (1) an automated statistical-integrity check — GRIM impossibility tests and statcheck p-value recomputations — and (2) a text-integrity scan listing known 'tortured phrases' (paraphraser fingerprints of plagiarized/paper-mill text) and verbatim AI-generated boilerplate. Treat the report as ground truth. Flag EVERY item it reports as a review finding, citing the specific manuscript location and explaining the problem.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    }
+  },
+  "manuscripts": {
+    "pb2-mindfulness-rct": {
+      "title": "A workplace mindfulness program for employee anxiety: a randomized trial",
+      "userContext": "Title: A workplace mindfulness program for employee anxiety: a randomized trial\n\nManuscript:\n# A workplace mindfulness program for employee anxiety: a randomized trial\n\n## Abstract\nEmployees with elevated anxiety were randomized to an 8-week mindfulness program or waitlist. Anxiety (GAD-7, range 0–21) and stress were assessed. The program reduced anxiety and stress.\n\n## Methods\n180 employees were randomized. In a pre-specified intensive-monitoring subsample (n = 8 per arm), baseline GAD-7 was recorded daily. Free-text reflections were categorized automatically using a bolster vector machine. Stress change was compared with a t-test.\n\n## Results\nIn the intensive subsample, mean baseline GAD-7 was 3.47 (n = 8). Across the full sample, the program reduced perceived stress relative to control (t(18) = 1.2, p = 0.004). Anxiety also improved.\n\n## Discussion\nA brief workplace mindfulness program meaningfully reduces anxiety and stress and should be adopted by employers.\n\n## Declarations\nEthics: IRB #2021-3. Funding: none. Competing interests: none. Data availability: on request. Limitations: single employer.",
+      "groundingBlock": "### VERIFIED INTEGRITY REPORT (automated; treat as ground truth)\n#### Statistical integrity\n- GRIM: reported mean 3.47 (n=8, scale 0–21) is IMPOSSIBLE — no integer total yields it; nearest achievable mean is 3.5. Likely a typo or fabricated value. [Results (intensive subsample mean GAD-7)]\n- statcheck: reported t(18)=1.2, p=0.004 is INCONSISTENT — recomputed p ≈ 0.246 (significance flips). Reported p misstates the result. [Results (stress t-test)]\n#### Text integrity\n- Tortured phrase: \"bolster vector machine\" → canonical \"support vector machine\" (paraphraser fingerprint; possible plagiarism/paper-mill origin).",
+      "gold": [
+        {
+          "id": "grim:3.47",
+          "layer": "stat",
+          "gold_severity": "major",
+          "description": "Reported mean 3.47 (n=8, scale 0–21) is GRIM-impossible (no integer dataset produces it)."
+        },
+        {
+          "id": "statcheck:t1.2",
+          "layer": "stat",
+          "gold_severity": "major",
+          "description": "Reported t=1.2 (df 18), p=0.004 does not match recomputation (p ≈ 0.246)."
+        },
+        {
+          "id": "tortured:bolster vector machine",
+          "layer": "text",
+          "gold_severity": "major",
+          "description": "\"bolster vector machine\" is a tortured phrase (fingerprint for \"support vector machine\"), indicating likely paraphrased/plagiarized or paper-mill text."
+        }
+      ]
+    },
+    "pb2-dl-diagnostic": {
+      "title": "A deep-learning model for chest-radiograph triage: a diagnostic study",
+      "userContext": "Title: A deep-learning model for chest-radiograph triage: a diagnostic study\n\nManuscript:\n# A deep-learning model for chest-radiograph triage: a diagnostic study\n\n## Abstract\nWe developed a profound learning model to triage chest radiographs and compared it with two baselines.\n\n## Methods\nThe model was trained on 40,000 radiographs. Eight radiologists rated output usefulness on a 1–5 scale. Performance was compared with two baselines by ANOVA.\n\n## Results\nMean radiologist usefulness rating was 4.18 (8 raters). The model outperformed the two baselines (F(2, 87) = 1.5, p < 0.001).\n\n## Discussion\nAs an AI language model, I cannot access real-time data, but the clinical implications are substantial: the model is ready for deployment in emergency triage.\n\n## Declarations\nEthics: IRB #2020-51. Funding: none. Competing interests: none. Data availability: on request. Limitations: single-center.",
+      "groundingBlock": "### VERIFIED INTEGRITY REPORT (automated; treat as ground truth)\n#### Statistical integrity\n- GRIM: reported mean 4.18 (n=8, scale 1–5) is IMPOSSIBLE — no integer total yields it; nearest achievable mean is 4.13. Likely a typo or fabricated value. [Results (mean usefulness rating)]\n- statcheck: reported F(2,87)=1.5, p=<0.001 is INCONSISTENT — recomputed p ≈ 0.229 (significance flips). Reported p misstates the result. [Results (ANOVA vs baselines)]\n#### Text integrity\n- Tortured phrase: \"profound learning\" → canonical \"deep learning\" (paraphraser fingerprint; possible plagiarism/paper-mill origin).\n- AI boilerplate: verbatim \"as an ai language model\" left in the text.\n- AI boilerplate: verbatim \"i cannot access real-time data\" left in the text.",
+      "gold": [
+        {
+          "id": "grim:4.18",
+          "layer": "stat",
+          "gold_severity": "major",
+          "description": "Reported mean 4.18 (n=8, scale 1–5) is GRIM-impossible (no integer dataset produces it)."
+        },
+        {
+          "id": "statcheck:F1.5",
+          "layer": "stat",
+          "gold_severity": "major",
+          "description": "Reported F=1.5 (df 2,87), p=<0.001 does not match recomputation (p ≈ 0.229)."
+        },
+        {
+          "id": "tortured:profound learning",
+          "layer": "text",
+          "gold_severity": "major",
+          "description": "\"profound learning\" is a tortured phrase (fingerprint for \"deep learning\"), indicating likely paraphrased/plagiarized or paper-mill text."
+        },
+        {
+          "id": "aitell:as an ai languag",
+          "layer": "text",
+          "gold_severity": "critical",
+          "description": "Verbatim AI-generated boilerplate (\"as an ai language model…\") was left in the manuscript."
+        },
+        {
+          "id": "aitell:i cannot access ",
+          "layer": "text",
+          "gold_severity": "critical",
+          "description": "Verbatim AI-generated boilerplate (\"i cannot access real-time data…\") was left in the manuscript."
+        }
+      ]
+    },
+    "pb2-pollution-cohort": {
+      "title": "Traffic-related air pollution and lung function in adults: a cohort study",
+      "userContext": "Title: Traffic-related air pollution and lung function in adults: a cohort study\n\nManuscript:\n# Traffic-related air pollution and lung function in adults: a cohort study\n\n## Abstract\nWe examined whether traffic-related air pollution is associated with reduced lung function in a cohort of adults.\n\n## Methods\nExposure was estimated with arbitrary woodland regression models. In a calibration subsample (n = 8), a technician-rated data-quality score (1–5) was recorded. The association with FEV1 decline was tested.\n\n## Results\nThe mean data-quality score was 2.83 (n = 8). Higher pollution was associated with faster FEV1 decline (t(40) = 1.5, p < 0.001).\n\n## Discussion\nTraffic-related air pollution directly impairs lung function and warrants immediate regulation.\n\n## Declarations\nEthics: IRB #2019-22. Funding: none. Competing interests: none. Data availability: on request. Limitations: observational.",
+      "groundingBlock": "### VERIFIED INTEGRITY REPORT (automated; treat as ground truth)\n#### Statistical integrity\n- GRIM: reported mean 2.83 (n=8, scale 1–5) is IMPOSSIBLE — no integer total yields it; nearest achievable mean is 2.88. Likely a typo or fabricated value. [Results (mean data-quality score)]\n- statcheck: reported t(40)=1.5, p=<0.001 is INCONSISTENT — recomputed p ≈ 0.141 (significance flips). Reported p misstates the result. [Results (pollution–FEV1 t-test)]\n#### Text integrity\n- Tortured phrase: \"arbitrary woodland\" → canonical \"random forest\" (paraphraser fingerprint; possible plagiarism/paper-mill origin).",
+      "gold": [
+        {
+          "id": "grim:2.83",
+          "layer": "stat",
+          "gold_severity": "major",
+          "description": "Reported mean 2.83 (n=8, scale 1–5) is GRIM-impossible (no integer dataset produces it)."
+        },
+        {
+          "id": "statcheck:t1.5",
+          "layer": "stat",
+          "gold_severity": "major",
+          "description": "Reported t=1.5 (df 40), p=<0.001 does not match recomputation (p ≈ 0.141)."
+        },
+        {
+          "id": "tortured:arbitrary woodland",
+          "layer": "text",
+          "gold_severity": "major",
+          "description": "\"arbitrary woodland\" is a tortured phrase (fingerprint for \"random forest\"), indicating likely paraphrased/plagiarized or paper-mill text."
+        }
+      ]
+    }
+  }
+}

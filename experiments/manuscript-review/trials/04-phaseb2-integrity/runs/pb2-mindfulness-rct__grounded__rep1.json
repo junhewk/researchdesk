@@ -1,0 +1,33 @@
+{
+  "mid": "pb2-mindfulness-rct",
+  "arm": "grounded",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 4,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results (intensive subsample mean GAD-7)",
+      "content_md": "**Impossible Descriptive Statistic**: The reported mean baseline GAD-7 score of 3.47 for a sample size of n=8 is mathematically impossible given the integer nature of the GAD-7 scale (0–21). As verified by GRIM tests, no combination of 8 integers can sum to produce this mean (the nearest achievable mean is 3.5). This indicates either data fabrication, severe calculation error, or misreporting.\n\n**Why it matters**: This undermines the credibility of the entire dataset. If basic descriptive statistics are fabricated or erroneous, confidence in the primary outcome analysis is nullified.\n\n**Suggested Action**: The authors must provide the raw data points for this subsample to verify the calculation. If this was a typo (e.g., intended 3.50), it must be corrected with an erratum. If the data cannot be reconstructed, the result must be retracted or removed."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results (stress t-test)",
+      "content_md": "**Inconsistent Inferential Statistics**: The reported t-statistic of 1.2 with df=18 yields a p-value of approximately 0.246, not the reported p=0.004. As verified by statcheck, this discrepancy flips the result from non-significant to significant.\n\n**Why it matters**: This is a fundamental statistical error that falsely claims efficacy where none exists (or vice versa). It misleads readers and stakeholders about the program's effectiveness.\n\n**Suggested Action**: The authors must re-run the analysis using the correct statistical software output. If the true p-value is >0.05, the conclusion of 'reduced perceived stress' must be withdrawn or heavily qualified as non-significant."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Methods (categorization technique)",
+      "content_md": "**Suspicious Terminology ('Tortured Phrase')**: The phrase 'bolster vector machine' is used instead of the standard 'support vector machine'. This specific paraphrasing error is a known fingerprint of automated paraphrasing tools often associated with paper-mill activity or plagiarized text.\n\n**Why it matters**: While it could be an innocent typo, its presence alongside statistical impossibilities raises serious concerns about the integrity of the manuscript's origin and whether the methods were genuinely conducted as described.\n\n**Suggested Action**: The authors must clarify the source of this terminology. If unintentional, correct to 'support vector machine'. However, given the other integrity flags, the journal should investigate the provenance of the text and the data."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (sample size and power)",
+      "content_md": "**Inadequate Sample Size and Power**: The study reports randomizing 180 employees but only analyzes a subsample of n=8 per arm for the intensive monitoring, while the t-test uses df=18 (implying n=20 total analyzed). It is unclear how the sample reduced from 180 to 20 for the primary analysis without explanation of attrition or exclusion criteria.\n\n**Why it matters**: A sample size of n=20 is likely underpowered to detect meaningful effects, especially with a t-statistic as low as 1.2. The lack of clarity on participant flow violates CONSORT guidelines and obscures potential bias.\n\n**Suggested Action**: Provide a CONSORT flow diagram detailing the disposition of all 180 randomized participants. Justify the sample size used for the final analysis or re-analyze the full available dataset if ethically and statistically appropriate."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "mid": "pb2-dl-diagnostic",
+  "arm": "ensemble",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The reported statistical analysis is internally inconsistent and mathematically impossible. The manuscript states that \"Eight radiologists\" rated the outputs, yet reports an ANOVA with degrees of freedom `F(2, 87)`. With only 8 raters, it is impossible to have 87 denominator degrees of freedom unless each rater evaluated tens of thousands of images, which contradicts the small sample size implied by the df (N≈90). Furthermore, an F-statistic of 1.5 with these degrees of freedom yields a p-value > 0.20, not the reported `< 0.001`. \n\n**Why it matters:** This discrepancy suggests either fabricated data, severe statistical misunderstanding, or major reporting errors that invalidate the core claim that the model outperforms baselines.\n\n**Suggested Action:** Re-run the statistical analysis using appropriate mixed-effects models for repeated measures by raters. Verify the actual sample size (N) and degrees of freedom. Report accurate F-statistics and p-values that align with the data structure."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The primary outcome measure is a subjective \"radiologist usefulness\" rating on a 1–5 scale, lacking essential details for validity. The manuscript does not define what constitutes \"usefulness,\" nor does it describe the ground truth or clinical context against which triage decisions were evaluated. Crucially, standard objective diagnostic metrics (sensitivity, specificity, AUROC) are absent.\n\n**Why it matters:** Subjective ratings do not equate to diagnostic accuracy. A model could be rated as \"useful\" for workflow while missing critical pathologies (low sensitivity), leading to patient harm. Without objective ground-truth comparisons, the clinical validity of the triage system cannot be assessed.\n\n**Suggested Action:** Explicitly define the rubric for \"usefulness.\" Include a comparison against a gold standard (e.g., final radiologist reports) and report standard diagnostic performance metrics (sensitivity, specificity, AUC). If only subjective data is available, reframe the study as a usability/utility study rather than a diagnostic accuracy study."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion section contains non-scientific meta-commentary from an AI language model (\"As an AI language model, I cannot access real-time data...\"). Additionally, it makes an unsupported clinical claim that the model is \"ready for deployment\" based on a single-center study with flawed statistics and subjective metrics.\n\n**Why it matters:** The inclusion of AI-generated boilerplate invalidates the academic integrity of the manuscript. The conclusion of readiness for deployment is premature and potentially dangerous given the lack of robust validation, external testing, or objective clinical outcomes.\n\n**Suggested Action:** Remove all AI-generated meta-commentary entirely. Rewrite the Discussion to critically interpret findings within existing literature. Temper conclusions significantly, acknowledging single-center limitations and the need for prospective, multi-center validation before any deployment consideration."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The description of the training data is insufficient. The manuscript states the model was trained on 40,000 radiographs but provides no information on data provenance, patient demographics, image acquisition protocols, labeling methods (human vs. automated), or class balance. There is also no mention of how the dataset was split into training, validation, and test sets.\n\n**Why it matters:** Chest radiograph datasets are highly heterogeneous. Without knowing the source, composition, and split strategy, it is impossible to assess potential biases (e.g., age, sex, device type), generalizability, or risks of data leakage/overfitting.\n\n**Suggested Action:** Provide a detailed table describing dataset demographics and acquisition parameters. Explicitly state the number of images in training, validation, and independent test sets. Describe preprocessing steps and strategies used to address class imbalance."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The two baseline models used for comparison are entirely undefined. It is unclear if these are human radiologists, previous AI models, or random chance.\n\n**Why it matters:** Without defining the comparators, the claim of \"outperformance\" is meaningless. Triage models must be compared against current standard-of-care practices to demonstrate added value.\n\n**Suggested Action:** Explicitly define the two baseline models used for comparison. If they are human readers, report their inter-rater reliability and average performance metrics alongside the model's."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Abstract & Title",
+      "content_md": "**Problem:** The term \"profound learning\" is used in the Abstract, which is non-standard terminology; the field uses \"deep learning.\" Additionally, the title claims it is a \"diagnostic study,\" but the results focus on subjective usefulness rather than diagnostic accuracy.\n\n**Why it matters:** Using non-standard terms reduces credibility. Mislabeling the study type misleads readers about the nature of the evidence provided (subjective utility vs. diagnostic performance).\n\n**Suggested Action:** Change \"profound learning\" to \"deep learning.\" Consider revising the title or abstract to accurately reflect that this is a usability/utility study rather than a pure diagnostic accuracy study, or expand the methods/results to include actual diagnostic metrics."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** The 'Data availability' statement says 'on request,' which is increasingly discouraged by major journals in favor of open access repositories. Additionally, the funding section states 'none,' which should be explicitly confirmed.\n\n**Why it matters:** Transparency in data sharing is a key requirement for reproducibility in AI research. Vague availability statements hinder peer verification.\n\n**Suggested Action:** Deposit the dataset or model weights in a recognized public repository (e.g., Zenodo, GitHub) and provide a DOI/link. If privacy concerns prevent this, provide a detailed protocol for how data requests will be handled."
+    }
+  ]
+}

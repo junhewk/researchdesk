@@ -1,0 +1,63 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Verification Bias (Work-up Bias) Invalidates Diagnostic Accuracy Estimates.**\nAll reviewers identified that the reference standard (ophthalmologist examination) was applied only to participants flagged as referable by the AI and a sample of those cleared, rather than to all 410 participants. This partial verification design introduces severe verification bias.\n\n**Why it matters:** Sensitivity is calculated only among those tested positive by the index test, while specificity is estimated from a subsample of those tested negative. Without verifying the true status of all negative cases (or using a random sample independent of index test results), false negatives in the 'cleared' group are missed or improperly weighted. This likely artificially inflates specificity and biases sensitivity estimates. The reported metrics (Sensitivity 0.89, Specificity 0.91) are invalid for clinical decision-making.\n\n**Suggested Action:** The authors must either: (1) Perform the reference standard on all participants and report the full 2x2 contingency table; or (2) If only a subset was verified, use statistical methods to correct for verification bias (e.g., multiple imputation, inverse probability weighting, maximum likelihood estimation assuming conditional independence, or Bayesian methods). The current point estimates are invalid without such correction."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Discussion",
+      "content_md": "**Problem: Overstated Conclusions Unsupported by Evidence.**\nThe Abstract and Discussion claim the system is \"ready for deployment\" and can \"replace specialist screening.\" Multiple reviewers noted these conclusions are scientifically unsound given the critical verification bias, lack of external validation, single-center design, and absence of safety metrics (e.g., false-negative rates in subgroups).\n\n**Why it matters:** Claiming readiness for deployment or replacement of specialists based on biased accuracy estimates is potentially harmful to patient safety. The term \"accurate\" is subjective without defined thresholds, and the study does not demonstrate that the AI misses sight-threatening cases at a rate lower than human graders.\n\n**Suggested Action:** Significantly temper the conclusions. Replace \"ready for deployment\" with language indicating preliminary feasibility or promise in a controlled setting. Remove claims of \"replacing specialists\" until unbiased validation in diverse populations is conducted. Explicitly state that current estimates are likely biased and further multi-center validation is required."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Undefined Reference Standard and Grading Protocol.**\nThe reference standard is described vaguely as \"dilated fundus examination by an ophthalmologist.\" Key details are missing: whether grading was performed by a single reader or multiple readers, if graders were masked to AI results (blinding), the specific grading criteria used (e.g., International Clinical Diabetic Retinopathy Disease Scale), and how inter-rater variability or disagreements were handled.\n\n**Why it matters:** The validity of the reference standard is paramount. If graders were unmasked, incorporation bias may occur. If only one grader was used without adjudication, inter-observer variability undermines the accuracy metrics. Without standardized criteria, the \"truth\" against which the AI is measured is unreliable.\n\n**Suggested Action:** Detail the reference standard procedure: number of graders, masking status (blinded to AI results), specific grading scale/criteria used, and consensus rules for discrepancies. If multiple graders were used, report inter-rater reliability (e.g., kappa statistic)."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing Measures of Uncertainty and Raw Data.**\nThe results report point estimates for sensitivity (0.89) and specificity (0.91) but provide no confidence intervals (CIs). Additionally, the raw data required to calculate these metrics (True Positives, False Negatives, True Negatives, False Positives) are not provided in a 2x2 contingency table.\n\n**Why it matters:** Point estimates alone do not convey the reliability or precision of the findings. In diagnostic studies, 95% CIs are essential to assess whether accuracy meets clinical thresholds. The absence of a 2x2 table prevents readers from verifying calculations or assessing the impact of prevalence on predictive values.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity and specificity (using appropriate resampling methods if bias correction is applied). Provide a 2x2 contingency table showing the counts of TP, FN, TN, and FP."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Lack of Image Quality Assessment Protocol.**\nThe manuscript does not report how many images were rejected due to poor quality (blur, poor dilation, artifacts) or the protocol for handling non-diagnostic images. Smartphone-based retinal photography is highly susceptible to user error and lighting conditions.\n\n**Why it matters:** The \"non-diagnostic\" rate is a critical performance metric for real-world deployment. If a significant portion of images are unusable, the effective throughput and sensitivity of the screening program drop significantly. Omitting this data hides a major practical limitation.\n\n**Suggested Action:** Report the number and percentage of images rejected for poor quality. Discuss how these rejections would impact workflow in primary care. If no quality control step was performed, acknowledge this as a significant limitation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Lack of Pre-specified Performance Thresholds and Sample Size Justification.**\nThe manuscript does not state the minimum acceptable sensitivity/specificity required to claim the device is \"ready for deployment,\" nor does it justify the sample size of 410 participants based on power calculations or expected prevalence.\n\n**Why it matters:** Without pre-specified targets, there is a risk of data-driven threshold selection. Furthermore, if the prevalence of referable DR is low, the study may be underpowered to estimate specificity with narrow confidence intervals. The claim of \"readiness\" requires meeting specific clinical standards defined a priori.\n\n**Suggested Action:** Provide a sample size calculation based on expected prevalence and desired precision. Clearly state the pre-specified minimum acceptable performance thresholds used to interpret the results."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Inadequate Description of Index Test Application.**\nThe methods do not specify if the smartphone images were graded automatically by the AI in real-time or post-hoc. It is unclear if human operators were blinded to patient status during acquisition, whether the AI output a continuous probability score (allowing ROC analysis) or a fixed binary classification, and what threshold was used for 'referable' vs 'non-referable.'\n\n**Why it matters:** The application of the index test must be reproducible and independent of the reference standard. Clarification is needed to assess performance bias and determine if optimal thresholds could have been derived.\n\n**Suggested Action:** Detail the image acquisition protocol, including operator training and blinding status. Clarify if the AI output was a continuous score or binary decision. Report the threshold used for classification."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Lack of Reporting Guideline Adherence (STARD).**\nThe manuscript does not appear to follow the STARD (Standards for Reporting Diagnostic Accuracy) checklist. Key items such as a participant flow diagram, definition of target condition, and handling of indeterminate results are missing.\n\n**Why it matters:** Adherence to reporting guidelines ensures transparency and reproducibility. Missing information on participant flow and exclusion criteria (e.g., due to image quality) is critical for AI studies.\n\n**Suggested Action:** Revise the manuscript to align with STARD guidelines. Include a participant flow diagram showing exclusions. Define how non-diagnostic images were managed."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Introduction",
+      "content_md": "**Problem: Insufficient Context and Background.**\nThe Introduction is extremely brief and lacks context on existing smartphone-based AI systems or specific gaps this study addresses.\n\n**Why it matters:** Readers need to know how this system differs from others (e.g., image quality, algorithm type, prior validations) to understand the novelty and justification of the study.\n\n**Suggested Action:** Expand the Introduction to briefly review existing AI screening tools and highlight the specific novelty or limitation of previous studies that this work addresses."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The manuscript fails to report confidence intervals (CIs) for the hazard ratio and provides insufficient detail on confounder adjustment. STROBE-16 requires reporting unadjusted and adjusted estimates with precision measures (e.g., 95% CIs). The Methods section mentions fitting Cox models but does not specify which covariates were included in the multivariable model to control for confounding.\n\n**Why it matters:** Without CIs, the precision of the effect estimate is unknown, making it impossible to assess statistical significance beyond the p-value or clinical relevance. In observational studies like this cohort, failure to adjust for key confounders (e.g., baseline physical health, socioeconomic status, social isolation) can lead to biased estimates. The claim that activity 'directly lowers' risk implies causality that cannot be supported without rigorous adjustment and reporting of residual confounding potential.\n\n**Suggested Action:** \n1. Report the hazard ratio with its 95% confidence interval (e.g., HR 0.72, 95% CI 0.58–0.89).\n2. Explicitly list all covariates included in the adjusted Cox model in the Methods section.\n3. Provide both unadjusted and fully adjusted hazard ratios in the Results to demonstrate the impact of confounding adjustment."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study lacks a clear description of how the sample size was determined (STROBE-10) and does not address potential selection bias or loss to follow-up adequately. The Methods state participants were recruited from two registries but do not describe the sampling frame, response rate, or criteria for exclusion beyond baseline depression status. The Results mention 498 included out of an implied larger initial pool (Abstract says 512 followed), but the disposition of the 14 excluded participants is unclear.\n\n**Why it matters:** Without a sample size justification, readers cannot assess if the study was adequately powered to detect the observed effect. Unclear exclusion criteria and missing participant flow details hinder the assessment of selection bias. If the 14 excluded individuals differed systematically from those included (e.g., more frail), this could skew results.\n\n**Suggested Action:**\n1. Add a paragraph in Methods detailing the sample size calculation or power analysis used.\n2. Include a CONSORT-style flow diagram or table describing participant recruitment, eligibility screening, exclusions, and follow-up retention rates (STROBE-13).\n3. Clarify why 14 participants were excluded from the final analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion overstates causal inference and fails to adequately discuss limitations (STROBE-19). It states, 'Because physical activity directly lowers depression risk,' implying a direct causal mechanism. However, this is an observational cohort study subject to residual confounding and reverse causality (e.g., undetected subclinical depression affecting activity levels). The discussion does not mention these inherent limitations of the design.\n\n**Why it matters:** Overstating causality in observational research misleads clinicians and policymakers. STROBE-19 explicitly requires discussing limitations, including sources of bias and imprecision. Ignoring residual confounding undermines the validity of the 'first-line prevention' recommendation.\n\n**Suggested Action:**\n1. Revise language to reflect association rather than causation (e.g., 'associated with lower risk' instead of 'directly lowers').\n2. Add a dedicated limitations paragraph discussing potential residual confounding, measurement error in self-reported activity, and the possibility of reverse causality.\n3. Temper recommendations to suggest that findings support further investigation or as part of a broader preventive strategy, rather than definitive first-line prescription."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of the exposure (leisure-time physical activity) and outcome (incident depression) lacks sufficient detail for reproducibility (STROBE-7). The Methods state activity was 'self-reported... using a validated questionnaire' but do not name the specific instrument or how tertiles were calculated. Similarly, incident depression is defined as GDS ≥5 or new diagnosis, but does not specify how diagnoses were verified or if GDS scores were confirmed by clinical interview.\n\n**Why it matters:** Without knowing the specific activity measure (e.g., IPAQ, PASE) and cut-points, replication is impossible. The dual definition of depression (screening score vs. clinical diagnosis) introduces heterogeneity in outcome classification. If GDS ≥5 was not validated against a gold-standard diagnostic interview, the outcome may include false positives.\n\n**Suggested Action:**\n1. Name the specific physical activity questionnaire used and provide reference/validation details.\n2. Specify how tertiles were derived (e.g., MET-minutes/week) and whether they were gender-specific.\n3. Clarify the diagnostic process for 'new clinical diagnosis' of depression (e.g., ICD-10 criteria, physician confirmation) and whether GDS scores were corroborated."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Funding source is not disclosed (STROBE-22). The Declarations section only mentions competing interests.\n\n**Why it matters:** Transparency about funding is essential for assessing potential bias. STROBE-22 requires disclosure of sources of support and the role of funders.\n\n**Suggested Action:** Add a statement detailing all sources of funding (grants, institutional support) and explicitly state whether funders had any role in study design, data collection, analysis, or manuscript preparation."
+    }
+  ]
+}

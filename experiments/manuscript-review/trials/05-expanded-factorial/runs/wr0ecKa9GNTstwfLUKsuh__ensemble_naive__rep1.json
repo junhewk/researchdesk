@@ -1,0 +1,45 @@
+{
+  "mid": "wr0ecKa9GNTstwfLUKsuh",
+  "arm": "ensemble_naive",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract, Discussion",
+      "content_md": "**Problem:** The manuscript claims a causal relationship between screen time and myopia (e.g., \"Screen time causes myopia\").\n**Why it matters:** The study design is explicitly cross-sectional, measuring exposure and outcome simultaneously. This design cannot establish temporality or rule out reverse causation (e.g., myopic children may spend more time on screens due to visual difficulty). Inferring causation from this design is a fundamental methodological error that invalidates the primary conclusion.\n**Suggested action:** Revise all language in the Abstract and Discussion to reflect association rather than causation (e.g., change \"causes\" to \"is associated with\"). Explicitly acknowledge the inability to infer causality due to the cross-sectional nature of the data."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Screen time was assessed via a single-day self-reported questionnaire.\n**Why it matters:** Self-reported screen time on a single day is highly prone to recall bias, social desirability bias, and does not represent habitual daily usage. This measurement error likely leads to misclassification of exposure, attenuating the true association or introducing random noise, which significantly reduces the validity of the exposure assessment.\n**Suggested action:** Acknowledge this limitation prominently in the Discussion. If possible, discuss how this limits generalizability. Suggest that future studies use more robust measures such as weekly diaries, parent-reported averages, or objective device logs."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The study lacks control for key confounding variables known to influence myopia, specifically genetic predisposition (parental myopia), time spent outdoors, and age/grade level.\n**Why it matters:** Without adjusting for these factors in the multivariable logistic regression, the observed association between screen time and myopia may be spurious or exaggerated. For instance, children who spend less time outdoors (a known protective factor) may also have higher screen time. Failing to account for this violates standard epidemiological practices.\n**Suggested action:** Collect data on potential confounders (outdoor activity, parental myopia status, age/grade) and include them in the multivariable model. If data is missing, explicitly state this as a major limitation and avoid strong conclusions regarding independent effects."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The manuscript lacks essential statistical reporting details.\n**Why it matters:** Readers cannot assess the precision or significance of the findings. Key information such as 95% confidence intervals for the odds ratio, p-values, sample sizes per tertile, and mean/standard deviation of screen time are missing. Additionally, the method of refraction (cycloplegic vs. non-cycloplegic) is not specified, which affects the accuracy of myopia diagnosis (non-cycloplegic refraction may overestimate prevalence due to accommodative spasm).\n**Suggested action:** Report 95% CIs and p-values for all regression estimates. Specify whether cycloplegic refraction was used; if not, acknowledge the risk of overdiagnosis. Provide descriptive statistics for the study population (age distribution, gender breakdown, screen time means/medians) and a table showing myopia prevalence across all screen-time tertiles."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The sampling strategy, recruitment process, response rate, and exclusion criteria are not described.\n**Why it matters:** It is unclear if the three schools are representative of the general population. Without knowing the sampling frame (random vs. convenience) and response rate, selection bias cannot be assessed. This affects the external validity and generalizability of the results.\n**Suggested action:** Describe the sampling frame, recruitment process, number of eligible children vs. participants, and reasons for exclusion. Discuss potential selection bias in the Discussion."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion recommends specific public health policies (e.g., \"Schools should restrict device use to prevent myopia\") without acknowledging the study's limitations or alternative explanations.\n**Why it matters:** Making strong policy recommendations based on a single, methodologically weak cross-sectional study is inappropriate and potentially harmful. It ignores other effective interventions (e.g., increasing outdoor time) and overstates the evidence base.\n**Suggested action:** Tone down recommendations to suggest further longitudinal research. Discuss potential confounders and limitations before drawing practical conclusions. Frame suggestions as hypotheses for future intervention trials rather than definitive policy advice."
+    }
+  ]
+}

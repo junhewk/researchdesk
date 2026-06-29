@@ -1,0 +1,45 @@
+{
+  "mid": "pb3-pollution-cohort",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract/Conclusions & Discussion",
+      "content_md": "**Problem:** The manuscript claims that air pollution is a \"strong, independent cause\" of dementia and that PM2.5 \"directly causes\" dementia. \n**Why it matters:** The study design is explicitly identified as \"observational\" in the Limitations section. Observational studies can demonstrate association but cannot establish causality due to potential confounding, reverse causation, or bias. Claiming direct causality oversteps the methodological evidence provided and violates fundamental principles of epidemiological inference.\n**Suggested action:** Rewrite the conclusions to reflect an associative relationship (e.g., \"associated with increased risk\") rather than causal language. Remove claims of \"direct cause\" and replace them with language consistent with observational evidence, such as \"suggests a potential link\" or \"is associated with incident dementia.\""
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section lacks essential details regarding the statistical adjustment for confounders. It states that \"Cox models estimated hazard ratios\" but does not list which covariates (e.g., age, sex, socioeconomic status, education, smoking, cardiovascular history) were adjusted for.\n**Why it matters:** In observational studies of environmental health, residual confounding is a primary threat to validity. Without knowing what variables were controlled for, it is impossible to assess whether the reported association (HR 1.42) is independent or driven by unmeasured factors like socioeconomic status, which correlates with both residential location (pollution exposure) and dementia risk.\n**Suggested action:** Provide a detailed table or text listing all covariates included in the multivariable Cox models. Justify the selection of these confounders based on prior literature or directed acyclic graphs (DAGs)."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The exposure assessment method is described only as \"residential land-use regression\" without specifying the model's performance metrics (e.g., R², cross-validation error) or spatial resolution.\n**Why it matters:** Exposure misclassification can bias results toward the null or introduce differential bias. Readers need to know the precision of the PM2.5 estimates to evaluate the reliability of the exposure-outcome association. Additionally, it is unclear if this accounts for time-activity patterns (e.g., time spent away from home).\n**Suggested action:** Report the validation statistics for the land-use regression model used to assign PM2.5 levels. Clarify whether exposure represents long-term average residential concentration and acknowledge potential misclassification due to mobility or time-activity patterns."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The manuscript does not describe how dementia was diagnosed or validated. It states dementia was \"ascertained from records\" but provides no details on diagnostic criteria (e.g., DSM-5, ICD-10 codes), whether it was physician-diagnosed, and if there was any adjudication process.\n**Why it matters:** Dementia diagnosis can vary in accuracy across different record sources. Without knowing the specificity and sensitivity of the outcome ascertainment, the validity of the 612 incident cases is unclear. Misclassification of the outcome can lead to biased hazard ratios.\n**Suggested action:** Detail the diagnostic criteria used for dementia identification. If possible, provide information on the source records (e.g., hospital discharge, primary care) and any steps taken to validate diagnoses (e.g., chart review by neurologists)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section only presents the main hazard ratio. It lacks information on baseline characteristics of the cohort, follow-up time distribution, number of events per exposure category, and results from sensitivity analyses.\n**Why it matters:** A complete results section should allow readers to assess the generalizability of the sample and the robustness of the findings. The absence of baseline data makes it impossible to evaluate potential confounding imbalances. The lack of sensitivity analyses (e.g., excluding early events to address reverse causality) weakens the claim of independence.\n**Suggested action:** Include a table of baseline characteristics for the cohort stratified by exposure quartiles or median. Report results from sensitivity analyses, such as lagging exposure by several years to account for latency and reverse causation."
+    },
+    {
+      "category": "evidence",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Data availability is stated as \"on request.\"\n**Why it matters:** Modern scientific standards increasingly require transparent data sharing to allow for replication and meta-analysis. \"On request\" can be a barrier to transparency.\n**Suggested action:** Consider depositing de-identified data in a public repository or providing a clear protocol for how requests will be handled, including any restrictions due to privacy laws."
+    }
+  ]
+}

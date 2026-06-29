@@ -1,0 +1,57 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "ensemble_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Verification Bias (Workup Bias) Invalidating Accuracy Estimates.**\n\n**Description:** All reviewers identified a fundamental flaw in the study design: the reference standard (ophthalmologist examination) was not applied to all participants. It was performed only on those flagged as referable by the AI and a sample of those cleared. This creates severe verification bias because the true disease status of the majority of 'non-referable' cases is unknown.\n\n**Why it matters:** Sensitivity cannot be accurately calculated without verifying false negatives (patients with DR cleared by AI). Consequently, the reported sensitivity (0.89) is likely inflated or biased. Specificity is also unreliable unless the sampled negatives are representative and weighted appropriately, which is not described. This renders the primary diagnostic accuracy claims invalid and potentially dangerous for clinical deployment.\n\n**Suggested Action:** The authors must address this bias by either:\n1. Applying the reference standard to all participants (retrospectively if images exist, or prospectively);\n2. Using appropriate statistical correction methods for partial verification bias (e.g., multiple imputation, inverse probability weighting) and explicitly reporting assumptions;\nor\n3. Reframing the study as a pilot/feasibility study without claiming valid sensitivity/specificity metrics if full verification is impossible.\n"
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing Cross-Tabulation (Confusion Matrix) – STARD Item 17.**\n\n**Description:** The manuscript reports aggregate sensitivity (0.89) and specificity (0.91) but fails to provide the 2x2 contingency table (True Positives, False Positives, True Negatives, False Negatives). This omission is critical given the verification bias issues.\n\n**Why it matters:** Without raw counts, readers cannot verify calculations, assess class balance, calculate Predictive Values (PPV/NPV), or determine the denominator used for metrics. It obscures how many participants lacked reference standard data due to the design flaw.\n\n**Suggested Action:** Include a table showing the number of participants in each category: AI Referable/Ophthalmologist Positive, AI Referable/Ophthalmologist Negative, AI Non-Referable/Ophthalmologist Positive, and AI Non-Referable/Ophthalmologist Negative. Clearly state if any cells are estimated or missing due to sampling.\n"
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Inadequate Description of Index Test and Reference Standard – STARD Items 10a & 11.**\n\n**Description:** \n1. **Index Test:** The manuscript mentions a \"smartphone camera with an embedded deep-learning classifier\" but lacks critical replication details: smartphone model, lens attachment type (critical for retinal imaging), software/app version, AI algorithm architecture/version, and training data source.\n2. **Reference Standard:** The description of \"dilated fundus examination by an ophthalmologist\" is vague. It does not specify if grading was based on clinical judgment or fundus photos, whether ETDRS criteria were used to define 'referable DR', the number of graders, inter-observer agreement, or if graders were blinded to AI results.\n\n**Why it matters:** Lack of hardware/software specifics prevents replication. Ambiguity in reference standards and lack of blinding information introduce risk of review/incorporation bias and undermine validity.\n\n**Suggested Action:** \n1. Specify smartphone make/model, lens attachments, software version, and AI model details.\n2. Define the reference standard explicitly (e.g., ETDRS levels), state if graders were masked to AI results, and describe any consensus procedures.\n"
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Handling of Indeterminate/Ungradable Images – STARD Item 14.**\n\n**Description:** The manuscript does not report how many images were deemed ungradable by the AI or ophthalmologists, nor how these cases were handled in the analysis (excluded, repeated, or counted as non-referable).\n\n**Why it matters:** Image quality significantly impacts screening utility. Excluding ungradable images without reporting them biases accuracy estimates and hides practical limitations (e.g., high re-take rates). If poor-quality images are auto-classified as negative, sensitivity is artificially lowered.\n\n**Suggested Action:** Report the number and percentage of images excluded due to poor quality by both the AI and reference standard. Explain whether these were excluded from analysis or assigned a specific class, and specify if per-protocol vs. intention-to-screen analyses were used.\n"
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem: Overstated Conclusions Unsupported by Evidence.**\n\n**Description:** The discussion and abstract claim that \"smartphone AI can replace specialist screening\" and \"wider rollout should proceed.\" This is a critical overreach given the severe verification bias, lack of generalizability data (single site/device), and absence of cost-effectiveness or workflow analysis.\n\n**Why it matters:** Recommending replacement of specialists based on biased data poses significant risks to patient care. The conclusions ignore the high false-negative risk inherent in the design.\n\n**Suggested Action:** Tone down conclusions significantly. Acknowledge verification bias as a major limitation. Frame results as preliminary, requiring validation in fully blinded, complete-verification designs before recommending widespread replacement of specialist screening.\n"
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing Confidence Intervals – STARD Item 13a.**\n\n**Description:** The manuscript reports point estimates for sensitivity and specificity but fails to provide 95% confidence intervals.\n\n**Why it matters:** Point estimates alone do not convey the precision of results, especially with a sample size of N=410. Readers cannot assess the statistical reliability of the findings.\n\n**Suggested Action:** Report 95% confidence intervals for both sensitivity and specificity in the Results section and Abstract.\n"
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem: Missing Predictive Values and Study Identification – STARD Item 1.**\n\n**Description:** The abstract does not explicitly identify the study as a diagnostic accuracy study in the title/structure. It also omits Positive and Negative Predictive Values (PPV/NPV).\n\n**Why it matters:** PPV/NPV are crucial for understanding the burden of false alarms and safety of ruling out disease in screening contexts.\n\n**Suggested Action:** Add 'Diagnostic Accuracy Study' to the title. Include PPV, NPV, and 95% CIs in the abstract results section.\n"
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Vague Eligibility Criteria – STARD Items 6 & 7.**\n\n**Description:** The manuscript mentions \"consecutive adults with diabetes\" but lacks explicit exclusion criteria (e.g., media opacities, pregnancy) and detailed recruitment flow.\n\n**Why it matters:** Clear eligibility criteria are needed to assess selection bias and generalizability.\n\n**Suggested Action:** List all inclusion and exclusion criteria explicitly. Describe the recruitment process in more detail (approached vs. enrolled).\n"
+    }
+  ]
+}

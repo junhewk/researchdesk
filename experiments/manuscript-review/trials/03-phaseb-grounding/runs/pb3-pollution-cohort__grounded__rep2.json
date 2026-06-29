@@ -1,0 +1,27 @@
+{
+  "mid": "pb3-pollution-cohort",
+  "arm": "grounded",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 3,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods; Results",
+      "content_md": "**Problem: Selective Reporting of Statistical Model (Protocol Deviation).** The manuscript reports a Hazard Ratio (HR) of 1.42 (95% CI 1.28–1.57), which the Verified Grounding Pack identifies as the **age/sex-only** model. However, the Registered Analysis Plan explicitly pre-specified the PRIMARY model to adjust for age, sex, education, smoking, and **APOE ε4 genotype**. The pre-specified APOE-adjusted HR was 1.11 (95% CI 0.98–1.26), which is not statistically significant. By presenting only the unadjusted/subset model that yields a significant result while omitting the primary, fully adjusted model, the authors have engaged in selective reporting.\n\n**Why it matters:** This deviation fundamentally alters the scientific conclusion. The pre-specified analysis suggests no significant association after accounting for key genetic confounders (APOE ε4). Presenting only the crude association misleads readers about the strength and independence of the link between PM2.5 and dementia, potentially inflating perceived risk.\n\n**Suggested Action:** Immediately revise the Results section to report the pre-specified primary model (HR 1.11, 95% CI 0.98–1.26) as the main finding. Include the age/sex-only model only in supplementary materials or as a secondary sensitivity analysis, clearly labeled as such. Update the Abstract and Discussion to reflect the null/non-significant result of the primary analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract; Discussion",
+      "content_md": "**Problem: Unsupported Causal Language.** The Abstract concludes that \"Air pollution is a strong, independent cause of dementia,\" and the Discussion states \"PM2.5 directly causes dementia.\" \n\n**Why it matters:** First, the primary pre-specified analysis (HR 1.11, CI 0.98–1.26) does not support a statistically significant association, let alone causality. Second, even if the association were significant, this is an observational cohort study; such designs cannot establish direct causation due to potential residual confounding and reverse causality. The language exceeds the evidence provided by both the reported (and erroneous) statistics and the design limitations acknowledged in the Declarations.\n\n**Suggested Action:** Remove all causal language (\"cause,\" \"directly causes\"). Replace with cautious, associative language consistent with observational data (e.g., \"associated with,\" \"linked to\"). Furthermore, given the primary result is non-significant, the conclusion should state that no significant independent association was found after adjusting for APOE ε4 and other covariates."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Incomplete Description of Confounder Adjustment.** The Methods section states, \"Cox models estimated hazard ratios,\" but fails to specify which covariates were included in the reported model. It vaguely references \"Prior cohorts\" but does not list the specific variables adjusted for in the primary analysis.\n\n**Why it matters:** Transparency is essential for reproducibility and validity assessment. Without explicitly stating that the pre-specified primary model includes APOE ε4, education, and smoking, readers cannot assess whether confounding was adequately controlled. This omission facilitates the selective reporting identified above.\n\n**Suggested Action:** Explicitly list all covariates included in the primary pre-specified model (age, sex, education, smoking, APOE ε4 genotype). Clarify that this is the primary analysis and report its results accordingly."
+    }
+  ]
+}

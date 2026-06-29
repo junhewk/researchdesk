@@ -1,0 +1,57 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "persona_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / STROBE-12, STROBE-16",
+      "content_md": "**Problem: Lack of confounder adjustment and precision reporting.** The manuscript states that Cox proportional-hazards models were fit but fails to specify whether the analysis was adjusted for potential confounders (e.g., age, sex, baseline health status, socioeconomic factors). Furthermore, the results report only a point estimate (HR 0.72) and a p-value threshold (p < 0.05), omitting the 95% confidence interval (CI).\n\n**Why it matters:** In observational cohort studies, unadjusted estimates are rarely interpretable due to confounding by indication or health status (healthier individuals are more likely to be active). Without adjustment, the association is likely biased. Additionally, reporting only p-values without CIs prevents assessment of the estimate's precision and clinical significance.\n\n**Suggested Action:** Report both unadjusted and fully adjusted hazard ratios with 95% confidence intervals. Clearly list all covariates included in the multivariable model and justify their inclusion based on a directed acyclic graph (DAG) or prior literature."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Discussion / STROBE-1b, STROBE-19",
+      "content_md": "**Problem: Overstated causal inference and lack of limitation discussion.** The discussion claims 'physical activity directly lowers depression risk' and recommends it as 'first-line prevention.' The abstract also uses definitive language ('substantially lower,' 'far less likely').\n\n**Why it matters:** Observational studies cannot establish causality due to residual confounding, reverse causation (e.g., subclinical symptoms affecting activity), and measurement error. STROBE-19 requires a discussion of limitations, including sources of bias. The current language ignores these fundamental constraints of the study design.\n\n**Suggested Action:** Rewrite the conclusion to reflect associative findings ('associated with lower risk') rather than causal ones ('lowers risk'). Explicitly discuss limitations such as residual confounding, self-reported exposure, and potential reverse causation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / STROBE-7",
+      "content_md": "**Problem: Exposure measurement and handling of time-varying covariates.** Leisure-time physical activity was self-reported at baseline only. The analysis treats this as a fixed exposure over a mean follow-up of 4.2 years.\n\n**Why it matters:** Physical activity levels in older adults often change due to health events, injury, or aging. Treating baseline activity as constant introduces misclassification bias and may attenuate the true effect (regression dilution). Furthermore, using tertiles discards information about the dose-response relationship and is susceptible to arbitrary cutoffs.\n\n**Suggested Action:** Discuss the limitation of single-time-point exposure assessment. If data allow, consider sensitivity analyses treating activity as time-varying or assessing linearity (e.g., restricted cubic splines) rather than relying solely on tertiles."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / STROBE-13",
+      "content_md": "**Problem: Unclear handling of missing data and attrition.** The abstract notes 512 participants were followed, but the results state 498 were included in the analysis. The disposition of the 14 excluded participants is not explained. Additionally, it is unclear if those lost to follow-up were handled via censoring or complete-case analysis.\n\n**Why it matters:** Differential loss to follow-up can introduce selection bias. If those who dropped out had different depression risks or activity levels, the results may be biased. The difference between enrolled (512) and analyzed (498) participants needs clarification to assess eligibility criteria adherence vs. data completeness.\n\n**Suggested Action:** Provide a flow diagram (STROBE-13) detailing reasons for exclusion from the analysis (e.g., missing exposure data, missing outcome data). Specify how censoring was handled in the Cox model and discuss potential bias from loss to follow-up."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / STROBE-10",
+      "content_md": "**Problem: No sample size justification or power calculation.** The manuscript does not state how the sample size of 512 was determined.\n\n**Why it matters:** Without a power analysis, it is unclear if the study was adequately powered to detect clinically meaningful effects, especially for subgroup analyses (e.g., 'across age strata'). Post-hoc power calculations are also discouraged. The lack of this information undermines the reliability of null findings in any secondary analyses.\n\n**Suggested Action:** Include a statement on how the sample size was determined (e.g., based on available registry data) and provide an estimated statistical power to detect the observed effect size, or acknowledge this as a limitation if no pre-study calculation was performed."
+    },
+    {
+      "category": "evidence",
+      "severity": "minor",
+      "section_ref": "Methods / STROBE-7",
+      "content_md": "**Problem: Outcome definition lacks specificity regarding 'new clinical diagnosis'.** Incident depression is defined as GDS ≥ 5 OR a new clinical diagnosis. It is unclear how 'new clinical diagnosis' was ascertained (e.g., medical records, self-report) and whether it was blinded to exposure status.\n\n**Why it matters:** If the clinical diagnosis was self-reported or unblinded, detection bias may occur. Also, GDS ≥ 5 is a screening threshold, not a diagnostic criterion for major depressive disorder, which may lead to misclassification of the outcome.\n\n**Suggested Action:** Clarify the source and validation method for 'clinical diagnosis.' Discuss the sensitivity/specificity trade-offs of using GDS ≥ 5 as an outcome measure."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Declarations / STROBE-22",
+      "content_md": "**Problem: Missing funding statement.** The Declarations section reports no competing interests but does not mention the source of funding. STROBE-22 requires disclosure of funding sources and their role.\n\n**Why it matters:** Transparency regarding funding is essential for assessing potential conflicts of interest, even if none are declared.\n\n**Suggested Action:** Add a sentence stating the funding source (e.g., 'This study was supported by [Grant Number] from [Agency]. The funder had no role in...') or explicitly state 'No specific funding was received for this work.'"
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Introduction / STROBE-3",
+      "content_md": "**Problem: Vague objective statement.** The Introduction states, \"We examined the association...\" but does not specify pre-specified hypotheses or specific research questions.\n\n**Why it matters:** Precise objectives help frame the interpretation of results and reduce data dredging concerns.\n\n**Suggested Action:** Refine the final sentence of the Introduction to explicitly state the primary hypothesis (e.g., \"We hypothesized that higher baseline leisure-time physical activity would be associated with a lower incidence of depression over 4.2 years, independent of age and sex.\")."
+    }
+  ]
+}

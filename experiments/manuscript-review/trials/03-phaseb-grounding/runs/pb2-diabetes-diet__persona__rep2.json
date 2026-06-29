@@ -1,0 +1,51 @@
+{
+  "mid": "pb2-diabetes-diet",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript fails to define eligibility criteria (inclusion/exclusion) and the 'usual care' comparator. It omits details on randomization sequence generation, allocation concealment, and blinding status beyond 'open-label.'\n\n**Why it matters:** Without defined eligibility criteria (e.g., age, baseline HbA1c, comorbidities), external validity is unknown, and group comparability cannot be assessed. The vague 'usual care' definition prevents replication and assessment of internal validity (e.g., attention bias). Missing randomization/concealment details raises concerns about selection bias.\n\n**Suggested Action:** Add a detailed 'Eligibility Criteria' subsection specifying inclusion/exclusion parameters. Explicitly define 'usual care' (e.g., standard medical management per guidelines, frequency of contact). Describe the randomization method (e.g., computer-generated block randomization) and allocation concealment mechanism (e.g., sealed envelopes or centralized system)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results/Methods",
+      "content_md": "**Problem:** The manuscript omits participant flow data (CONSORT diagram), baseline characteristics (Table 1), and the sample size/power calculation. It also fails to specify if the analysis was intention-to-treat (ITT) or per-protocol.\n\n**Why it matters:** Without a CONSORT diagram, attrition bias cannot be assessed, which is critical in 6-month dietary trials. Missing baseline data prevents verification of randomization balance (e.g., baseline HbA1c). Lack of power calculation prevents assessment of whether the study was adequately powered. Unclear analysis method (ITT vs. per-protocol) risks bias from attrition.\n\n**Suggested Action:** Include a CONSORT flow diagram detailing screening, randomization, follow-up, and analysis numbers. Provide Table 1 with baseline demographics and clinical characteristics for both arms. Report the sample size calculation (effect size, alpha, power). Explicitly state whether the primary analysis was ITT or per-protocol and justify the choice."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results/Abstract",
+      "content_md": "**Problem:** The results report point estimates (Risk Ratio 1.37; p=0.004) and mean weight loss but omit 95% Confidence Intervals (CIs) for all primary and secondary outcomes. The abstract ambiguously reports weight loss without specifying the arm or providing a comparison.\n\n**Why it matters:** P-values alone do not convey the precision or clinical significance of the effect size; CIs are required for proper inference. The ambiguous abstract reporting misleads readers about the control group's outcome and creates internal inconsistency.\n\n**Suggested Action:** Report 95% CIs for the risk ratio, absolute risk difference, mean change in HbA1c, and mean difference in weight loss. Correct the Abstract to specify that the 4.1 kg weight loss refers to the coaching arm and include the control arm’s value or the between-group difference."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The intervention description is insufficient. It cites a general review for 'standard low-carb guidance' but lacks details on frequency, duration, modality (video/chat/phone), coach qualifications, and adherence monitoring.\n\n**Why it matters:** Replicability requires a detailed intervention protocol. Without knowing the dose (frequency/duration) and fidelity of the coaching, it is impossible to replicate the study or distinguish effects of the diet from the attention/support provided. Citing a broad review instead of a specific protocol hinders reproducibility.\n\n**Suggested Action:** Provide a detailed intervention description: number of sessions, duration per session, mode of delivery, credentials of coaches, and how adherence was measured (e.g., food diaries, biomarkers). Replace or supplement the general citation with a reference to the specific intervention protocol/manual used."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The manuscript does not describe how missing data were handled (e.g., LOCF, multiple imputation) or report adherence metrics and safety data (e.g., hypoglycemia, lipid changes).\n\n**Why it matters:** In dietary trials, dropouts often differ systematically between arms; ignoring missing data handling can bias results. Adherence data are crucial for interpreting efficacy, especially given high dropout rates in low-carb diets. Safety outcomes are essential for assessing the risk-benefit profile of the intervention.\n\n**Suggested Action:** State the statistical method used to handle missing outcome data and justify it. Report adherence rates (e.g., session attendance, carb intake verification). Include safety outcomes such as adverse events, hypoglycemia episodes, and lipid changes."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion/Abstract",
+      "content_md": "**Problem:** The conclusion states low-carb coaching 'should become standard care' based on a single, open-label, 6-month trial with no long-term safety or adherence data. This is an overstatement of evidence.\n\n**Why it matters:** Open-label dietary trials are prone to performance and detection bias. Recommendations for changing standard care require robust evidence from multiple RCTs, consideration of harms, and long-term sustainability data. The current conclusion ignores these limitations and potential biases.\n\n**Suggested Action:** Temper the conclusion to reflect the study's limitations (open-label, single-center, short duration). Avoid prescribing 'standard care' status. Use language such as 'suggests potential benefit' or 'warrants further investigation.' Discuss potential biases and the need for replication."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Data availability is stated as 'on request,' which is less transparent than providing a repository link.\n\n**Why it matters:** Open science guidelines encourage depositing data in public repositories to facilitate verification and secondary analysis. 'On request' can create barriers to transparency and reproducibility.\n\n**Suggested Action:** Consider depositing anonymized data in a recognized public repository (e.g., Dryad, Figshare) and provide the DOI/link in the Declarations."
+    }
+  ]
+}

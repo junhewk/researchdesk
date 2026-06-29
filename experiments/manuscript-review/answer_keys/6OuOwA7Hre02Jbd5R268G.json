@@ -1,0 +1,90 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "6OuOwA7Hre02Jbd5R268G",
+  "title": "Artificial intelligence in undergraduate medical education: a scoping review",
+  "research_type": "scoping_review",
+  "study_id": null,
+  "guidelines": [
+    "PRISMA-ScR"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:conflict_of_interest:1",
+      "layer": "gate",
+      "source_ref": "conflict_of_interest",
+      "gold_severity": "minor",
+      "description": "No conflict-of-interest declaration found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:funding:2",
+      "layer": "gate",
+      "source_ref": "funding",
+      "gold_severity": "minor",
+      "description": "No funding statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:ethics:3",
+      "layer": "gate",
+      "source_ref": "ethics",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:4",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:PRISMA-ScR-4",
+      "layer": "checklist",
+      "source_ref": "PRISMA-ScR PRISMA-ScR-4 (Introduction)",
+      "gold_severity": "minor",
+      "description": "Objectives / questions stated with the PCC (Population, Concept, Context) frame.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:PRISMA-ScR-5",
+      "layer": "checklist",
+      "source_ref": "PRISMA-ScR PRISMA-ScR-5 (Methods)",
+      "gold_severity": "minor",
+      "description": "Protocol and registration — whether a protocol exists and where it can be accessed.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:PRISMA-ScR-8",
+      "layer": "checklist",
+      "source_ref": "PRISMA-ScR PRISMA-ScR-8 (Methods)",
+      "gold_severity": "minor",
+      "description": "Full electronic search strategy for at least one database, including limits.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 5,
+    "checklist": 3
+  },
+  "reviewer_letters": [
+    {
+      "id": "wUU-eW5miEvArBOJ5r224",
+      "reviewer_label": "Reviewer 1",
+      "source": "reviewer_report",
+      "round": 1,
+      "content_md": "This scoping review lacks a registered protocol, searched only PubMed without a full strategy, and provides no PRISMA-ScR flow diagram or charting method. The sweeping recommendation to integrate AI into all curricula is not supported by a descriptive mapping of 38 papers.",
+      "atomized": false
+    }
+  ]
+}

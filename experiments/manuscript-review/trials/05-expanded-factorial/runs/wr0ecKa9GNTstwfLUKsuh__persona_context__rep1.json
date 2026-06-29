@@ -1,0 +1,57 @@
+{
+  "mid": "wr0ecKa9GNTstwfLUKsuh",
+  "arm": "persona_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Discussion",
+      "content_md": "**Problem:** The manuscript asserts a causal relationship ('Screen time causes myopia') based on cross-sectional data.\n\n**Why it matters:** Cross-sectional studies measure exposure and outcome simultaneously, making it impossible to establish temporality or rule out reverse causation (e.g., children with existing myopia may require more screen time for reading or have restricted outdoor activities). Causal language violates fundamental principles of observational epidemiology and invalidates the study's primary conclusion.\n\n**Suggested Action:** Replace all causal language with associative terms (e.g., 'associated with'). Explicitly state in the Discussion and Abstract that causality cannot be inferred from this study design. Frame conclusions as identifying an association that warrants further longitudinal investigation."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The analysis fails to define or adjust for key confounders such as time spent outdoors, parental history of myopia, age, sex, socioeconomic status, and non-screen near-work activities. These are well-established strong predictors of myopia.\n\n**Why it matters:** Omission of major confounders compromises internal validity. The association between screen time and myopia is widely known to be partially or wholly mediated by reduced outdoor time and genetic factors. Without adjustment, the reported Odds Ratio (2.1) is likely severely biased (confounding by indication/lifestyle) and overestimates the independent effect of screen time.\n\n**Suggested Action:** Identify potential confounders based on existing literature. If data were collected, include them in multivariable logistic regression models. If not collected, acknowledge this as a critical limitation and refrain from presenting unadjusted associations as robust findings. List all covariates included in the final model."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results report an Odds Ratio (OR) of 2.1 without Confidence Intervals (CIs), p-values, or clarity on whether the estimate is adjusted.\n\n**Why it matters:** STROBE Item 16 requires reporting estimates with measures of precision. Without CIs, the reader cannot assess statistical significance or the plausible range of the effect size. An OR of 2.1 could be statistically non-significant if the CI includes 1.0 (e.g., 0.8–5.4). Reporting only point estimates obscures the uncertainty inherent in observational data.\n\n**Suggested Action:** Report both unadjusted and adjusted Odds Ratios with their corresponding 95% Confidence Intervals and p-values for all primary associations."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Exposure assessment relies on a single-day self-reported questionnaire for 'daily' screen time. Additionally, the refraction method is not specified (specifically whether cycloplegia was used).\n\n**Why it matters:** Single-day measures introduce substantial random measurement error and do not capture habitual usage patterns (weekdays vs. weekends), leading to misclassification of exposure. Furthermore, in school-aged children, non-cycloplegic refraction can underestimate myopia due to accommodative spasm (pseudomyopia). Self-report is also subject to recall and social desirability bias.\n\n**Suggested Action:** Specify whether refraction was cycloplegic or non-cycloplegic; if not, acknowledge this as a source of potential underestimation. Justify the choice of single-day assessment or use validated questionnaires assessing habitual usage. Acknowledge measurement error and recall bias as limitations in the Discussion."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The manuscript fails to report participant flow (STROBE Item 13), sampling methods, and eligibility criteria (STROBE Items 6/7). It states '600 children surveyed' but does not specify how many were eligible, refused, or excluded, nor how the three schools were selected.\n\n**Why it matters:** Missing flow data prevents assessment of selection bias and non-response bias. Lack of detail on eligibility (e.g., age range, exclusion of prior eye surgery) and recruitment prevents readers from determining if the sample is representative or if specific subgroups were systematically excluded.\n\n**Suggested Action:** Include a participant flow diagram or text describing the number of eligible participants, those approached, consented, and included in the final analysis. Describe the criteria for selecting schools and detailed inclusion/exclusion criteria for participants."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** No sample size calculation or power analysis is provided.\n\n**Why it matters:** STROBE Item 10 requires explaining how the study size was arrived at. Without this, it is unclear if the study had sufficient power to detect a clinically meaningful association or if the results are underpowered.\n\n**Suggested Action:** Provide a sample size justification based on expected prevalence and effect size, or include a post-hoc power calculation."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion lacks a dedicated section on limitations (STROBE Item 19) and does not disclose funding sources (STROBE Item 22).\n\n**Why it matters:** Acknowledging limitations is essential for contextualizing findings (e.g., cross-sectional design, recall bias, unmeasured confounding). Transparency regarding funding is required to assess potential conflicts of interest.\n\n**Suggested Action:** Add a paragraph discussing specific limitations: cross-sectional design preventing causal inference, measurement error in self-reported screen time, and potential residual confounding. Add a statement disclosing all sources of financial support and the role of funders."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is not balanced or informative enough per STROBE 1b. It omits key methodological details (setting, specific definition of myopia) and results precision.\n\n**Why it matters:** Readers need sufficient detail to assess the validity and applicability of the findings. The current abstract overstates findings while under-reporting methods.\n\n**Suggested Action:** Expand the abstract to include: study setting, number of participants with complete data, adjusted vs. unadjusted ORs with CIs, key limitations, and a cautious conclusion limited to associations observed."
+    }
+  ]
+}

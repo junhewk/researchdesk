@@ -1,0 +1,51 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "persona_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Verification Bias (Partial Verification)**\n\nAll reviewers identified a fundamental design flaw: the reference standard (ophthalmologist examination) was applied only to participants flagged as referable by the AI and an unspecified sample of those cleared. Consequently, the true disease status is unknown for the majority of participants who tested negative.\n\n**Why it matters:** This invalidates the calculation of sensitivity and specificity as reported. Specificity is likely overestimated because false negatives among the unverified 'cleared' group are not accounted for. Sensitivity is also biased due to an incomplete denominator. The internal validity of the diagnostic accuracy claims is compromised unless rigorous statistical corrections (e.g., multiple imputation, inverse probability weighting) or a random sampling strategy with appropriate weighting were used and explicitly described.\n\n**Suggested Action:**\n1. Clarify the sampling method for the 'cleared' group (random vs. selective). If non-random, acknowledge that specificity estimates are invalid/overestimated.\n2. Re-analyze data using methods appropriate for partial verification (e.g., Begg-Greenes method, multiple imputation) if the Missing At Random assumption holds.\n3. If correction is not feasible, reframe the study as a feasibility/pilot study and remove definitive claims of diagnostic accuracy."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results / STARD-17",
+      "content_md": "**Problem: Missing 2x2 Contingency Table**\n\nThe manuscript reports aggregate sensitivity (0.89) and specificity (0.91) but fails to provide the raw counts of True Positives, False Positives, True Negatives, and False Negatives required by STARD Item 17.\n\n**Why it matters:** Without the underlying contingency table, readers cannot verify calculations, assess precision, or evaluate the impact of the verification bias. It is impossible to determine how many 'cleared' participants were actually examined or what their results were. This prevents independent statistical assessment and meta-analysis inclusion.\n\n**Suggested Action:** Provide a complete 2x2 table cross-classifying AI results vs. Reference Standard results for all participants with available reference data. Clearly distinguish between verified and unverified participants."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / STARD-10a & 11",
+      "content_md": "**Problem: Insufficient Detail on Index Test and Reference Standard**\n\nThe description of the index test is insufficient for replication. Key details missing include:\n- **Index Test:** Smartphone model, camera specifications, lens attachments, lighting conditions, AI software version/algorithm, and image quality control procedures (e.g., exclusion criteria for poor-quality images).\n- **Reference Standard:** Whether the ophthalmologist graded smartphone images or performed a new clinical exam with gold-standard equipment; grading criteria (e.g., ICDR levels); number of graders; inter-rater reliability measures; and blinding status.\n\n**Why it matters:** Replicability is impossible without hardware/software specifics. Furthermore, if the reference standard was not blinded to the AI result, observer/incorporation bias may inflate accuracy estimates. Lack of clarity on whether the reference standard involved re-imaging or clinical exam affects the independence of the verification.\n\n**Suggested Action:**\n1. Specify device models, adapters, AI version, and image quality protocols.\n2. Define reference standard grading criteria explicitly.\n3. Explicitly state if graders were blinded to AI results. If not, acknowledge this limitation.\n4. Report inter-rater agreement if multiple graders were involved."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / STARD-6 & 7",
+      "content_md": "**Problem: Vague Eligibility Criteria and Participant Identification**\n\nThe text states 'Consecutive adults with diabetes' but lacks specifics on duration of diabetes, age range, exclusion criteria (e.g., media opacities/cataracts preventing image capture), and how 'consecutive' was defined (timeframe, clinic sessions).\n\n**Why it matters:** Diagnostic accuracy depends on case mix (prevalence/severity). Excluding patients with poor image quality or cataracts without reporting introduces selection bias and limits generalizability.\n\n**Suggested Action:** Detail inclusion/exclusion criteria explicitly. Provide a STARD flow diagram showing the number of participants assessed, excluded, and reasons for exclusion (including image quality issues)."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Conclusion",
+      "content_md": "**Problem: Overstated Conclusions Unsupported by Methodology**\n\nThe conclusion states 'smartphone AI can replace specialist screening in primary care' and recommends 'wider rollout.'\n\n**Why it matters:** This claim is not supported by a single-center study with critical verification bias, lack of blinding details, and no external validation. Such definitive language ignores the risk of false negatives in primary care and overstates clinical utility/safety.\n\n**Suggested Action:** Tone down conclusions significantly. Acknowledge verification bias limitations explicitly. State that further validation in prospective cohorts with full reference standard application is required before considering clinical deployment or replacement of specialists."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results / STARD-13a",
+      "content_md": "**Problem: Missing Confidence Intervals**\n\nThe manuscript reports point estimates for sensitivity and specificity but omits 95% confidence intervals (CIs).\n\n**Why it matters:** Point estimates alone do not convey uncertainty, especially in a sample of N=410 with verification bias. Without CIs, it is impossible to determine if accuracy is statistically distinguishable from lower thresholds or comparable tools.\n\n**Suggested Action:** Calculate and report 95% CIs using methods that account for partial verification (e.g., bootstrap CIs or model-based CIs from imputation analysis), as standard binomial CIs are inappropriate here."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract / STARD-1",
+      "content_md": "**Problem: Misleading Abstract Regarding Study Design**\n\nThe abstract states the study was evaluated 'Against an ophthalmologist reference' but does not mention the partial verification design or sampling method.\n\n**Why it matters:** This creates a misleading impression that all patients received the gold standard comparison, obscuring the verification bias limitation from initial readers.\n\n**Suggested Action:** Modify the abstract to explicitly state that the reference standard was applied to all AI-positive cases and a sample of AI-negative cases, noting how sensitivity/specificity were estimated."
+    }
+  ]
+}

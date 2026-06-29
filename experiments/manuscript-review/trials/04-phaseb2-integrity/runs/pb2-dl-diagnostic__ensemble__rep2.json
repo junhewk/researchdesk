@@ -1,0 +1,57 @@
+{
+  "mid": "pb2-dl-diagnostic",
+  "arm": "ensemble",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The statistical analysis is internally inconsistent and likely invalid. The text reports an ANOVA with degrees of freedom F(2, 87), implying a total sample size of approximately 90 observations. However, the study involves only 8 radiologists rating outputs. It is impossible to derive 87 error degrees of freedom from 8 raters unless there were ~11 ratings per rater (implying ~11 images rated per rater), but the number of test images is not specified in the Methods. Furthermore, if each rater scored multiple images, standard ANOVA violates the independence assumption; a repeated-measures ANOVA or linear mixed-effects model would be required to account for inter-rater correlation.\n\n**Why it matters**: The primary claim of superiority over baselines rests on a statistically impossible or misreported test. Without knowing the number of test cases and using the correct statistical design, the validity of the findings cannot be verified, and the study may be underpowered or violate independence assumptions.\n\n**Suggested Action**: Explicitly state the number of chest radiographs included in the external validation/test set. Clarify the statistical design (e.g., whether a repeated-measures ANOVA or linear mixed model was used). If multiple images were rated per rater, re-analyze using appropriate models to account for non-independence."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The reported p-value (p < 0.001) contradicts the F-statistic (F(2, 87) = 1.5). Mathematically, an F-value of 1.5 with these degrees of freedom yields a p-value of approximately 0.23, not < 0.001. This indicates a severe calculation error, typo, or data fabrication.\n\n**Why it matters**: This contradiction undermines the credibility of the entire study and suggests that the core claim of statistical significance is unsupported by the reported metrics.\n\n**Suggested Action**: Recalculate the ANOVA results to ensure consistency between the F-statistic, degrees of freedom, and p-value. Report the correct values."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The Discussion section contains a meta-comment from an AI language model (\"As an AI language model, I cannot access real-time data...\"), which is inappropriate for a scientific manuscript. Additionally, the conclusion that the model is \"ready for deployment in emergency triage\" is unsupported by the provided evidence. The study relies on subjective usefulness ratings from only 8 radiologists without objective diagnostic performance metrics (sensitivity, specificity, AUC) or external validation.\n\n**Why it matters**: The presence of AI-generated placeholder text indicates a lack of authorial oversight and raises concerns about academic integrity. Furthermore, claiming readiness for clinical deployment based solely on subjective usability ratings from a small sample is clinically dangerous and unsupported by evidence. Clinical deployment requires rigorous validation of diagnostic accuracy and safety.\n\n**Suggested Action**: Remove the meta-comment entirely. Reframe the conclusion to reflect the preliminary nature of the study. Do not claim readiness for deployment without prospective clinical validation, objective diagnostic performance data, and regulatory approval."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The study claims to be a \"diagnostic study\" but uses a subjective \"usefulness\" rating (1–5 scale) as the primary outcome, rather than objective diagnostic performance metrics (e.g., sensitivity, specificity, AUC-ROC). There is no mention of ground truth comparisons.\n\n**Why it matters**: \"Usefulness\" is not a standard metric for diagnostic accuracy and does not measure how well the model detects pathology or triages patients correctly. This makes the claim of being a \"diagnostic study\" misleading and prevents comparison with other diagnostic AI tools. A model could be rated as \"useful\" but still miss critical pathologies.\n\n**Suggested Action**: If the goal is diagnostic accuracy, include ground-truth comparisons (sensitivity/specificity). If the goal is workflow utility, reframe the title and discussion to reflect a usability or workflow study, and justify why subjective ratings are sufficient for \"triage\" claims."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The manuscript states the model was trained on 40,000 radiographs but fails to specify the source of this data, the ground truth labels used for training, or how the test set was selected and balanced. There is no description of inclusion/exclusion criteria, annotation methodology (e.g., number of raters per image, consensus rules), or preprocessing steps.\n\n**Why it matters**: Without details on dataset provenance, labeling protocol, and potential selection bias, the study's reproducibility and validity cannot be assessed. This is a fundamental requirement for diagnostic accuracy studies.\n\n**Suggested Action**: Provide a detailed description of the dataset source (public/private), inclusion/exclusion criteria, annotation methodology, and how the training/validation/test splits were generated."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Methods",
+      "content_md": "**Problem**: The term \"profound learning\" is used instead of the standard term \"deep learning.\" Additionally, the Methods section lacks detail on the model architecture (e.g., CNN type), hyperparameters, and the specific definition of the \"two baselines\" used for comparison.\n\n**Why it matters**: \"Profound learning\" is not a recognized technical term in computer science or medicine, suggesting a lack of familiarity with the field or poor editing. Without knowing the baselines (e.g., random guessing vs. human radiologists) and model details, the claim that the model \"outperformed\" them is meaningless, and replication is impossible.\n\n**Suggested Action**: Replace \"profound learning\" with \"deep learning\" throughout the manuscript. Explicitly define the two baseline methods used for comparison and provide their performance metrics. Specify the neural network architecture and training hyperparameters."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The use of parametric ANOVA on ordinal Likert scale data (1–5) is methodologically questionable without verifying assumptions or using non-parametric alternatives. The abstract and methods do not clearly define the primary outcome measure or justify the statistical test choice.\n\n**Why it matters**: Using parametric ANOVA on small-sample ordinal data violates statistical assumptions. If normality cannot be assumed, non-parametric tests (e.g., Friedman test or Kruskal-Wallis) should be used.\n\n**Suggested Action**: Justify the use of ANOVA for ordinal data with assumption checks or switch to non-parametric alternatives if appropriate. Clearly state whether this is a usability study or a diagnostic accuracy study."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: Data availability is stated as \"on request,\" and no details are provided about the data source, preprocessing, or annotation quality. This does not comply with current FAIR (Findable, Accessible, Interoperable, Reusable) data principles.\n\n**Why it matters**: Reproducibility is a cornerstone of scientific research. Without access to data or detailed methodology, other researchers cannot verify the results. \"On request\" is increasingly discouraged by major journals and hinders independent verification.\n\n**Suggested Action**: Deposit the dataset in a public repository if possible, or provide a detailed data sharing statement explaining why it cannot be shared publicly and how requests are handled. Include details on image acquisition and annotation protocols."
+    }
+  ]
+}

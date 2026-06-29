@@ -1,0 +1,10 @@
+{
+  "trial": "01-claude-checklist",
+  "date": "2026-06-28",
+  "base_model": "Claude (workflow agents)",
+  "generation": "multi-agent workflow (sub-reviews + neutral merge)",
+  "context_arm_grounding": "reporting-guideline checklist (no protocol-diff handed over)",
+  "judge": "Claude (blinded, arm-stripped, hash-ordered)",
+  "manuscripts": 4, "arms": 6, "reps": 1, "arm_runs": 24,
+  "note": "Strong-model baseline. Ceiling effects: precision 1.0, hallucination ~0 across all arms."
+}

@@ -1,0 +1,57 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "persona_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / PRISMA-ScR Items 5, 6, 7, 8, 9, 10, 11, 13",
+      "content_md": "**Missing Methodological Transparency and Reproducibility**\n\nThe manuscript fails to report essential methodological details required by PRISMA-ScR, rendering the review non-reproducible and susceptible to selection bias.\n\n*   **Protocol & Registration (Item 5):** No mention of a registered protocol or registration status (e.g., PROSPERO).\n*   **Eligibility Criteria (Item 6):** Eligibility criteria are vague (e.g., undefined \"undergraduate medical education\") and lack rationale. The PCC framework is not explicitly stated.\n*   **Search Strategy & Sources (Items 7, 8):** Only \"PubMed\" is mentioned without specifying the date of the last search or providing the full electronic search strategy (keywords, MeSH terms, Boolean operators). This prevents replication and assessment of timeliness.\n*   **Selection & Charting Process (Items 9, 10, 11):** The manuscript does not describe how sources were selected (e.g., single vs. dual reviewer screening, conflict resolution) or how data was charted. Specific data items extracted are not listed.\n*   **Synthesis Methods (Item 13):** The phrase \"Findings were summarized\" is insufficient; no narrative synthesis framework or coding strategy is described.\n\n**Suggested Action:** Rewrite the Methods section to fully comply with PRISMA-ScR. Provide a registered protocol link (or justify its absence). Detail the PCC framework, full search strings for all databases used, screening process (number of reviewers, conflict resolution), specific data items charted, and the narrative synthesis approach."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Introduction / PRISMA-ScR Items 3, 4",
+      "content_md": "**Missing Rationale and PCC Framework**\n\nThe Introduction does not provide a clear rationale for the review in the context of existing knowledge (Item 3) nor does it state objectives using the Population, Concept, Context (PCC) framework (Item 4).\n\n**Why it matters:** The PCC framework is critical for defining the scope of a scoping review. Without it, eligibility criteria appear arbitrary, and the review may include irrelevant studies or exclude key ones. A clear rationale justifies why this review is needed now.\n\n**Suggested Action:** Add a clear Rationale section explaining the gap in current literature. Define the PCC: Population (e.g., undergraduate medical students), Concept (AI applications such as LLMs, adaptive learning systems), and Context (undergraduate medical education settings). State explicit objectives aligned with this PCC."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results / PRISMA-ScR Items 14, 15",
+      "content_md": "**Missing Flow Diagram and Study Characteristics**\n\nThe manuscript does not include a PRISMA flow diagram detailing the number of records identified, screened, assessed for eligibility, and included (Item 14). It also lacks a charting table describing the characteristics of the 38 included sources (Item 15).\n\n**Why it matters:** The absence of a flow diagram obscures the screening process and potential losses. Without a charting table, readers cannot assess the heterogeneity of the included studies (e.g., study design, sample size, AI type, educational context), making it impossible to evaluate the scope or relevance of the evidence base.\n\n**Suggested Action:** Include a PRISMA-ScR compliant flow diagram. Add a detailed table summarizing key characteristics of each included study (author, year, country, study design, AI application, educational context, outcomes)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract / PRISMA-ScR Items 18, 20",
+      "content_md": "**Overstated Conclusions and Lack of Evidence Synthesis**\n\nThe manuscript asserts that \"AI is widely beneficial\" and should be \"integrated into all medical curricula immediately.\" This conclusion is not supported by the data presented.\n\n*   **No Synthesis Linked to Objectives (Item 18):** The results merely list categories (tutoring, assessment, chatbots) without synthesizing findings regarding efficacy, implementation challenges, or educational outcomes. There is no discussion of comparative effectiveness or specific benefits.\n*   **Overstated Conclusions (Item 20):** Scoping reviews map concepts and identify gaps; they do not assess effect sizes or quality of evidence. Drawing strong policy recommendations for immediate integration from a descriptive review conflates mapping with evaluation of effectiveness. This misleads readers into believing there is high-quality evidence for efficacy when the included studies may be anecdotal or pilot-based.\n\n**Suggested Action:** Reframe the Discussion and Abstract to reflect the exploratory nature of a scoping review. Avoid claims of \"benefit\" unless supported by specific, synthesized findings (e.g., \"Several studies reported improved student satisfaction... but rigorous efficacy data were limited\"). Remove the call for immediate universal integration. Instead, highlight gaps in the literature and suggest areas for future primary research or systematic reviews."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract / PRISMA-ScR Item 2",
+      "content_md": "**Unstructured Abstract Missing Key Elements**\n\nThe abstract is unstructured and lacks required components: Background, Objectives, Eligibility criteria, Sources of evidence, Charting methods, Results (with numbers), and Conclusions.\n\n**Why it matters:** A structured abstract allows readers to quickly assess the review's scope, methodology, and key findings. Its absence reduces accessibility and transparency. Additionally, the current abstract overstates conclusions without providing necessary methodological context.\n\n**Suggested Action:** Restructure the abstract according to PRISMA-ScR guidelines, including distinct headings for Background, Objectives, Eligibility Criteria, Sources of Evidence, Charting Methods, Results, and Conclusions. Ensure the conclusion reflects the exploratory nature of a scoping review."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion / PRISMA-ScR Item 21",
+      "content_md": "**Missing Limitations Section**\n\nThe Discussion does not address limitations of the scoping process, such as the use of a single database (PubMed), the lack of critical appraisal of included studies, and potential publication bias.\n\n**Why it matters:** Acknowledging limitations is crucial for interpreting the findings. A single-database search likely misses relevant studies in other fields (e.g., computer science, education). Lack of quality appraisal means low-quality or biased studies are weighted equally with robust ones, affecting the validity of any generalizations.\n\n**Suggested Action:** Add a Limitations subsection discussing the impact of using only PubMed, the absence of critical appraisal, and potential selection bias. Discuss how these limitations affect the interpretation of the results."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion / Funding / PRISMA-ScR Item 22",
+      "content_md": "**Missing Funding Statement**\n\nNo funding sources or role of funders are disclosed in the manuscript.\n\n**Why it matters:** Transparency regarding funding is essential to identify potential conflicts of interest and ensure the integrity of the review.\n\n**Suggested Action:** Add a Funding section disclosing any financial support and the role of funders in study design, analysis, interpretation, or writing."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Title / PRISMA-ScR Item 1",
+      "content_md": "**Title Does Not Identify Study Design**\n\nThe title does not explicitly identify the report as a scoping review, although it is implied by the context.\n\n**Why it matters:** Clear identification helps readers and indexers categorize the article correctly and sets appropriate expectations for the type of evidence presented.\n\n**Suggested Action:** Modify the title to explicitly include \"scoping review\" (e.g., 'Artificial intelligence in undergraduate medical education: a scoping review')."
+    }
+  ]
+}

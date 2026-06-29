@@ -1,0 +1,57 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "persona_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results/Abstract",
+      "content_md": "**Problem:** The manuscript reports an odds ratio (OR) of 1.8 for heavy coffee drinkers but fails to provide 95% confidence intervals (CI), p-values, or distinguish between unadjusted and adjusted estimates.\n\n**Why it matters:** Reporting only a point estimate violates STROBE-16 and prevents assessment of statistical significance or precision. An OR of 1.8 could be statistically insignificant if the CI is wide (e.g., 0.9–3.5). Furthermore, without adjusted estimates, readers cannot determine if the association persists after controlling for confounders.\n\n**Action:** Report both unadjusted and multivariable-adjusted odds ratios with their corresponding 95% confidence intervals and p-values for all key comparisons in the text and tables."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The study fails to specify which confounders were included in the logistic regression model or provide unadjusted estimates. Crucially, it does not adjust for major risk factors such as smoking, alcohol consumption, diabetes, BMI, and family history.\n\n**Why it matters:** Smoking is a strong risk factor for pancreatic cancer and is highly correlated with coffee consumption. Failure to adjust for these variables likely results in spurious associations due to residual confounding. STROBE-7 and STROBE-12 require defining predictors/confounders and describing statistical control methods.\n\n**Action:** Explicitly list all variables included in the multivariable model. Provide a table showing both unadjusted and adjusted odds ratios to demonstrate the impact of confounding adjustment. If the association disappears after adjustment, this must be reported."
+    },
+    {
+      "category": "rewrite",
+      "severity": "critical",
+      "section_ref": "Abstract/Discussion",
+      "content_md": "**Problem:** The abstract and discussion make definitive causal claims ('Coffee increases pancreatic cancer risk', 'intake should be reduced') based on a single, small hospital-based case-control study with significant potential for bias.\n\n**Why it matters:** Observational studies can only demonstrate association, not causation. Given the high potential for recall bias and selection bias, causal language is statistically unjustified and contradicts current consensus from larger prospective cohort studies. This violates STROBE-1b (balanced summary) and STROBE-19.\n\n**Action:** Rewrite conclusions to reflect associative language only (e.g., 'associated with higher odds'). Remove prescriptive public health recommendations. Acknowledge that findings are hypothesis-generating and require validation in prospective cohorts."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The selection criteria for hospital-based controls are inadequately described. The manuscript does not specify the diagnoses of control patients or exclusion criteria regarding conditions potentially linked to coffee consumption (e.g., peptic ulcer disease, liver cirrhosis, cardiovascular disease).\n\n**Why it matters:** Hospital controls must be selected from conditions unrelated to the exposure and outcome to avoid selection bias (Berkson's bias). If controls have diagnoses associated with altered coffee intake, the baseline exposure rate will be skewed. STROBE-6 requires detailed eligibility criteria.\n\n**Action:** Detail the eligibility criteria for controls, specifically excluding diseases potentially linked to coffee consumption. Justify why the chosen control conditions are independent of the exposure and representative of the source population."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods/Discussion",
+      "content_md": "**Problem:** Lifetime coffee consumption was ascertained by interview after diagnosis, with no description of validation steps, handling of recall bias, or definition of the exposure window (e.g., latency period).\n\n**Why it matters:** Case-control studies relying on retrospective self-report are prone to differential recall bias, where cases may over-report exposures they believe caused their disease. Additionally, recent changes in consumption due to early symptoms (reverse causation) can distort risk estimates. STROBE-19 requires discussion of these limitations.\n\n**Action:** Discuss potential for differential recall bias and reverse causation in the limitations section. Specify if the assessment included quantity, frequency, and duration over specific time periods (e.g., average intake 5–10 years prior to diagnosis). Describe any steps taken to minimize bias (e.g., blinded interviewers)."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript fails to report a sample-size calculation or power analysis.\n\n**Why it matters:** With 240 cases and 240 controls, it is unclear if the study had sufficient power to detect modest effect sizes or adjust for multiple confounders without substantial loss of precision. STROBE-10 requires explanation of study size.\n\n**Action:** Provide the formula and parameters used for the sample-size calculation (e.g., expected prevalence, anticipated OR, alpha, power). If not performed a priori, provide a post-hoc power analysis or discuss the precision of estimates."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The definition of exposure is vague. 'Heavy coffee drinkers' (>3 cups/day) is used, but it is unclear if this refers to current, peak, or average lifetime intake. No data on dose-response relationships or intermediate categories are presented.\n\n**Why it matters:** Binary categorization may mask non-linear effects. STROBE-7 requires clear definition of exposures including duration and timing. Assessing a dose-response trend strengthens evidence for an association.\n\n**Action:** Precisely define how 'heavy drinking' was operationalized (e.g., average daily intake over the past 10 years). Present results across multiple exposure categories (e.g., 0, 1-2, 3-4, >4 cups/day) and test for linear trend if appropriate."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations/Abstract",
+      "content_md": "**Problem:** The funding source and role of funders are not disclosed. Additionally, the abstract title does not clearly indicate the study design ('Case-Control Study'), and a participant flow diagram is missing.\n\n**Why it matters:** Transparency regarding funding is essential for assessing conflicts of interest (STROBE-22). STROBE-1a requires informative titles indicating design. STROBE-13 requires reporting numbers at each stage to assess attrition bias.\n\n**Action:** Add a statement detailing funding sources and funder roles. Rewrite the title to include 'Case-Control Study'. Provide a text description or flow diagram showing the number of individuals assessed, excluded, and included in the analysis."
+    }
+  ]
+}

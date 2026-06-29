@@ -1,0 +1,99 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "LrOfxJE1433uOfuh0MQNn",
+  "title": "Efficacy of LLM-assisted counseling in type-2 diabetes",
+  "research_type": "randomized-trial",
+  "study_id": "st__nHsELKvMj5hnQ4H",
+  "guidelines": [
+    "CONSORT",
+    "CONSORT-AI"
+  ],
+  "gold": [
+    {
+      "id": "gate:outcome_timing_ambiguity:0",
+      "layer": "gate",
+      "source_ref": "outcome_timing_ambiguity",
+      "gold_severity": "minor",
+      "description": "Protocol measures the primary outcome at 12 weeks, but the manuscript does not report this timepoint.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:comparator_mismatch:1",
+      "layer": "gate",
+      "source_ref": "comparator_mismatch",
+      "gold_severity": "major",
+      "description": "Protocol comparator (\"Usual care\") does not appear in the manuscript.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:exclusion_drift:2",
+      "layer": "gate",
+      "source_ref": "exclusion_drift",
+      "gold_severity": "minor",
+      "description": "The protocol pre-specifies exclusion criteria, but the manuscript reports no exclusions.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:data_dictionary_inconsistency:3",
+      "layer": "gate",
+      "source_ref": "data_dictionary_inconsistency",
+      "gold_severity": "minor",
+      "description": "Secondary outcomes defined in the protocol (\"Diabetes self-efficacy; medication adherence; treatment satisfaction\") are not reflected in the manuscript.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:reporting_checklist_gap:4",
+      "layer": "gate",
+      "source_ref": "reporting_checklist_gap",
+      "gold_severity": "major",
+      "description": "Protocol commits to CONSORT-AI-25 (CONSORT-AI) — State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use. — but the manuscript does not appear to report it.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:CONSORT-7a",
+      "layer": "checklist",
+      "source_ref": "CONSORT CONSORT-7a (Sample size)",
+      "gold_severity": "minor",
+      "description": "How sample size was determined.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:CONSORT-23",
+      "layer": "checklist",
+      "source_ref": "CONSORT CONSORT-23 (Registration)",
+      "gold_severity": "minor",
+      "description": "Registration number and name of trial registry.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:CONSORT-AI-25",
+      "layer": "checklist",
+      "source_ref": "CONSORT-AI CONSORT-AI-25 (Other)",
+      "gold_severity": "minor",
+      "description": "State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 5,
+    "checklist": 3
+  },
+  "reviewer_letters": [
+    {
+      "id": "SU8HkQNQeAlZNl3bEatJL",
+      "reviewer_label": "Editor",
+      "source": "decision_letter",
+      "round": 1,
+      "content_md": "# Decision letter\n\nThank you for submitting the manuscript. The reviewers find the question timely,\nbut substantial revisions are needed before the claims are defensible.\n\n1. Please reconcile the primary outcome timepoint with the registered protocol.\nThe manuscript reports HbA1c at 8 weeks, while the protocol materials indicate\n12 weeks.\n\n2. The comparator is not consistently described. Clarify whether the control arm\nreceived usual care or printed diabetes education, and align all sections.\n\n3. The conclusion should be softened. The current wording implies proven routine\nclinical effectiveness despite a short, unblinded, single-centre trial.",
+      "atomized": false
+    },
+    {
+      "id": "G5Pj9f9baLzWVAfqmujan",
+      "reviewer_label": "Reviewer 1",
+      "source": "reviewer_report",
+      "round": 1,
+      "content_md": "# Reviewer 1 report\n\n1. Eligibility criteria are incomplete. The manuscript names adults with type 2\ndiabetes and a smartphone, but does not report the HbA1c threshold, diabetes\nduration, or exclusions described in the protocol.\n\n2. The AI intervention is under-specified for CONSORT-AI. Please state the model\nbuild/version, input data, output handling, human oversight, error handling, and\nwhether model updates occurred during the trial.\n\n3. Secondary outcomes differ from the protocol. Diabetes self-efficacy appears\nin the study materials but not in the manuscript.\n\n4. Please add the planned code/model availability statement and report effect\nsizes with confidence intervals, not only directional claims.",
+      "atomized": false
+    }
+  ]
+}

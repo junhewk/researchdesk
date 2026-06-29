@@ -1,0 +1,45 @@
+{
+  "mid": "HeabcaqsNJagBNtgXG9kK",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** Severe overfitting due to insufficient events per variable (EPV). The study reports 60 readmission events used to develop a model with 12 predictors. This results in only 5 EPV, which is well below the generally accepted minimum of 10–20 EPV for logistic regression to avoid severe overfitting and optimistic bias.\n\n**Why it matters:** With such low EPV, the reported AUC of 0.78 is almost certainly an overestimate of the model's true performance in new data. The coefficients are likely unstable, rendering the score unreliable for clinical decision-making.\n\n**Suggested Action:** The authors must acknowledge this limitation explicitly. Ideally, they should reduce the number of predictors (e.g., to ≤5–6) or use penalized regression methods (LASSO/Ridge) with appropriate internal validation (bootstrapping). If the sample size cannot be increased, the model should not be recommended for clinical use."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Results",
+      "content_md": "**Problem:** Claim of validation without evidence. The Discussion states, \"This validated score is ready for clinical use,\" but the Methods and Results only describe a single-center development dataset with no mention of internal (e.g., bootstrapping, cross-validation) or external validation.\n\n**Why it matters:** A model developed on one hospital's data without internal validation has not been tested for overfitting. Claiming it is \"validated\" and \"ready for clinical use\" is scientifically unsupported and potentially dangerous if implemented prematurely.\n\n**Suggested Action:** Remove the claim of validation. If no internal validation was performed, add a bootstrapping procedure to estimate optimism-corrected performance metrics. If external validation is not possible, clearly label this as a *development* study only and recommend external validation before clinical implementation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / TRIPOD-10b",
+      "content_md": "**Problem:** Inadequate reporting of model-building procedures. The Methods state that \"stepwise selection\" was used but do not specify the direction (forward, backward, or both), the entry/exit criteria (p-values or AIC/BIC thresholds), or how ties were handled.\n\n**Why it matters:** Stepwise selection is known to produce biased estimates and inflated type I error rates. Without transparent reporting of the selection algorithm, the model cannot be replicated, and the robustness of the selected predictors cannot be assessed.\n\n**Suggested Action:** Provide detailed parameters for the stepwise selection process (e.g., \"backward elimination with p-to-remove = 0.1\"). Consider justifying the choice of stepwise over other variable selection methods or considering penalized regression as a more robust alternative."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results / TRIPOD-16",
+      "content_md": "**Problem:** Missing calibration assessment and confidence intervals. The Results report an AUC of 0.78 but do not provide a confidence interval for this metric, nor do they report any measure of calibration (e.g., calibration plot, Hosmer-Lemeshow test, or calibration slope/intercept).\n\n**Why it matters:** Discrimination (AUC) alone is insufficient to evaluate a prediction model. A model can discriminate well but be poorly calibrated (i.e., predicted probabilities do not match observed frequencies), leading to incorrect risk stratification in clinical practice.\n\n**Suggested Action:** Report the 95% confidence interval for the AUC. Include a calibration plot comparing predicted vs. observed readmission rates across deciles of risk, and report statistical measures of calibration (e.g., calibration slope)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / TRIPOD-7a & 9",
+      "content_md": "**Problem:** Incomplete predictor definition and missing data handling. The Methods mention 22 candidate predictors but do not define them, specify how they were measured, or state when they were collected relative to the index admission. There is no description of how missing data were handled.\n\n**Why it matters:** Without clear definitions, predictors cannot be consistently applied in other settings. Missing data handling significantly impacts model performance and bias; complete-case analysis (if used) can introduce selection bias if data are not missing completely at random.\n\n**Suggested Action:** Create a table listing all 22 candidate predictors with their definitions, measurement units, and timing. Explicitly state the percentage of missing data for each predictor and the method used to handle them (e.g., multiple imputation, complete-case analysis, or single imputation)."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract / Title",
+      "content_md": "**Problem:** The title and abstract do not clearly identify the study as a *development* study only, implying broader applicability than supported.\n\n**Why it matters:** Readers may assume external validation has occurred. Transparency about the study phase is crucial for interpreting the evidence level.\n\n**Suggested Action:** Revise the title to include \"Development of...\" and ensure the abstract clearly states that this is a single-center development study without external validation."
+    }
+  ]
+}

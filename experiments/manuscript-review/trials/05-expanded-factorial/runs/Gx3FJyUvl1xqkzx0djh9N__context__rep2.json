@@ -1,0 +1,45 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / STARD-11",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was not blinded to the index test results. The manuscript states the treating team \"were aware of the panel result\" when making the diagnosis.\n**Why it matters:** This introduces significant review bias (incorporation bias), where knowledge of the biomarker influences the clinical decision, artificially inflating sensitivity and specificity. It violates a core assumption of diagnostic accuracy studies that the index test and reference standard are independent.\n**Suggested action:** The study design is fundamentally flawed for establishing diagnostic accuracy. You must either: 1) Restrict the analysis to cases where the reference standard was determined by criteria independent of the panel (e.g., retrospective chart review using Sepsis-3 definitions without access to biomarker data), or 2) Clearly frame this as a preliminary, biased study and acknowledge that performance metrics are likely overestimated. Do not claim the panel is \"ready for bedside use\" based on biased estimates."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results / STARD-13a, STARD-17",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy in the same sample used to report performance metrics (overfitting). No cross-validation, bootstrapping, or independent validation cohort is mentioned.\n**Why it matters:** Optimizing a threshold on a single dataset leads to optimistic bias. The reported sensitivity (0.92) and specificity (0.88) will not replicate in new patients. This renders the performance estimates unreliable for clinical deployment.\n**Suggested action:** You must report optimism-corrected performance metrics using internal validation methods (e.g., bootstrapping or cross-validation). Alternatively, validate the panel in a completely independent cohort. If neither is possible, clearly state that these are \"apparent\" accuracy estimates and are not generalizable."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / STARD-6, STARD-7",
+      "content_md": "**Problem:** Eligibility criteria and participant identification methods are missing. The manuscript only states \"Consecutive ICU patients\" without specifying inclusion/exclusion criteria (e.g., age, duration of stay, exclusion of immunocompromised).\n**Why it matters:** Without clear eligibility criteria, the study population is undefined, making it impossible to assess applicability or external validity. Readers cannot determine if the results apply to their specific patient groups.\n**Suggested action:** Provide a detailed list of inclusion and exclusion criteria. Describe the flow of participants (e.g., number screened, excluded, and analyzed) ideally using a STARD flow diagram."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / STARD-10a",
+      "content_md": "**Problem:** The index test (the three-marker panel) is not described in sufficient detail for replication. The specific biomarkers, assay methods, and cutoff values used are not provided.\n**Why it matters:** Replicability is a cornerstone of scientific research. Without knowing the components and methodology of the panel, other researchers cannot verify or build upon these findings.\n**Suggested action:** Detail the three biomarkers included in the panel, the commercial or laboratory assay methods used, and how the composite score or threshold was derived."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results / STARD-17",
+      "content_md": "**Problem:** The cross-tabulation of index test results by reference standard results (2x2 table) is missing. Only sensitivity and specificity are reported.\n**Why it matters:** A 2x2 table allows readers to calculate all other diagnostic measures (PPV, NPV, likelihood ratios) and assess the balance of true/false positives/negatives. It is essential for transparency and meta-analysis.\n**Suggested action:** Include a 2x2 contingency table showing True Positives, False Positives, True Negatives, and False Negatives."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods / STARD-5",
+      "content_md": "**Problem:** It is unclear whether the study was prospective or retrospective. The phrase \"had the panel measured\" is ambiguous regarding timing relative to clinical decision-making.\n**Why it matters:** Prospective studies generally have higher internal validity for diagnostic accuracy than retrospective ones, but require clear temporal documentation.\n**Suggested action:** Explicitly state whether the study design was prospective or retrospective and describe the timeline of data collection."
+    }
+  ]
+}

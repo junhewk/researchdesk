@@ -1,0 +1,63 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "ensemble_naive",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Severe Verification Bias (Work-up/Spectrum Bias)**\n\n**Why it matters:** All reviewers identified a critical flaw in the study design: the reference standard (ophthalmologist examination) was not applied to all participants. It was performed only on those flagged as referable and a sample of those cleared. This introduces severe verification bias, artificially inflating specificity and potentially sensitivity because false negatives among the unverified 'cleared' group are not detected. Consequently, the reported accuracy metrics (0.89 sensitivity, 0.91 specificity) are invalid and unreliable for clinical decision-making.\n\n**Suggested Action:** The authors must re-analyze the data using methods that account for incomplete verification (e.g., multiple imputation, Bayesian approaches, regression calibration, or latent class models) if full verification is impossible. Ideally, the study design should be revised to ensure every participant receives the gold-standard examination. If this is not possible, the manuscript must explicitly state that specificity estimates are upper bounds and likely biased, and definitive claims about diagnostic accuracy cannot be supported."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem: Overstated Clinical Conclusions Unsupported by Evidence**\n\n**Why it matters:** The discussion claims that \"smartphone AI can replace specialist screening in primary care\" and recommends \"wider rollout.\" This conclusion is unsupported by the flawed methodology (verification bias) and the limited scope of a single-center study. Such strong recommendations based on biased accuracy estimates are clinically dangerous and ignore operational challenges, safety nets for false negatives, and the need for robust validation.\n\n**Suggested Action:** Significantly tone down the conclusions to reflect the limitations of the study design. Acknowledge that while the technology shows promise, robust validation studies with full verification against the gold standard in diverse populations are required before recommending replacement of specialist screening. Discuss the need for prospective implementation studies."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Lack of Transparency in Reference Standard and Grading Protocol**\n\n**Why it matters:** The manuscript does not specify whether the ophthalmologist grading was masked to the AI results, nor does it define the criteria for \"referable\" diabetic retinopathy (e.g., moderate non-proliferative DR or worse per ICDRS/ETDRS). Without masking, there is a risk of incorporation/reviewer knowledge bias. Furthermore, without clear diagnostic thresholds and inter-rater reliability data, the results cannot be compared to other studies or applied in clinical guidelines.\n\n**Suggested Action:** Clearly state whether reference standard examiners were masked to AI outputs. Define the specific International Clinical Diabetic Retinopathy Disease Severity Scale (ICDRS) criteria used to classify images as \"referable.\" Report inter-rater reliability among ophthalmologists if multiple graders were involved, and describe how discordant cases were adjudicated."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Missing Sample Size for Verification of 'Cleared' Group**\n\n**Why it matters:** The manuscript states a sample of 'cleared' participants was verified but does not specify how many, nor does it report the number of false negatives found in that sample. Without knowing the number of verified negatives and the false negatives within that sample, it is impossible to calculate true specificity or assess the reliability of the reported metrics. If only a tiny fraction was sampled, confidence intervals would be extremely wide.\n\n**Suggested Action:** Provide the exact number of participants in the 'cleared' group who underwent ophthalmologic verification and the number of those who were actually found to have referable DR. Recalculate sensitivity and specificity with 95% confidence intervals based on these verified counts."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Incomplete Reporting of Participant Characteristics and Image Quality**\n\n**Why it matters:** The manuscript provides no demographic data (age, sex, duration of diabetes, HbA1c) or information on image quality metrics (e.g., percentage of non-diagnostic images). Smartphone-based imaging is highly susceptible to user error and poor lighting. Without knowing the proportion of rejected images or the baseline characteristics of the cohort, it is impossible to assess the generalizability of the results to primary care settings.\n\n**Suggested Action:** Include a table of participant demographics and disease severity distribution. Report the number and percentage of images deemed non-diagnostic by the AI or ophthalmologists, and describe how these were handled in the analysis."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Missing AI Model Details and Reproducibility Information**\n\n**Why it matters:** The manuscript does not specify the AI model version, architecture, or training data source. Reproducibility and assessment of potential bias in the training data are impossible without this information. Clinical journals require transparency regarding the 'black box' nature of AI.\n\n**Suggested Action:** Add a detailed subsection describing: 1) The specific AI algorithm (e.g., CNN architecture); 2) The dataset it was trained on; 3) Whether it was validated on external data."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing Confidence Intervals and Statistical Precision**\n\n**Why it matters:** The results report point estimates for sensitivity (0.89) and specificity (0.91) without confidence intervals. This prevents readers from assessing the precision of the estimates, especially given the potential bias issues and sample size (N=410).\n\n**Suggested Action:** Provide 95% confidence intervals for all diagnostic performance metrics. Additionally, report positive and negative predictive values if prevalence data is available."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Declarations",
+      "content_md": "**Problem: Incomplete or Misleading Conflict of Interest/Funding Disclosure**\n\n**Why it matters:** The manuscript states \"no conflicts of interest\" but describes a proprietary smartphone-based AI system. It is highly probable that the authors have financial ties to the developers of the AI technology. Undisclosed industry funding is a major source of bias in diagnostic accuracy studies.\n\n**Suggested Action:** Disclose any financial relationships, equity holdings, consulting roles, or specific funding sources (including equipment loans) with companies involved in the development or distribution of the smartphone AI system."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Missing Prevalence and Predictive Values**\n\n**Why it matters:** The manuscript does not report the prevalence of diabetic retinopathy in the study population. Prevalence affects predictive values (PPV/NPV), which are crucial for clinical deployment. A test with high sensitivity/specificity may have low PPV in a low-prevalence screening setting.\n\n**Suggested Action:** Report the prevalence of referable DR in the study cohort and calculate Positive Predictive Value (PPV) and Negative Predictive Value (NPV)."
+    }
+  ]
+}

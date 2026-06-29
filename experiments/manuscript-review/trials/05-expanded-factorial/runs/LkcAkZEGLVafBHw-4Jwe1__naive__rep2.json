@@ -1,0 +1,39 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The study design relies on self-reported lifetime coffee consumption ascertained by interview *after* diagnosis, without detailing how recall bias was mitigated or adjusted for. Cases may over-report or under-report past habits differently than controls due to their disease status.\n**Why it matters**: Recall bias is a major confounder in retrospective case-control studies of dietary exposures. Without addressing this, the observed association (OR 1.8) may be entirely artifactual rather than causal.\n**Suggested action**: Explicitly describe steps taken to minimize recall bias (e.g., using standardized food frequency questionnaires validated for past use, blinding interviewers to case/control status if possible, or sensitivity analyses). If no such measures were taken, acknowledge this as a major limitation and temper conclusions accordingly."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The manuscript fails to specify the selection criteria for controls beyond being \"other patients admitted to the same hospital.\" It does not state whether controls were frequency-matched or individually matched on key confounders such as age, sex, smoking status, or alcohol consumption.\n**Why it matters**: Smoking is a strong risk factor for both pancreatic cancer and coffee consumption. If controls are not comparable to cases on these variables, the odds ratio will be severely confounded. Hospital-based controls may also have conditions associated with coffee drinking (e.g., gastrointestinal issues), leading to selection bias.\n**Suggested action**: Detail the matching strategy or multivariable adjustment process. List all covariates included in the logistic regression model (especially smoking, alcohol, BMI, and family history). Justify why these specific controls were chosen and how they represent the source population of the cases."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The results report only a single odds ratio (1.8) for \"heavy\" drinkers vs. non-drinkers, without providing confidence intervals, p-values, or dose-response data.\n**Why it matters**: Statistical significance and precision are unknown. An OR of 1.8 with a wide confidence interval (e.g., 0.9–3.5) would not be statistically significant. Furthermore, lacking a dose-response gradient weakens the argument for causality.\n**Suggested action**: Report the 95% confidence intervals and p-values for all categories of coffee consumption. Present data for moderate drinkers to assess for a linear or non-linear trend. Include a table summarizing crude and adjusted odds ratios for all exposure levels."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The discussion draws a definitive causal conclusion (\"Coffee raises the risk\") and recommends public health action based on a single, potentially biased case-control study without acknowledging contradictory evidence from large prospective cohort studies or meta-analyses.\n**Why it matters**: Current scientific consensus, supported by larger prospective studies, generally finds no strong association between coffee and pancreatic cancer. Ignoring this context misleads readers and undermines the credibility of the findings.\n**Suggested action**: Contextualize the findings within the broader literature. Discuss potential reasons for discrepancies (e.g., confounding by smoking in this study vs. better adjustment in cohorts). Avoid causal language; instead, suggest that further prospective research is needed to clarify the relationship."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The methods section lacks detail on how \"coffee consumption\" was defined and measured (e.g., type of coffee, brewing method, inclusion of decaffeinated). It also does not describe the statistical software or specific model specifications.\n**Why it matters**: Different types of coffee have varying chemical compositions. Without precise exposure metrics, the results are not reproducible or comparable to other studies.\n**Suggested action**: Provide a detailed description of the data collection instrument (e.g., validated questionnaire). Specify whether decaffeinated coffee was included in the analysis. State the statistical software used and the exact variables entered into the logistic regression model."
+    }
+  ]
+}

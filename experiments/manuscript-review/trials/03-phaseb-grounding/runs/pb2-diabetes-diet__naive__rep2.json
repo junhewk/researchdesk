@@ -1,0 +1,39 @@
+{
+  "mid": "pb2-diabetes-diet",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section is severely under-specified. It lacks essential details required for reproducibility and validity assessment, including: (1) inclusion/exclusion criteria for participants; (2) specific definition of \"low-carb guidance\" beyond a citation; (3) description of the control group's \"usual care\"; (4) randomization method (e.g., computer-generated, stratified); (5) blinding procedures (only \"open-label\" is mentioned in Declarations, but Methods should describe how bias was mitigated); and (6) statistical analysis plan.\n\n**Why it matters:** Without these details, readers cannot assess the risk of selection bias, performance bias, or detection bias. The lack of inclusion/exclusion criteria prevents understanding of the generalizability of results. The undefined intervention makes replication impossible.\n\n**Suggested Action:** Expand the Methods section to include a detailed protocol: specify participant eligibility (age, diabetes duration, prior medications), define the exact carbohydrate limits and coaching frequency/content, describe the usual care comparator in detail, explain the randomization sequence generation and allocation concealment, and state the primary statistical tests used."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section reports only summary statistics (proportions, mean weight loss) without measures of uncertainty (confidence intervals) or adjustment for covariates. It also lacks reporting on adherence to the coaching intervention, attrition/dropout rates, and baseline characteristics of the two groups.\n\n**Why it matters:** Confidence intervals are necessary to interpret the precision of the risk ratio and mean differences. Without baseline characteristics, we cannot confirm that randomization successfully balanced prognostic factors. Attrition data is critical to assess intent-to-treat vs per-protocol analyses and potential bias from missing data. Adherence data is vital for understanding the effectiveness of the coaching.\n\n**Suggested Action:** Add a table presenting baseline demographics and clinical characteristics for both arms. Report 95% confidence intervals for all effect estimates (risk ratio, mean difference in weight). Include CONSORT flow diagram details: number randomized, received intervention, completed follow-up, and reasons for dropout. Report adherence metrics (e.g., % of coaching sessions attended, self-reported carb intake)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion makes an overly strong recommendation (\"should become standard care\") without adequately addressing limitations, alternative explanations, or generalizability. It fails to discuss the clinical significance of a 4.1 kg weight loss vs 0.9 kg, nor does it address potential harms or side effects of low-carb diets (e.g., hypoglycemia risk with medication changes, lipid profile changes).\n\n**Why it matters:** Overstating conclusions can mislead clinical practice. Standard care recommendations require robust evidence across diverse populations and consideration of risks/benefits. The open-label nature (mentioned in Declarations) introduces significant performance and detection bias that must be discussed as a limitation affecting the validity of the results.\n\n**Suggested Action:** Temper the conclusion to reflect the study's limitations (open-label, single site?, short duration). Add a dedicated paragraph discussing limitations: potential bias due to lack of blinding, generalizability to broader T2D populations, and lack of long-term follow-up. Discuss safety outcomes and whether medications were adjusted. Compare findings with other trials more critically rather than just stating it \"extends\" them."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Declarations / Methods",
+      "content_md": "**Problem:** The manuscript declares \"Data availability: on request\" but does not provide a pre-registered protocol or statistical analysis plan. Given the open-label design and strong conclusions, there is a risk of selective reporting or p-hacking.\n\n**Why it matters:** Pre-registration enhances credibility by demonstrating that hypotheses and analysis plans were defined before data collection. \"On request\" data availability is less transparent than public repositories and hinders independent verification.\n\n**Suggested Action:** Provide the link to the pre-registered trial protocol (e.g., ClinicalTrials.gov). If not pre-registered, acknowledge this as a limitation. Consider depositing de-identified data in a public repository to enhance transparency."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The Abstract Results state \"Mean weight loss was 4.1 kg\" without specifying which group this applies to, though the full text clarifies it is the coaching group. This could be misinterpreted as overall mean or control group.\n\n**Why it matters:** Ambiguity in abstracts can lead to misinterpretation by readers who do not read the full text.\n\n**Suggested Action:** Clarify in the Abstract: \"Mean weight loss was 4.1 kg in the coaching group vs 0.9 kg in control.\" Also, include the confidence interval for the primary outcome in the Abstract."
+    }
+  ]
+}

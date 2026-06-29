@@ -1,0 +1,45 @@
+{
+  "mid": "rVaGFWm6dYLlb-juTfVW2",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract, Methods, Results, Discussion",
+      "content_md": "**Problem:** The manuscript is severely under-reported and lacks essential methodological details required for a randomized controlled trial (RCT). It reads like an abstract or summary rather than a full journal article. Key sections such as Participant eligibility, Intervention details, Sample size calculation, Randomization procedures, Allocation concealment, Blinding, and detailed statistical analysis are entirely missing.\n\n**Why it matters:** Without these details, the study cannot be appraised for internal validity (risk of bias) or replicated by other researchers. The journal cannot assess whether the reported effect (p=0.02) is robust or potentially biased by poor trial conduct.\n\n**Suggested Action:** Rewrite the manuscript to fully comply with CONSORT 2010 guidelines. Specifically:\n1. **Methods:** Add subsections for Eligibility Criteria, Randomization (sequence generation and allocation concealment), Blinding, Interventions (detailed description of telehealth vs. usual care), Outcomes (pre-specified primary/secondary measures with timing), Sample Size Calculation, and Statistical Methods.\n2. **Results:** Include a CONSORT flow diagram and report numbers randomized, analyzed, and lost to follow-up for each group. Report absolute numbers and effect sizes with 95% confidence intervals, not just p-values.\n3. **Discussion:** Expand to include limitations, interpretation of results in context of existing literature, and generalizability."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section lacks essential statistical reporting. Only a mean difference favoring telehealth with p=0.02 is reported. There is no mention of the primary outcome measure (e.g., pain scale used), baseline characteristics, or 95% confidence intervals (CI) for the effect size.\n\n**Why it matters:** P-values alone do not convey the magnitude of the effect or its precision. Without CIs and baseline data, it is impossible to determine if the groups were balanced at randomization or if the clinical significance of the pain reduction is meaningful.\n\n**Suggested Action:** Report the mean change in pain scores (with standard deviations) for both groups at baseline and post-intervention. Provide the between-group difference with a 95% CI. Ensure the primary outcome measure is clearly defined in the Methods section."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Declarations, Title",
+      "content_md": "**Problem:** The manuscript does not report trial registration number or name of the registry (CONSORT-23), nor where the full protocol can be accessed (CONSORT-24). Additionally, while the title identifies it as an RCT, it lacks specific design details (parallel, factorial, etc.) and allocation ratio (CONSORT-3a).\n\n**Why it matters:** Trial registration is a standard requirement for publication in clinical journals to prevent selective reporting of outcomes. Protocol access allows readers to check for deviations from the planned analysis.\n\n**Suggested Action:** Add the trial registration number and registry name to the Declarations section. State the trial design (e.g., parallel-group) and allocation ratio (e.g., 1:1) in the Methods section."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The intervention description is insufficient. 'Telehealth physiotherapy' and 'usual care' are not defined in detail (CONSORT-5). It is unclear what specific exercises, education, or contact frequency constituted the telehealth intervention, nor what 'usual care' entailed.\n\n**Why it matters:** Replicability is a cornerstone of scientific research. Without detailed intervention descriptions, other clinicians cannot replicate the study, and readers cannot assess if the results are applicable to their practice settings.\n\n**Suggested Action:** Provide a detailed description of both interventions in the Methods section, including: frequency and duration of sessions, specific exercises or advice provided, mode of delivery (video, phone, app), and who delivered the care. Define 'usual care' explicitly."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes a strong claim that telehealth physiotherapy 'should become standard care' based on limited evidence. It does not discuss limitations, potential biases, or how the results compare to existing literature.\n\n**Why it matters:** Overstating conclusions from a single RCT can lead to premature policy changes. A balanced discussion should acknowledge study limitations (e.g., lack of blinding in physiotherapy trials, short follow-up) and contextualize findings within the broader evidence base.\n\n**Suggested Action:** Revise the Discussion to include: a summary of key findings, interpretation in light of other studies, limitations of the current study (e.g., risk of bias, generalizability), and implications for practice and research. Avoid definitive policy recommendations unless supported by robust systematic reviews or meta-analyses."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Title, Abstract",
+      "content_md": "**Problem:** The title and abstract do not specify the AI component (if any) despite the inclusion of CONSORT-AI in the reporting standards. If the intervention does not involve AI, the CONSORT-AI checklist is irrelevant. If it does, this must be clearly stated.\n\n**Why it matters:** Misclassification of the intervention type affects how the study is appraised. If AI is involved, specific details about the algorithm, data inputs, and human-AI interaction are required (CONSORT-AI items).\n\n**Suggested Action:** Clarify whether the telehealth intervention uses artificial intelligence or machine learning. If yes, update the title/abstract to reflect this and provide all CONSORT-AI required details. If no, remove CONSORT-AI from the reporting standards applied."
+    }
+  ]
+}

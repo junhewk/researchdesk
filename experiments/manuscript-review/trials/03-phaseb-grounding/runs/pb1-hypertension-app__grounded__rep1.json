@@ -1,0 +1,39 @@
+{
+  "mid": "pb1-hypertension-app",
+  "arm": "grounded",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "References",
+      "content_md": "**Problem:** Citation [2] (Lee K, et al., JAMA. 2021. doi:10.1001/jama.2021.55512) is fabricated. The grounding pack confirms this DOI does not exist in Crossref or OpenAlex.\n**Why it matters:** Citing non-existent literature constitutes academic misconduct and invalidates the claim that \"prior digital trials concur\" with these results, as the supporting evidence is fictional.\n**Action:** Remove Citation [2] immediately. Replace with valid, existing references from the literature that support the claim about digital mindfulness interventions, or remove the claim if no such valid evidence exists."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Abstract",
+      "content_md": "**Problem:** Major protocol deviation regarding the comparator. The registered protocol specifies an **active control (sham relaxation audio)**, but the manuscript reports a **waitlist** control.\n**Why it matters:** Switching from an active control to a waitlist significantly changes the trial's internal validity and blinding status. A waitlist control allows for placebo effects and lack of blinding, which can inflate treatment effects compared to an active sham control. This deviation undermines the credibility of the causal inference.\n**Action:** Explicitly disclose this deviation in the Methods section. Justify why the protocol was changed post-hoc or pre-registration. Re-analyze or discuss how the lack of active control and blinding might have inflated the observed effect size."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Methods / Results",
+      "content_md": "**Problem:** Major protocol deviation regarding the primary outcome timepoint. The registered protocol defines the primary outcome as change in SBP at **24 weeks**, but the manuscript reports and analyzes results at **8 weeks**.\n**Why it matters:** Reporting a secondary or interim timepoint as the primary outcome constitutes HARKing (Hypothesizing After Results are Known) if not pre-specified, or simply misrepresents the trial's design. The effect size may differ significantly between 8 and 24 weeks. This deviation invalidates the claim that the results address the registered primary hypothesis.\n**Action:** Clearly state in the Methods that the analysis was performed at 8 weeks despite the 24-week registration, or clarify if the protocol was amended. If the 24-week data exists, it should be reported as the primary outcome. If not, the study cannot claim to fulfill its registered primary objective."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** Deviation from pre-specified statistical analysis. The protocol mandates an **ANCOVA adjusting for baseline SBP**, but the manuscript presents raw mean differences and p-values without specifying if ANCOVA was used.\n**Why it matters:** While the independent recomputation shows the reported t-test/p-value is mathematically consistent with the provided means/SDs, using a simple t-test instead of the pre-specified ANCOVA can lead to biased estimates and reduced power. It is unclear if the reported p < 0.001 comes from the required ANCOVA or an ad-hoc t-test.\n**Action:** Explicitly state whether the primary analysis followed the protocol (ANCOVA) or deviated from it. If ANCOVA was used, report the adjusted mean difference and confidence interval. If a t-test was used instead, justify this deviation and acknowledge the potential bias."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Conclusions",
+      "content_md": "**Problem:** Overstated conclusions. The Discussion claims the app \"could replace first-line lifestyle counseling\" and should be \"offered in primary care.\"\n**Why it matters:** Given the critical protocol deviations (wrong comparator, wrong timepoint) and the fabricated citation, the evidence base for such a strong clinical recommendation is nonexistent. Furthermore, an 8-week result from a single-center trial with a waitlist control is insufficient to recommend replacing standard of care.\n**Action:** Tone down the conclusions significantly. Acknowledge the limitations imposed by the protocol deviations. Remove the claim about replacing first-line counseling unless supported by robust, valid evidence (which is currently missing due to the fabricated citation and design flaws)."
+    }
+  ]
+}

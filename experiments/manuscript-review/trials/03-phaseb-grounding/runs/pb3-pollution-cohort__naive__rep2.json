@@ -1,0 +1,45 @@
+{
+  "mid": "pb3-pollution-cohort",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion states definitively that \"PM2.5 directly causes dementia\" and claims it is a \"strong, independent cause.\" \n**Why it matters:** The manuscript explicitly acknowledges in the Declarations that the study design is \"observational.\" Observational studies can identify associations but cannot establish direct causality due to potential confounding and reverse causation. Asserting direct causality contradicts the acknowledged limitations and exceeds what the data can support.\n**Suggested action:** Rewrite the conclusion to reflect the observational nature of the evidence. Use language such as \"associated with\" or \"linked to\" rather than \"causes.\" Acknowledge that while the association is strong, causal inference requires further investigation or triangulation of evidence."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section lacks critical details on confounding adjustment. It states \"Cox models estimated hazard ratios\" but does not list which covariates (e.g., age, sex, education, socioeconomic status, smoking, comorbidities) were adjusted for.\n**Why it matters:** In observational epidemiology, failing to adjust for key confounders can lead to spurious associations. Without knowing what was controlled for, it is impossible to assess the validity of the claim that PM2.5 is an \"independent\" cause or to judge the robustness of the hazard ratio.\n**Suggested action:** Explicitly list all variables included in the Cox proportional hazards models. Provide a rationale for their selection and report whether the association remained significant after full adjustment."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The exposure assessment method is described only as \"residential land-use regression.\" There is no description of the model's performance, validation metrics (e.g., R²), spatial resolution, or how address history was handled.\n**Why it matters:** Misclassification of exposure can bias results. Readers cannot evaluate the quality of the exposure data without knowing the accuracy of the land-use regression model or how long participants resided at their assigned addresses.\n**Suggested action:** Include details on the LUR model development, validation statistics (e.g., cross-validated R²), and the protocol for handling residential mobility (e.g., time-weighted averages vs. current residence only)."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The ascertainment of the outcome \"dementia\" is described vaguely as \"ascertained from records.\" It does not specify if this was clinical diagnosis, cognitive testing, or registry data, nor does it mention blinding of assessors to exposure status.\n**Why it matters:** Dementia diagnosis requires rigorous criteria (e.g., DSM-5, NIA-AA). Using administrative records without clinical validation can lead to misclassification. Lack of blinding introduces potential information bias.\n**Suggested action:** Specify the diagnostic criteria used for dementia. Clarify whether diagnoses were confirmed by physicians or neuropsychologists and whether outcome assessors were blinded to PM2.5 exposure levels."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Methods",
+      "content_md": "**Problem:** The manuscript lacks a description of the study population's baseline characteristics and inclusion/exclusion criteria.\n**Why it matters:** Without knowing who was included (e.g., exclusion of prevalent dementia cases at baseline) and their demographic profile, the generalizability of the findings cannot be assessed. It is also unclear if prevalent cases were excluded, which would bias incidence estimates.\n**Suggested action:** Add a table or text describing baseline characteristics (age, sex, education, etc.) of the 8,200 participants. Explicitly state exclusion criteria, particularly regarding prevalent dementia at study entry."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Data availability is listed as \"on request.\"\n**Why it matters:** Modern scientific standards increasingly require transparent data sharing plans to facilitate reproducibility and meta-analysis. Vague availability statements hinder scientific progress.\n**Suggested action:** Provide a more specific data availability statement, including any restrictions on access (e.g., privacy concerns) and the process for requesting data, or deposit data in a recognized repository if possible."
+    }
+  ]
+}

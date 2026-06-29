@@ -1,0 +1,45 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was applied with knowledge of the index test results. This constitutes a major risk of **review bias** (also known as incorporation bias or differential verification), where the interpreter of the reference standard is influenced by the test result being evaluated.\n\n**Why it matters:** In diagnostic accuracy studies, the reference standard must be interpreted independently of the index test to ensure an unbiased estimate of sensitivity and specificity. Knowing the biomarker panel results likely inflated the agreement between the test and the diagnosis, rendering the reported high sensitivity (0.92) and specificity (0.88) unreliable and likely overestimated.\n\n**Suggested Action:** The study design is fundamentally flawed for a diagnostic accuracy claim as currently presented. If re-analysis is impossible, this limitation must be prominently disclosed in the Discussion as a critical threat to validity, and the results should not be interpreted as definitive evidence of diagnostic performance. Ideally, the authors should acknowledge that these findings are hypothesis-generating only and require validation in a study with blinded reference standard adjudication."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold for the biomarker panel was selected to maximize accuracy **in this same sample**. This is known as **overfitting** or 'optimism bias.'\n\n**Why it matters:** Using the training dataset to both derive and validate the cutoff leads to inflated performance metrics that will not replicate in external populations. The reported sensitivity and specificity are therefore likely much higher than what would be observed in a new cohort.\n\n**Suggested Action:** The authors must clarify if this is a derivation study or a validation study. If derivation, they must state that internal validation (e.g., bootstrapping) was performed to correct for optimism, or acknowledge that the performance estimates are overly optimistic. Without external validation or robust internal correction, the claim that the panel is 'ready for bedside use' is unsupported."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** Missing **STARD-17 (Cross-tabulation)**: The manuscript reports only sensitivity and specificity but fails to provide the contingency table (True Positives, False Positives, True Negatives, False Negatives) or a 2x2 table linking index test results to reference standard results.\n\n**Why it matters:** Without the raw counts, readers cannot verify the calculations, assess the prevalence of disease in the sample, or calculate other important metrics like Positive Predictive Value (PPV) and Negative Predictive Value (NPV). It also prevents meta-analysts from pooling data correctly.\n\n**Suggested Action:** Include a 2x2 contingency table in the Results section showing the distribution of index test results against the reference standard. Report PPV and NPV with confidence intervals."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Missing **STARD-10a (Index test details)**: The manuscript mentions a 'three-marker serum panel' but does not specify which biomarkers constitute the panel, how they were measured (assay type, manufacturer), or how the combined score was calculated.\n\n**Why it matters:** Without this information, the study cannot be replicated. Other researchers cannot determine if the performance is due to specific biological markers or the statistical combination method.\n\n**Suggested Action:** Explicitly list the three biomarkers included in the panel. Describe the analytical platform used for measurement and provide the formula or algorithm used to combine the individual marker levels into a single diagnostic score."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Missing **STARD-6 and STARD-7 (Eligibility and Recruitment)**: The manuscript states 'Consecutive ICU patients' but provides no inclusion/exclusion criteria, time frame of recruitment, or setting details (e.g., single-center vs multi-center).\n\n**Why it matters:** Eligibility criteria determine the applicability (generalizability) of the results. 'Early sepsis' detection implies a specific window of time; without defining who was eligible (e.g., only patients within 6 hours of admission?), the target population is unclear. Selection bias may also affect prevalence and predictive values.\n\n**Suggested Action:** Provide a flow diagram or detailed text describing the recruitment process, inclusion/exclusion criteria, and the specific definition of 'early' in the context of patient enrollment."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Missing **STARD-14 (Handling of indeterminate results)**: The manuscript does not state how patients with missing data, inconclusive biomarker results, or unclear clinical adjudications were handled.\n\n**Why it matters:** Excluding patients with indeterminate results can introduce bias if the reasons for indeterminacy are related to disease status. Transparency in handling missing data is essential for assessing the robustness of the accuracy estimates.\n\n**Suggested Action:** Report the number and proportion of participants excluded due to missing index test or reference standard data. Describe the policy for handling indeterminate results (e.g., treated as negative, positive, or excluded)."
+    }
+  ]
+}

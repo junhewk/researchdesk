@@ -1,0 +1,39 @@
+{
+  "mid": "pb2-mindfulness-rct",
+  "arm": "ensemble",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The statistical reporting for the stress change analysis contains multiple severe inconsistencies that invalidate the primary findings. Specifically:\n1. **Degrees of Freedom Mismatch**: The t-test reports `t(18)`, implying a sample size of ~20, which contradicts the Methods statement that 180 employees were randomized (expected df ~178).\n2. **Mathematical Inconsistency**: The reported t-statistic (1.2) and degrees of freedom (18) yield a p-value of approximately 0.25, not the reported significant p-value of 0.004. A t-value of 1.2 is not statistically significant at standard alpha levels regardless of df.\n3. **Unsubstantiated Primary Claim**: The Results section provides no statistical test, p-value, or effect size for the primary anxiety outcome (GAD-7), despite the Abstract and Discussion claiming anxiety improved. Only stress reduction is supported by statistics (which are themselves erroneous).\n\n**Why it matters**: These errors suggest severe flaws in data analysis, reporting, or sample description. The main conclusion that the program reduces anxiety/stress is currently unsupported by valid statistical evidence. If the analysis was performed on only ~20 participants, the study is severely underpowered; if it was a typo, the correct statistics must be provided.\n\n**Suggested Action**: Recalculate all statistical tests using the full randomized sample (N=180) or explicitly justify any exclusions. Report the correct t-statistic, degrees of freedom, p-value, and effect size for both stress and anxiety outcomes. If anxiety did not significantly improve, remove efficacy claims regarding anxiety from the Abstract and Discussion."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The Methods section states that free-text reflections were categorized using a \"bolster vector machine.\" This is not a recognized statistical or machine learning algorithm. It appears to be a fabrication or a severe typo (likely for \"Support Vector Machine\"), but even if corrected, no details on training, validation, accuracy metrics, or human verification are provided.\n\n**Why it matters**: Citing a non-existent or misnamed algorithm renders the methodological description unreliable and makes replication impossible. It raises serious doubts about the validity of any qualitative or automated text analysis presented in the paper.\n\n**Suggested Action**: Identify and correct the name of the actual algorithm used (e.g., Support Vector Machine, Random Forest). Provide full details on model training, validation, and performance metrics (accuracy, precision, recall). If this was manual coding, describe the inter-rater reliability process. If the analysis was not performed or reported in the results, remove it from the Methods."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: There is significant confusion regarding the \"intensive-monitoring subsample\" (n=8 per arm, total n=16). \n1. **Selection and Purpose**: It is unclear how this subsample was selected (random vs. convenience) or its purpose in the primary analysis.\n2. **Measurement Ambiguity**: The GAD-7 is typically a one-time assessment, yet the Methods mention daily recording for this subsample without clarifying aggregation methods.\n3. **Baseline Discrepancy**: The reported mean baseline GAD-7 for this subsample is 3.47 (minimal/no clinical anxiety), which contradicts the Abstract's claim that participants had \"elevated anxiety.\" It is unclear if this low score represents the full cohort or just a non-representative subset.\n\n**Why it matters**: Reporting descriptive statistics for a minuscule, potentially non-representative subsample while claiming results for a larger group creates confusion about the target population. If the subsample is used for inference, it is severely underpowered. If it is exploratory, its relevance to the main RCT findings is unclear.\n\n**Suggested Action**: Clarify the selection criteria and purpose of the intensive subsample. Report the mean baseline GAD-7 for the *full* sample (N=180) to verify inclusion criteria. Explicitly state that findings from the n=16 subsample are exploratory/descriptive only. Restructure Results to separate primary analysis (full cohort) from secondary/exploratory subsample analyses."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The Discussion makes strong policy recommendations, stating the program \"should be adopted by employers,\" based on statistically inconsistent results and without reporting effect sizes or confidence intervals for the primary outcomes. The limitations section is insufficient, failing to address potential confounders, adherence rates, or the statistical errors identified in the Results.\n\n**Why it matters**: Broad implementation claims require robust evidence. Overstating conclusions based on flawed statistics can lead to harmful organizational decisions. The lack of effect sizes and contextualization makes the findings appear stronger than they are.\n\n**Suggested Action**: Tone down recommendation language to reflect the preliminary nature of the findings. Include effect sizes (e.g., Cohen's d) and confidence intervals for all primary outcomes. Expand the Limitations section to address statistical inconsistencies, single-site design, generalizability, and comparison with existing literature."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: The Data Availability statement is listed as \"on request\" without providing specific contact information, a protocol for requests, or a link to a repository. This is increasingly considered insufficient by major journals and funding bodies.\n\n**Why it matters**: Lack of transparent data availability hinders reproducibility and independent verification of statistical claims, which is particularly critical given the discrepancies noted in sample sizes and statistical reporting.\n\n**Suggested Action**: Deposit the anonymized dataset in a recognized public repository (e.g., OSF, Zenodo) and provide the DOI/link. If this is not possible due to privacy concerns, provide a detailed protocol for how data requests are handled, including specific contact information and ethical approvals governing access."
+    }
+  ]
+}

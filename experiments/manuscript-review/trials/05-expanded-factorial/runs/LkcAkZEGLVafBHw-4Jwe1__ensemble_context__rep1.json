@@ -1,0 +1,63 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "ensemble_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results (STROBE-7, STROBE-12, STROBE-16)",
+      "content_md": "**Problem**: The manuscript fails to report adjusted odds ratios or measures of statistical precision (95% Confidence Intervals) and does not define or control for major confounders such as smoking, alcohol consumption, diabetes, and BMI.\n\n**Why it matters**: Smoking is the strongest known risk factor for pancreatic cancer and is highly correlated with coffee consumption. Without adjusting for these confounders, the observed association (OR 1.8) is likely spurious. Furthermore, reporting only a point estimate without CIs prevents assessment of statistical significance or clinical relevance; an OR of 1.8 could be non-significant if the CI includes 1.0.\n\n**Action**: Recalculate models using multivariable logistic regression that adjusts for smoking status (pack-years), alcohol intake, diabetes history, age, sex, and BMI. Report both unadjusted and fully adjusted odds ratios with 95% confidence intervals and P-values for all exposure categories."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods (STROBE-6, STROBE-7)",
+      "content_md": "**Problem**: Critical methodological details regarding participant selection and exposure definition are missing. Specifically, eligibility criteria for hospital controls are not defined (e.g., whether conditions associated with coffee intake or pancreatic cancer risk were excluded), and the definition of 'heavy' consumption is vague.\n\n**Why it matters**: Hospital-based case-control studies are prone to selection bias (Berkson’s bias) if controls have diseases associated with the exposure. If controls are disproportionately non-coffee drinkers due to their admitting diagnoses, the OR will be artificially inflated. Vague exposure definitions hinder reproducibility and comparability.\n\n**Action**: Detail the eligibility criteria for controls, explicitly stating exclusions for diseases associated with coffee consumption or pancreatic cancer. Define exposure categories precisely (e.g., cups per day, type of coffee) and list all covariates collected."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (STROBE-10)",
+      "content_md": "**Problem**: No sample size calculation or power analysis is provided to justify the enrollment of 240 cases and 240 controls.\n\n**Why it matters**: Without a priori power calculations, it is unclear if the study was adequately powered to detect clinically meaningful effects, especially after adjustment for confounders. This raises concerns about Type II error risk or overinterpretation of imprecise estimates.\n\n**Action**: Include a sample size justification based on expected prevalence of heavy coffee drinking in controls, desired power (e.g., 80%), and significance level (e.g., 5%). If no formal calculation was done, discuss the statistical power post-hoc."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (STROBE-12)",
+      "content_md": "**Problem**: The statistical methods section is vague. It mentions logistic regression but does not specify how confounding was controlled, how covariates were selected for the model, or how missing data were handled.\n\n**Why it matters**: Transparency in statistical analysis is crucial for reproducibility and validity. Without knowing how confounders were identified and adjusted, the results cannot be trusted.\n\n**Action**: Detail the statistical approach: specify which variables were considered potential confounders, the method for selecting variables for the multivariable model (e.g., change-in-estimate criterion, a priori selection), and how interactions or non-linear relationships were assessed."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results (STROBE-13)",
+      "content_md": "**Problem**: The results do not provide a flow diagram or detailed numbers of participants at each stage of enrollment (e.g., number of eligible patients, number excluded, reasons for exclusion).\n\n**Why it matters**: This omission prevents assessment of selection bias. For example, if many controls were excluded due to conditions related to coffee consumption, the control group may not represent the source population.\n\n**Action**: Provide a flow diagram or table showing the number of individuals assessed for eligibility, included in the study, and excluded, with reasons for exclusion."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods (STROBE-7)",
+      "content_md": "**Problem**: The method of exposure assessment is described only as 'interview after diagnosis' without detailing the instrument used or validation steps.\n\n**Why it matters**: Recall bias is a major threat in case-control studies, particularly for dietary exposures. Cases may over-report unhealthy behaviors (like heavy coffee drinking) compared to controls. Without a validated food frequency questionnaire (FFQ) or specific details on how 'lifetime' consumption was quantified, the data quality is questionable.\n\n**Action**: Describe the specific instrument used to assess coffee intake (e.g., validated FFQ). Discuss steps taken to minimize recall bias, such as using standardized portions or reference periods."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Abstract (STROBE-1b, STROBE-19)",
+      "content_md": "**Problem**: The abstract and discussion present a causal conclusion ('Coffee increases pancreatic cancer risk') and public health recommendations based on observational data with significant potential for bias and confounding. Limitations are not discussed.\n\n**Why it matters**: Observational studies cannot establish causality. Given the known confounding by smoking and potential recall bias, claiming a direct causal link is scientifically unsupported and potentially misleading. Failure to discuss limitations violates STROBE guidelines.\n\n**Action**: Rewrite conclusions to reflect association rather than causation (e.g., 'associated with increased odds'). Add a dedicated paragraph in the Discussion addressing selection bias, recall bias, and residual confounding as major limitations. Refrain from public health recommendations until robust evidence supports causality."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Declarations (STROBE-22)",
+      "content_md": "**Problem**: Funding sources and the role of funders are not declared.\n\n**Why it matters**: Transparency regarding funding is essential for assessing potential conflicts of interest, especially in nutritional epidemiology where industry funding can influence outcomes.\n\n**Action**: Explicitly state the source of funding for this study. If no specific grant supported the work, state 'This research received no specific grant from any funding agency.' Declare the role of funders in study design, analysis, and publication."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract (STROBE-1b)",
+      "content_md": "**Problem**: The abstract lacks a balanced summary and does not clearly indicate the study design in the title or structure. It is overly promotional and lacks key statistical details.\n\n**Why it matters**: Readers need to quickly understand the study type (case-control) and the uncertainty of the results.\n\n**Action**: Restructure the abstract into structured sections (Background, Methods, Results, Conclusion). Include the 95% CI in the results section. Ensure the title clearly states 'Case-Control Study'."
+    }
+  ]
+}

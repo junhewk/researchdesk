@@ -1,0 +1,11 @@
+{
+  "trial": "02-qwen3_6-27b-checklist",
+  "date": "2026-06-28",
+  "base_model": "qwen3.6-27b-mtp-q8 (local llama-server @ http://100.122.169.13:8091/v1)",
+  "generation": "direct HTTP /v1/chat/completions, response_format json_schema (grammar-constrained enums), sub-reviews + neutral merge",
+  "sampling": "Qwen3 instruct (non-thinking): temperature 0.7, top_p 0.8, top_k 20, presence_penalty 1.5; grammar decoding suppresses <think>",
+  "context_arm_grounding": "reporting-guideline checklist (identical manifest to trial 01) — only the model differs",
+  "judge": "Claude (blinded, arm-stripped, hash-ordered) — held constant with trial 01 for a clean weak-vs-strong comparison",
+  "manuscripts": 4, "arms": 6, "reps": 2, "arm_runs": 48,
+  "purpose": "Weak base model: test whether fabrication appears (it could not on Claude — ceiling), and whether persona/ensemble/context effects differ from the strong-model pilot."
+}

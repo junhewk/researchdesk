@@ -1,0 +1,39 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The search strategy is severely under-reported and likely incomplete for a scoping review. Only PubMed was searched, with no mention of search strings, date ranges, inclusion/exclusion criteria details, or the use of other relevant databases (e.g., ERIC, Embase, Scopus). \n\n**Why it matters**: Scoping reviews require comprehensive and reproducible search strategies to map the breadth of literature. Relying solely on PubMed introduces significant selection bias and limits the generalizability and completeness of the findings.\n\n**Suggested Action**: Expand the search to include multiple disciplinary databases (e.g., ERIC for education, Embase/Scopus for broader medical coverage). Provide a detailed PRISMA-ScR compliant methods section including full search strings, date limits, and specific inclusion/exclusion criteria."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The results section lacks the core components of a scoping review. It lists only three broad categories (tutoring systems, assessment tools, chatbots) without providing a synthesis of the evidence, such as study designs, sample sizes, specific AI technologies used, outcomes measured, or quality assessments.\n\n**Why it matters**: A scoping review aims to map key concepts and gaps. Merely listing topics without synthesizing *how* AI is used, *what* the evidence suggests about its effectiveness, or *where* the research is lacking fails to meet the purpose of this study type.\n\n**Suggested Action**: Structure the results to include a flow diagram (PRISMA), a table of included studies detailing key characteristics (author, year, country, study design, AI tool, educational context, findings), and a narrative synthesis grouping findings by theme, technology type, or educational outcome."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The conclusion that AI \"should be integrated into all undergraduate curricula immediately\" is an unsupported overgeneralization. The manuscript provides no evidence of efficacy, safety, ethical considerations, or implementation challenges from the 38 papers.\n\n**Why it matters**: Making strong policy recommendations without critical appraisal of the included studies (which may be pilot studies, opinions, or low-quality evidence) is scientifically irresponsible and potentially harmful to educational practice. Scoping reviews identify gaps; they do not typically provide definitive clinical or pedagogical guidelines unless explicitly framed as such with rigorous synthesis.\n\n**Suggested Action**: Tone down the recommendations to reflect the exploratory nature of a scoping review. Discuss identified gaps, inconsistencies in the literature, and the need for higher-quality empirical studies before making broad curricular integration claims. Address limitations such as heterogeneity of included studies."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract",
+      "content_md": "**Problem**: The abstract is excessively brief and lacks standard structured elements (Background, Methods, Results, Conclusion) with sufficient detail. It does not report the number of studies screened, reasons for exclusion, or key thematic findings.\n\n**Why it matters**: Readers rely on the abstract to quickly assess the relevance and rigor of the review. The current abstract fails to provide enough information to judge the scope or validity of the review.\n\n**Suggested Action**: Rewrite the abstract following PRISMA-ScR guidelines for structured abstracts. Include specific details on the search process, number of included studies, key themes identified, and a balanced conclusion."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: There is no description of data extraction or quality assessment processes. It is unclear how the 38 papers were selected, who extracted data, and whether the methodological quality of included studies was considered.\n\n**Why it matters**: Without transparent data extraction and quality appraisal, the reliability of the findings is questionable. In scoping reviews, while formal quality appraisal is sometimes debated, describing the characteristics of the evidence is essential.\n\n**Suggested Action**: Detail the data extraction process (e.g., independent dual extraction, pilot testing) and describe how study characteristics were recorded. If applicable, include a narrative summary of the methodological quality or design types of included studies."
+    }
+  ]
+}

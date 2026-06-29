@@ -1,0 +1,39 @@
+{
+  "mid": "rVaGFWm6dYLlb-juTfVW2",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The manuscript lacks essential methodological details required to assess internal validity, reproducibility, and adherence to CONSORT guidelines. Specific missing elements include: \n1) **Participant Eligibility**: No inclusion/exclusion criteria (e.g., age ranges, pain duration).\n2) **Randomization & Allocation**: No description of sequence generation, allocation concealment, or sample size justification.\n3) **Blinding**: No statement on the blinding status of participants, providers, or outcome assessors.\n4) **Intervention Details**: The 'telehealth physiotherapy' intervention is vaguely defined; missing details on platform, frequency, duration, content, and therapist qualifications (TIDieR guidelines). \n5) **Comparator Definition**: 'Usual care' is undefined; it is unclear if the control group received no treatment, standard in-person care, or advice only.\n6) **Statistical Methods**: No description of the statistical analysis plan.\n\n**Why it matters**: Without these details, it is impossible to determine if selection bias, performance bias, or confounding influenced the results. The vagueness of the comparator and intervention prevents replication and accurate interpretation of efficacy. Lack of sample size justification raises concerns about adequate power.\n\n**Suggested Action**: Rewrite the Methods section to strictly adhere to CONSORT guidelines. Include: (1) precise eligibility criteria; (2) detailed randomization method (e.g., computer-generated sequence, block size) and allocation concealment; (3) blinding status for all parties involved; (4) a detailed protocol for both the telehealth intervention and 'usual care' comparator following TIDieR guidelines; (5) *a priori* sample size calculation with assumptions; (6) statistical analysis methods."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The results are reported with extreme vagueness and lack essential quantitative data. Specific omissions include:\n1) **Effect Size & Precision**: Only a p-value (p = 0.02) and a directional statement are provided. There is no effect size estimate (e.g., mean difference) with 95% Confidence Intervals (CI).\n2) **Baseline Characteristics**: No table of baseline data to assess group balance at randomization.\n3) **Absolute Outcomes**: No absolute values (means/SDs or medians/IQRs) for the primary outcome at follow-up.\n4) **Outcome Measure Specifics**: The specific pain measurement tool (e.g., VAS, NRS) and assessment time points are not specified in the results context.\n5) **Participant Flow & Attrition**: No CONSORT flow diagram or data on screened/randomized/completed participants. Reasons for withdrawal and handling of missing data (e.g., Intention-to-Treat analysis, imputation methods) are absent.\n6) **Adverse Events**: No reporting of safety data or adverse events.\n\n**Why it matters**: A p-value alone does not convey clinical significance or precision. Without CIs, readers cannot assess the magnitude of the treatment effect. Missing baseline data prevents verification of successful randomization. Ignoring attrition and flow raises serious concerns about missing data bias and internal validity.\n\n**Suggested Action**: Provide a complete results table including: (1) Baseline characteristics for both groups; (2) Outcome measures at all time points with means (SD); (3) Between-group differences with 95% CIs and exact p-values; (4) A CONSORT flow diagram showing participant flow and reasons for exclusion/withdrawal; (5) Description of missing data handling (ITT analysis); (6) Report any adverse events."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract",
+      "content_md": "**Problem**: The abstract is insufficiently detailed and lacks the structured elements required for an RCT report. It omits study design specifics (e.g., blinding status), sample size, inclusion/exclusion criteria, specific outcome measures, and key quantitative findings (effect sizes, CIs). It includes prescriptive policy statements unsupported by the data presented.\n\n**Why it matters**: Readers rely on the abstract for a quick, accurate summary. Without specific results and methodological clarity, the abstract fails to inform readers or support evidence-based decision-making. The lack of data undermines the credibility of the conclusions drawn.\n\n**Suggested Action**: Restructure the abstract into standard subsections: Background, Methods (including N, randomization method, blinding), Results (including primary outcome means/SDs and CIs), and Conclusion. Remove prescriptive policy statements from the conclusion."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The discussion makes definitive, overstated claims (telehealth \"should become standard care\") that are not supported by the limited evidence presented. There is no discussion of study limitations (e.g., single center, short follow-up, lack of blinding), generalizability, cost-effectiveness, or comparison with existing literature. The conclusion ignores the need for robust evidence across multiple outcomes (function, quality of life) before changing standard care.\n\n**Why it matters**: Strong policy recommendations require robust evidence. Overstating conclusions based on limited data can mislead clinical practice and policy guidelines. Failing to acknowledge limitations undermines scientific credibility.\n\n**Suggested Action**: Temper the conclusion to reflect the study's specific findings and limitations (e.g., \"Telehealth may be a viable option... in this context\"). Add a paragraph discussing potential biases, generalizability, lack of functional outcome data, and how these findings compare with prior RCTs. Recommend further research before advocating for changes in standard care."
+    },
+    {
+      "category": "mechanical",
+      "severity": "major",
+      "section_ref": "Declarations/General",
+      "content_md": "**Problem**: The manuscript lacks essential reporting elements required by clinical journals, including: (1) trial registration details (e.g., ClinicalTrials.gov ID and date), (2) funding source information, and (3) a detailed ethical approval statement confirming informed consent.\n\n**Why it matters**: Trial registration is mandatory for publication in most major clinical journals to prevent selective reporting. Funding sources are critical for assessing conflicts of interest. Ethical compliance must be explicitly documented.\n\n**Suggested Action**: Add the trial registration number and date of registration. Specify the funding source (or state \"no external funding\"). Expand the ethics statement to confirm that informed consent was obtained from all participants."
+    }
+  ]
+}

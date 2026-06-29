@@ -1,0 +1,45 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods (PRISMA-7)",
+      "content_md": "**Problem:** The search strategy is critically incomplete. Only PubMed was searched, and no dates, limits, or full search strings are provided.\n**Why it matters:** Systematic reviews require comprehensive searching to minimize publication bias and ensure all relevant evidence is captured. Relying on a single database without a reproducible search string violates core PRISMA standards and undermines the validity of the conclusions.\n**Suggested Action:** Search at least two major databases (e.g., PubMed, Embase, Cochrane Central). Provide the full electronic search strategy for at least one database, including all terms and limits, as well as the date of the last search."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods (PRISMA-12, PRISMA-14)",
+      "content_md": "**Problem:** The manuscript lacks a risk-of-bias assessment and a proper synthesis method. It states outcomes were 'summarised narratively' without detailing how heterogeneity was handled or if meta-analysis was attempted.\n**Why it matters:** Without assessing the quality of included studies (risk of bias), the review cannot weigh evidence appropriately. Narrative summaries alone are insufficient for a systematic review claiming to determine effectiveness, especially when effect sizes varied. This prevents readers from judging the reliability of the findings.\n**Suggested Action:** Implement a validated risk-of-bias tool (e.g., Cochrane RoB 2) for all included studies. Report the results of this assessment. If data permitted, perform a meta-analysis with measures of consistency (I²); if not, explain why and use standardized narrative synthesis methods."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem:** The conclusion that 'dCBT-I should replace pharmacotherapy as first-line treatment' is unsupported and overreaching. The review included trials comparing dCBT-I to control groups, not necessarily head-to-head against pharmacotherapy.\n**Why it matters:** Making clinical practice recommendations requires direct comparative evidence or a robust body of indirect evidence with clear justification. Claiming replacement of standard care based on superiority over controls (which may be waitlist or education) is a logical leap not supported by the described methodology.\n**Suggested Action:** Tone down the conclusion to reflect the actual evidence found (e.g., 'dCBT-I shows promise as an effective intervention'). Do not recommend replacing pharmacotherapy unless the included studies specifically compared dCBT-I directly with pharmacological treatments and showed superiority."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (PRISMA-17)",
+      "content_md": "**Problem:** The PRISMA flow diagram is missing.\n**Why it matters:** The flow diagram is essential for transparency, showing the number of records identified, screened, assessed for eligibility, and included. Its absence makes it impossible to verify the study selection process.\n**Suggested Action:** Include a standard PRISMA 2020 flow diagram in the Results section or as a supplementary file."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (PRISMA-5)",
+      "content_md": "**Problem:** Eligibility criteria are vague. 'Adult population' is not defined by age range, and 'insomnia severity outcomes' does not specify which scales (e.g., ISI, PSQI) were accepted.\n**Why it matters:** Vague criteria introduce selection bias and reduce reproducibility. Different insomnia scales measure different aspects of sleep disturbance, affecting comparability.\n**Suggested Action:** Define specific inclusion/exclusion criteria for age, diagnosis of insomnia (e.g., DSM-5, ICSD-3), duration of insomnia, and accepted outcome measures."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract (PRISMA-2)",
+      "content_md": "**Problem:** The abstract is unstructured and lacks key elements such as registration number, specific data sources beyond 'PubMed', and limitations.\n**Why it matters:** Structured abstracts allow readers to quickly assess the review's scope and validity. Missing registration information raises concerns about protocol adherence and selective reporting.\n**Suggested Action:** Rewrite the abstract into a structured format (Background, Methods, Results, Conclusion). Include the registration number of the systematic review protocol (e.g., PROSPERO) and explicitly state limitations."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Discussion",
+      "content_md": "**Problem:** The abstract and discussion claim that \"Coffee increases pancreatic cancer risk\" and recommend reducing intake based solely on an unadjusted odds ratio (OR) of 1.8 with no reported confidence intervals or p-values.\n**Why it matters:** An OR of 1.8 without precision estimates is scientifically meaningless; the true effect could range from protective to highly harmful. Furthermore, claiming causality from a single hospital-based case-control study with unreported adjustment for confounders (e.g., smoking, which is strongly linked to both coffee drinking and pancreatic cancer) is a major overstatement that violates STROBE-1b and STROBE-19.\n**Suggested Action:** Remove definitive causal language. Do not publish recommendations for public health messaging until the study reports adjusted estimates with 95% CIs and adequately addresses confounding by smoking and other lifestyle factors."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The manuscript fails to report any statistical adjustment for confounding variables. It states ORs were estimated by logistic regression but does not list covariates included in the model.\n**Why it matters:** In pancreatic cancer research, smoking is a potent confounder because smokers are more likely to drink coffee and have a higher risk of pancreatic cancer. Without adjusting for smoking (and potentially diabetes, BMI, alcohol), the observed association is likely spurious. This violates STROBE-12 and STROBE-16.\n**Suggested Action:** Clearly define all confounders considered in the analysis. Present both unadjusted and multivariable-adjusted odds ratios with 95% confidence intervals. If smoking data was not collected or adjusted for, this study is fundamentally flawed and cannot support its conclusions."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The selection of controls is described only as \"other patients admitted to the same hospital.\" No details are provided on the diagnoses of controls or why they were chosen.\n**Why it matters:** Hospital-based case-control studies require controls that represent the source population that produced the cases. If controls have conditions associated with coffee consumption (e.g., cardiovascular disease, which might be inversely associated with coffee in some contexts, or peptic ulcer disease), selection bias will distort the odds ratio. This violates STROBE-6.\n**Suggested Action:** Specify the diagnostic criteria for eligible controls and exclude patients with diseases known to be associated with coffee consumption. Justify why these controls are representative of the base population."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The exposure (coffee consumption) was ascertained by interview *after* diagnosis. No information is provided on how recall bias was minimized or assessed.\n**Why it matters:** Cases with a serious new diagnosis may recall past habits differently than controls (differential misclassification). This is a well-known limitation in case-control studies of diet. Failing to acknowledge this violates STROBE-19 and undermines the validity of the exposure assessment.\n**Suggested Action:** Discuss the potential for recall bias in the limitations section. Consider if any validation methods were used or if sensitivity analyses were performed."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript does not explain how the sample size of 240 cases and 240 controls was determined.\n**Why it matters:** Without a power calculation, it is unclear if the study had sufficient statistical power to detect a meaningful effect size or if the results are underpowered. This violates STROBE-10.\n**Suggested Action:** Include a sample size calculation in the Methods section, specifying the assumed effect size, alpha level, and power."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** The funding source is not disclosed.\n**Why it matters:** Transparency regarding funding is essential for assessing potential conflicts of interest, even if none are declared. This violates STROBE-22.\n**Suggested Action:** Add a specific statement identifying the funding agency and its role in study design, data collection, analysis, interpretation, and writing."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract lacks a balanced summary. It presents only the positive finding without mentioning limitations or the lack of statistical significance testing.\n**Why it matters:** STROBE-1b requires an informative, balanced abstract. Readers need to know the study's limitations and the precision of the estimates to interpret the findings correctly.\n**Suggested Action:** Revise the abstract to include key results with 95% CIs (once calculated), mention major limitations, and avoid definitive causal conclusions."
+    }
+  ]
+}

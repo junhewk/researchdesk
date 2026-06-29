@@ -1,0 +1,51 @@
+{
+  "mid": "pb2-dl-diagnostic",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: The statistical analysis is fundamentally flawed, contradictory, and potentially fabricated. \n1. **Sample Size Mismatch**: The Methods state only \"Eight radiologists\" provided ratings, implying a small N. However, the reported ANOVA degrees of freedom `F(2, 87)` imply a total sample size of N=90 (87 + 3 groups). It is unclear how 8 raters generated 90 independent observations without specifying the number of images rated per rater.\n2. **Inappropriate Test**: ANOVA assumes independence of observations and normality, which are violated by ordinal Likert-scale data (1–5) and clustered/repeated measures (multiple ratings per radiologist). Non-parametric tests or mixed-effects models are required.\n3. **Statistical Inconsistency**: Reviewers note that an F-statistic of 1.5 with df(2, 87) typically yields a non-significant p-value (~0.23), contradicting the reported `p < 0.001`. This suggests calculation errors or data fabrication.\n\n**Why it matters**: The statistical validity of the comparison between the model and baselines is compromised. The reported significance and effect sizes cannot be trusted, undermining the core claims of the study.\n\n**Suggested Action**: Clarify the unit of analysis and total number of evaluations. Recalculate statistics using appropriate methods for ordinal, clustered data (e.g., mixed-effects ordinal regression or non-parametric alternatives). Report consistent degrees of freedom and p-values. If N=8 raters, explain the experimental design fully."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Discussion",
+      "content_md": "**Problem**: The study lacks objective diagnostic performance metrics and ground truth validation. \n1. **Subjective Outcome**: The primary outcome is a subjective \"usefulness\" rating (1–5 scale) rather than objective accuracy metrics (sensitivity, specificity, AUC-ROC). Usefulness does not equate to clinical safety or efficacy.\n2. **No Ground Truth**: There is no reference standard (e.g., expert consensus, clinical diagnosis) against which the model's predictions are validated. Consequently, diagnostic performance cannot be determined.\n3. **Unsupported Triage Claim**: The claim that the model is suitable for \"triage\" requires high sensitivity to rule out critical pathologies, which cannot be assessed without objective validation.\n\n**Why it matters**: A model could be rated highly useful for workflow speed while missing critical diagnoses. Without objective validation against a gold standard, the study fails to demonstrate clinical utility or safety, rendering the \"diagnostic\" label misleading.\n\n**Suggested Action**: Include objective diagnostic performance metrics (sensitivity, specificity, PPV, NPV, AUC-ROC) calculated against a reference standard. If only subjective ratings are available, retitle the manuscript as a \"usability\" or \"preference\" study and remove claims of diagnostic accuracy."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The Discussion contains non-scientific AI meta-commentary and makes unsupported, potentially dangerous clinical claims.\n1. **AI Artifacts**: The text includes phrases such as \"As an AI language model, I cannot access real-time data...\", indicating the manuscript may have been generated or heavily edited by an LLM without proper oversight.\n2. **Overstated Deployment Readiness**: The claim that the model is \"ready for deployment in emergency triage\" is unsupported by a single-center study with subjective ratings, no objective accuracy data, and statistical flaws. Regulatory bodies require rigorous prospective validation before such claims.\n\n**Why it matters**: The presence of AI meta-commentary renders the manuscript unprofessional and raises questions about authorship integrity. Claiming readiness for deployment without robust evidence poses significant patient safety risks.\n\n**Suggested Action**: Remove all AI-generated meta-commentary. Rewrite the Discussion to interpret findings cautiously, acknowledging limitations (single-center, subjective metrics). Explicitly remove claims of readiness for clinical deployment."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: Critical details required for reproducibility and validity assessment are missing.\n1. **Undefined Baselines**: The study compares the model to \"two baselines\" but does not specify what they are (e.g., human readers, existing software, random chance).\n2. **Data Leakage Risk**: There is no description of how the 40,000 training images and the test set were partitioned. It is unclear if patient-level separation was enforced to prevent data leakage.\n3. **Missing Model Details**: The manuscript lacks details on the model architecture (e.g., ResNet, EfficientNet) and the specific clinical condition being triaged.\n\n**Why it matters**: Without defining comparators, the claim of \"outperforming\" is meaningless. Lack of data splitting details raises concerns about artificial inflation of performance due to leakage. Missing architectural details prevent replication.\n\n**Suggested Action**: Explicitly define the baseline models. Describe the train/test split strategy, confirming patient-level separation. Specify the model architecture and the target clinical condition."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem**: Insufficient reporting of uncertainty and effect sizes. The results report mean ratings and F-statistics but omit confidence intervals (CIs) for the means or pairwise differences, as well as effect size measures (e.g., eta-squared, Cohen's d).\n\n**Why it matters**: Statistical significance (p-value) does not indicate clinical significance. Without CIs and effect sizes, readers cannot assess the magnitude or precision of the observed differences.\n\n**Suggested Action**: Report 95% confidence intervals for mean usefulness ratings and pairwise differences. Include an effect size measure to quantify the practical impact of the model's performance."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract / Methods",
+      "content_md": "**Problem**: Non-standard terminology is used throughout the manuscript. The term \"profound learning\" appears in the Abstract instead of the standard scientific term \"deep learning.\" This suggests a lack of familiarity with field nomenclature or potential AI-generation artifacts.\n\n**Why it matters**: Incorrect terminology undermines credibility and clarity, potentially confusing readers regarding the algorithm type.\n\n**Suggested Action**: Replace \"profound learning\" with \"deep learning\" throughout the manuscript."
+    },
+    {
+      "category": "mechanical",
+      "severity": "major",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: Ethical and data availability statements are insufficient.\n1. **Data Availability**: The statement \"on request\" is discouraged; public repository links are preferred for reproducibility.\n2. **Ethics/Consent**: The ethics declaration provides an IRB number but does not specify if informed consent was obtained or waived for the use of retrospective radiographs.\n\n**Why it matters**: Transparency in data sharing and ethical handling of patient data is mandatory for publication. Lack of clarity on consent violates standard ethical guidelines for human subject research.\n\n**Suggested Action**: Provide a public repository link for code/data if possible. Clarify the ethical approval process, specifically stating whether informed consent was waived and how patient privacy was maintained."
+    }
+  ]
+}

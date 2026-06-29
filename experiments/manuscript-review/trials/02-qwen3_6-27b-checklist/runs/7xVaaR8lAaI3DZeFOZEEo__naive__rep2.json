@@ -1,0 +1,39 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study design introduces severe verification bias (work-up bias). The reference standard (ophthalmologist examination) was not applied to all participants, but only to those flagged as referable and a sample of those cleared. This violates the fundamental assumption of diagnostic accuracy studies that the index test and reference standard are independent and applied to the same target condition population.\n\n**Why it matters:** Because negative cases (non-referable) were not fully verified by the gold standard, the specificity calculation is likely inflated and unreliable. The sensitivity may also be biased if the 'sample' of cleared participants was not representative or if false negatives were missed because they weren't examined. Consequently, the reported sensitivity (0.89) and specificity (0.91) are statistically invalid for claiming diagnostic accuracy.\n\n**Suggested action:** The authors must either: 1) Re-analyze data using only the subset of patients who received both the smartphone test AND the ophthalmologist reference standard (acknowledging this limits generalizability), or preferably 2) Conduct a new study where all participants undergo the reference standard examination regardless of the AI result, to allow for unbiased calculation of sensitivity and specificity."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion claims that 'smartphone AI can replace specialist screening in primary care' and advocates for 'wider rollout.' This conclusion is not supported by the flawed methodology described in the Methods section. Furthermore, there is no comparison to current standard-of-care screening methods (e.g., traditional fundus photography) to establish non-inferiority or added value.\n\n**Why it matters:** Recommending clinical replacement based on biased data poses a significant patient safety risk. False negatives could lead to untreated diabetic retinopathy and blindness, while false positives could overwhelm specialist services. The claim of 'readiness for deployment' is premature without robust validation against an unbiased reference standard.\n\n**Suggested action:** Remove all claims regarding clinical replacement or immediate rollout. The discussion should instead focus on the preliminary nature of the findings, explicitly acknowledge the verification bias as a major limitation, and call for rigorous, prospective trials with full gold-standard verification before considering clinical implementation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript lacks essential methodological details required for reproducibility and assessment of bias. It does not specify: the sample size of the 'sample of those it cleared' that were examined by the ophthalmologist; the criteria used for selecting this sample (random vs. convenience); the specific AI algorithm or version used; image quality rejection rates; or how ungradable images were handled.\n\n**Why it matters:** Without knowing how many true negatives were actually verified, it is impossible to assess the validity of the specificity metric. Image quality issues are a major confounder in retinal AI studies; if poor-quality images were excluded or misclassified, this affects accuracy metrics. Lack of algorithmic transparency prevents assessment of potential technical biases.\n\n**Suggested action:** Provide a detailed flow diagram (STARD compliant) showing the number of participants at each stage, including those excluded due to poor image quality. Explicitly state the number of 'cleared' cases that were actually verified by the ophthalmologist and justify the sampling method. Include technical specifications of the AI system and image acquisition protocol."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results report only point estimates for sensitivity (0.89) and specificity (0.91) without confidence intervals. Additionally, the results do not report the prevalence of referable diabetic retinopathy in this cohort, nor do they provide a confusion matrix (True Positives, False Positives, True Negatives, False Negatives).\n\n**Why it matters:** Point estimates alone do not convey the precision of the findings. Given the small sample size of verified cases (implied by the biased design), confidence intervals are crucial to understand the uncertainty. The prevalence affects the positive and negative predictive values, which are clinically relevant for screening tools. Without a confusion matrix, readers cannot verify the calculations or assess the absolute number of errors.\n\n**Suggested action:** Report 95% confidence intervals for sensitivity and specificity. Provide a 2x2 contingency table showing the counts of TP, FP, TN, and FN based on the verified subset. State the prevalence of referable DR in the studied population."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Introduction",
+      "content_md": "**Problem:** The manuscript does not adhere to standard reporting guidelines for diagnostic accuracy studies (STARD). There is no mention of patient selection criteria, definition of the target condition (referable vs. non-referable DR), or how the reference standard was defined and applied.\n\n**Why it matters:** Non-adherence to STARD reduces the transparency and reliability of the study. It makes it difficult for clinicians and researchers to interpret the results or compare them with other studies. The lack of clear definitions for 'referable' DR (e.g., based on ETDRS levels) creates ambiguity about what the AI is actually detecting.\n\n**Suggested action:** Restructure the manuscript to follow STARD guidelines. Clearly define the target condition (e.g., referable DR as moderate non-proliferative DR or worse). Detail the patient eligibility criteria and the exact protocol for image acquisition and grading."
+    }
+  ]
+}

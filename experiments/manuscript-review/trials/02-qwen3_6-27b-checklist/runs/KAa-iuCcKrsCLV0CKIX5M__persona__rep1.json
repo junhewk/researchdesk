@@ -1,0 +1,45 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "persona",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript claims to be a systematic review but lacks essential methodological rigor and reproducibility. Key omissions include: no pre-registered protocol (e.g., PROSPERO); an incomplete search strategy limited to PubMed only (excluding major databases like Embase, Cochrane Central, PsycINFO) with no reported search terms or dates; undefined eligibility criteria (PICO elements such as specific definitions of 'digital CBT-I', comparator types, and outcome measures are vague); no risk-of-bias assessment tool (e.g., Cochrane RoB 2) or study quality evaluation; and no description of the data extraction process or handling of missing data/attrition.\n\n**Why it matters:** These deficiencies violate PRISMA guidelines and core systematic review standards. A single-database search introduces significant selection bias, while the lack of protocol registration increases the risk of outcome switching. Without risk-of-bias assessment and clear eligibility criteria, the validity of included trials cannot be judged, rendering the synthesis unreliable and non-reproducible.\n\n**Suggested Action:** Register the protocol (or acknowledge retrospective registration). Expand the search to include multiple major databases (Embase, Cochrane Library, PsycINFO) and report the full search strategy for at least one database. Clearly define PICO criteria. Apply a standardized risk-of-bias tool to all included studies and report these assessments. Describe data extraction procedures and how missing data were handled."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The review relies solely on narrative synthesis without performing a meta-analysis or quantitative pooling of data, despite including 14 trials. There is no assessment of statistical heterogeneity (e.g., I², tau²) or exploration of sources of variability.\n\n**Why it matters:** Narrative summaries are subjective and prone to bias, particularly when effect sizes vary across studies. Without statistical pooling, the review cannot provide precise estimates of overall treatment effects, confidence intervals, or consistency of findings. This undermines the claim of establishing 'effectiveness' which typically requires quantitative evidence in systematic reviews.\n\n**Suggested Action:** Perform a random-effects meta-analysis if data permits. If not, provide a structured table of effect sizes (e.g., Hedges’ g or SMDs) with 95% confidence intervals for each study. Assess and report statistical heterogeneity and conduct subgroup analyses or meta-regression to explore sources of variation."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract & Discussion",
+      "content_md": "**Problem:** The conclusion that dCBT-I 'should replace pharmacotherapy as first-line treatment' is an unsupported overgeneralization. The review includes trials comparing dCBT-I to controls (likely waitlist or usual care) but lacks direct head-to-head comparisons with pharmacotherapy, nor does it utilize indirect treatment comparisons (network meta-analysis).\n\n**Why it matters:** Claiming superiority over a specific active treatment requires direct comparative evidence. Extrapolating from passive control studies to recommend replacing drug therapy is a logical leap not justified by the methodology and may be clinically misleading or dangerous if patients are switched without appropriate monitoring.\n\n**Suggested Action:** Temper the conclusions to reflect only the comparisons actually made. Explicitly state the limitation regarding the lack of head-to-head trials against pharmacotherapy. Avoid recommending replacement of first-line treatments without direct evidence; instead, frame dCBT-I as an effective alternative or adjunctive option consistent with broader guidelines."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section lacks essential descriptive data and transparency. It states 'Effect sizes varied' but provides no quantitative data (means, SDs, effect sizes, p-values) for the 14 trials. It also fails to specify control conditions (active vs. passive), sample sizes, intervention durations, or specific digital platforms used. Additionally, the screening process is inadequately described (no PRISMA flow diagram, no mention of full-text screening or conflict resolution).\n\n**Why it matters:** Without raw data or summary statistics, readers cannot assess the magnitude, clinical relevance, or precision of the estimates. The nature of the control group critically influences interpretation (e.g., waitlist controls often yield inflated effects). Lack of a PRISMA flow diagram and detailed screening workflow obscures potential selection bias.\n\n**Suggested Action:** Include a PRISMA flow diagram detailing the study selection process. Present a 'Characteristics of Included Studies' table summarizing N, age, sex, intervention type/duration, comparator type, and primary outcomes. Report effect sizes with 95% CIs for each study in the text or table."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion recommends broad health system adoption based on a review that lacks data on cost-effectiveness, long-term maintenance of effects, or adherence rates. It also fails to adequately contextualize the findings within current clinical guidelines.\n\n**Why it matters:** Clinical relevance extends beyond short-term symptom reduction. Digital interventions often suffer from high dropout rates. Recommending broad adoption without evidence of sustainability, economic viability, or long-term efficacy is premature and may lead to wasted resources.\n\n**Suggested Action:** Temper recommendations by discussing limitations regarding long-term follow-up and adherence. Suggest that further research on implementation science and cost-effectiveness is needed before broad health system mandates. Contextualize findings within existing guidelines (e.g., AASM, ESMRSL) which already recommend CBT-I as first-line."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract / Introduction",
+      "content_md": "**Problem:** The Abstract and Introduction are overly brief and lack necessary context. The Introduction does not define chronic insomnia, cite prevalence data, or explain the current standard of care. The Abstract lacks a structured format (Background, Methods, Results, Conclusion).\n\n**Why it matters:** Readers need context to understand the significance of the review and its contribution to the field. A structured abstract improves readability and information retrieval.\n\n**Suggested Action:** Expand the Introduction to include definition/burden of chronic insomnia, current first-line treatments, and rationale for digital delivery. Restructure the Abstract into Background, Methods, Results, and Conclusion sections with concise, specific details."
+    }
+  ]
+}

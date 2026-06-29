@@ -1,0 +1,51 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / STROBE-7, STROBE-12",
+      "content_md": "**Problem:** The manuscript fails to define or adjust for critical confounders, specifically smoking and alcohol consumption, which are strong risk factors for pancreatic cancer and highly correlated with coffee intake. The methods section states odds ratios were estimated by logistic regression but does not list the covariates included in the model.\n\n**Why it matters:** Without adjusting for smoking, the observed association (OR 1.8) is likely spurious or substantially overestimated. In epidemiological literature, failure to control for smoking in coffee-pancreatic cancer studies is a primary source of bias that invalidates causal inference.\n\n**Suggested Action:** Explicitly list all variables included in the multivariable logistic regression model (e.g., age, sex, smoking status, pack-years, alcohol intake, BMI). If these were not collected or adjusted for, the study cannot support its conclusions and must be re-analyzed or significantly qualified as unadjusted/hypothesis-generating only."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results / STROBE-16",
+      "content_md": "**Problem:** The results report a point estimate (OR 1.8) without providing measures of precision, such as 95% confidence intervals (CI) or p-values.\n\n**Why it matters:** Without confidence intervals, it is impossible to determine if the result is statistically significant or clinically precise. An OR of 1.8 with a wide CI (e.g., 0.5–6.0) would be non-significant and inconclusive, whereas a narrow CI would support a stronger association. Reporting only point estimates violates basic statistical reporting standards.\n\n**Suggested Action:** Report the 95% confidence intervals and p-values for all reported odds ratios. Include both unadjusted and fully adjusted estimates if applicable."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / STROBE-10",
+      "content_md": "**Problem:** The manuscript does not provide a sample size calculation or justification for the number of participants (240 cases, 240 controls).\n\n**Why it matters:** It is unclear if the study had sufficient statistical power to detect a meaningful effect size after adjusting for confounders. Without this information, the reliability of negative findings or marginal positive findings cannot be assessed.\n\n**Suggested Action:** Include a post-hoc power calculation or a pre-specified sample size justification in the Methods section, detailing the assumed effect size, alpha level, and power."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / STROBE-6, STROBE-7",
+      "content_md": "**Problem:** The selection of controls is described vaguely as 'other patients admitted to the same hospital' without specifying diagnoses or exclusion criteria. Additionally, the definition of 'heavy coffee drinking' (>3 cups/day) lacks detail on type of coffee (filtered vs. unfiltered), preparation method, and whether decaffeinated coffee was included.\n\n**Why it matters:** Hospital controls must be representative of the source population that produced the cases. If controls have conditions related to coffee consumption (e.g., gastrointestinal disorders), selection bias may occur. Furthermore, different coffee types have different chemical profiles; lumping them together reduces validity.\n\n**Suggested Action:** Detail the diagnoses of control patients and confirm they were not excluded for conditions associated with coffee intake. Define coffee exposure metrics clearly, including type, preparation, and caffeine content if available."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion / STROBE-19",
+      "content_md": "**Problem:** The discussion asserts a causal relationship ('Coffee raises the risk...') and recommends public health messaging without acknowledging major limitations, such as recall bias (interview after diagnosis), selection bias, or lack of adjustment for smoking.\n\n**Why it matters:** Case-control studies are observational and prone to bias. Claiming causality and issuing public health recommendations based on a single, potentially biased study is scientifically unsound and potentially harmful.\n\n**Suggested Action:** Rewrite the discussion to emphasize the observational nature of the findings. Explicitly discuss limitations including recall bias, potential residual confounding (especially smoking), and selection bias. Avoid causal language; use terms like 'associated with' instead of 'raises risk.' Do not recommend public health changes based on this single study."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract / STROBE-1b, STROBE-3",
+      "content_md": "**Problem:** The abstract is unbalanced and misleading. It highlights the positive finding (OR 1.8) but omits confidence intervals, p-values, adjustment details, and any mention of null findings or limitations. It lacks a clear statement of objectives.\n\n**Why it matters:** An informative abstract must provide a balanced summary of methods, results, and conclusions. Omitting precision metrics and limitations misleads readers about the strength and certainty of the evidence.\n\n**Suggested Action:** Rewrite the abstract to include: 1) Specific objectives/hypotheses; 2) Key methodological details (e.g., adjustment for confounders); 3) Results with 95% CIs and p-values; 4) A balanced conclusion that acknowledges limitations."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations / STROBE-22",
+      "content_md": "**Problem:** The 'Competing interests' section is present, but there is no statement regarding funding sources or the role of funders in study design, data collection, analysis, or manuscript preparation.\n\n**Why it matters:** Transparency about funding is essential for assessing potential bias. STROBE requires explicit disclosure of funding sources.\n\n**Suggested Action:** Add a 'Funding' section stating the source(s) of financial support and the role of funders in the study process."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "ensemble_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / PRISMA-ScR Items 5, 6, 7, 8, 9, 10, 11, 13",
+      "content_md": "**Missing Methodological Rigor and Search Transparency**: The manuscript fails to report essential methodological details required for a scoping review. Specifically, there is no mention of protocol registration (PRISMA-ScR-5), explicit eligibility criteria with rationale (PRISMA-ScR-6), or the full electronic search strategy including limits and dates (PRISMA-ScR-7, 8). Furthermore, the screening process (how duplicates were handled, conflict resolution) and data charting methods (who charted, what items were extracted) are absent (PRISMA-ScR-9, 10, 11, 13).\n\n**Why it matters**: Without a reproducible search strategy and clear inclusion/exclusion criteria, the review cannot be verified or replicated. The claim of including '38 papers' from PubMed is unverifiable without the search string and date range. This lack of transparency severely compromises the validity and utility of the review.\n\n**Suggested Action**: Expand the Methods section to fully comply with PRISMA-ScR guidelines. Include: (1) Protocol registration details or statement; (2) Detailed PCC framework defining Population, Concept, and Context; (3) Complete search string for PubMed with date of last search; (4) Description of the screening process (e.g., two independent reviewers); (5) List of data items charted."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results / PRISMA-ScR Items 14, 15, 18",
+      "content_md": "**Absence of Flow Diagram and Data Synthesis**: The Results section lacks a PRISMA flow diagram detailing the number of records identified, screened, assessed for eligibility, and included (PRISMA-ScR-14). It also fails to provide a charting table summarizing the characteristics of the 38 included sources (PRISMA-ScR-15) or a synthesized narrative linking results back to the review objectives (PRISMA-ScR-18).\n\n**Why it matters**: A scoping review’s primary value lies in mapping the existing literature. Without a flow diagram, readers cannot assess selection bias or the volume of excluded literature. Without a charting table or detailed synthesis, the reader cannot understand the diversity of AI applications (e.g., types of tutors, specific chatbot functions) or the quality/nature of the evidence base.\n\n**Suggested Action**: Add a PRISMA-ScR flow diagram. Create a comprehensive data extraction/charting table summarizing key features of the 38 studies (author, year, country, AI type, educational context, outcomes). Rewrite the Results section to narratively synthesize these findings according to the review questions."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / PRISMA-ScR Items 20, 21",
+      "content_md": "**Unsupported Conclusions and Lack of Limitations**: The Discussion claims AI is 'widely beneficial' and should be integrated 'immediately' into all curricula. This broad generalization is not supported by the sparse Results section, which only lists categories (tutoring, assessment, chatbots) without evidence of efficacy or outcomes. Additionally, the manuscript fails to discuss limitations of the scoping process itself (PRISMA-ScR-21).\n\n**Why it matters**: Scoping reviews map concepts; they do not typically appraise quality or determine effectiveness unless explicitly stated. Making strong prescriptive claims ('should be integrated immediately') based on a list of applications without outcome data is scientifically unsound. Ignoring limitations (e.g., single database, lack of critical appraisal) misleads readers about the strength of the evidence.\n\n**Suggested Action**: Tone down conclusions to reflect the descriptive nature of the review. Avoid prescriptive statements about curriculum integration unless supported by specific evidence in the included studies. Add a dedicated paragraph discussing limitations (e.g., restriction to PubMed, potential for publication bias, lack of quality appraisal)."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Introduction / PRISMA-ScR Items 3, 4",
+      "content_md": "**Missing Rationale and Objectives**: The Introduction does not provide a rationale for the review in the context of existing knowledge (PRISMA-ScR-3) nor does it state clear objectives using the PCC framework (PRISMA-ScR-4).\n\n**Why it matters**: Readers need to understand why this review is necessary now and what specific questions it aims to answer. Without a clear PCC framework, the scope of the review is ambiguous.\n\n**Suggested Action**: Rewrite the Introduction to include: (1) A brief background on AI in medical education and gaps in current literature; (2) Clear objectives framed using Population (undergraduate medical students), Concept (AI applications), and Context (educational settings)."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract / PRISMA-ScR Item 2",
+      "content_md": "**Non-Structured Abstract**: The abstract is not structured according to PRISMA-ScR guidelines, which require distinct sections for Background, Objectives, Eligibility criteria, Information sources, Charting methods, Results, and Conclusions.\n\n**Why it matters**: A structured abstract allows readers to quickly assess the review's scope, methods, and key findings. The current unstructured format obscures critical methodological details and makes it difficult to evaluate the review's adherence to standards.\n\n**Suggested Action**: Restructure the abstract into the required PRISMA-ScR headings: Background, Objectives, Eligibility criteria, Information sources, Charting methods, Results, and Conclusions."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Discussion",
+      "content_md": "**Limited Search Scope (Single Database)**: The review searched only PubMed. While PRISMA-ScR does not mandate multiple databases, searching only one major biomedical database may miss relevant literature from education-focused journals (e.g., ERIC, Scopus, Web of Science) that are not fully indexed in PubMed.\n\n**Why it matters**: This limits the comprehensiveness of the scoping review, potentially introducing selection bias and missing key studies on AI in medical education published in non-clinical or educational venues.\n\n**Suggested Action**: Justify the choice of only searching PubMed. If possible, expand the search to include at least one additional database relevant to education (e.g., ERIC) or acknowledge this as a significant limitation in the discussion."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Discussion / PRISMA-ScR Item 22",
+      "content_md": "**Missing Funding Statement**: The manuscript does not include a statement on sources of funding and the role of funders.\n\n**Why it matters**: Transparency regarding funding is essential for assessing potential conflicts of interest, especially in reviews that may influence educational policy.\n\n**Suggested Action**: Add a Funding section stating whether the review received financial support and, if so, the role of the funder. If no funding was received, state 'This study received no specific grant from any funding agency.'"
+    }
+  ]
+}

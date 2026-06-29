@@ -1,0 +1,63 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "persona_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Discussion",
+      "content_md": "**Problem**: The manuscript claims causality (\"Coffee increases pancreatic cancer risk\") and recommends public health policy changes based on a single hospital-based case-control study. This contradicts the broader scientific consensus (e.g., major prospective cohort studies showing null associations) and ignores the observational nature of the design.\n\n**Why it matters**: Case-control studies establish association, not causation. The leap to causal language and public health recommendations is unsupported by this single study, especially given potential biases (recall, selection) and confounding. Such claims are scientifically irresponsible and likely to cause confusion or harm.\n\n**Action**: Remove all causal language and public health policy recommendations. Replace with associative language (e.g., \"Higher coffee consumption was associated with...\"). Explicitly state that findings are hypothesis-generating and require confirmation in prospective cohorts or randomized trials. Reframe the discussion to acknowledge conflicting evidence from larger prospective studies."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The results report an Odds Ratio (OR) of 1.8 but fail to provide a 95% Confidence Interval (CI) or p-value.\n\n**Why it matters**: Without a CI, the precision of the estimate is unknown. Given the small sample size (N=480 total), the CI may be wide and include the null value (1.0), rendering the finding statistically non-significant. Reporting only the point estimate violates STROBE-16 and prevents assessment of statistical significance and clinical relevance.\n\n**Action**: Report the adjusted OR with its 95% CI and p-value. If the CI includes 1.0, acknowledge the lack of statistical significance in the discussion and abstract."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: The manuscript does not report whether the analysis was adjusted for key confounders, nor does it list which variables were considered. It fails to distinguish between unadjusted and adjusted estimates. Crucially, there is no evidence of adjustment for smoking (a strong risk factor for pancreatic cancer highly correlated with coffee) or diabetes.\n\n**Why it matters**: Without multivariable adjustment for these confounders, the observed association is likely spurious. STROBE-12 and STROBE-16 require description of statistical methods and reporting of adjusted estimates. Failure to adjust for smoking specifically threatens the internal validity of the study.\n\n**Action**: Specify all covariates included in the logistic regression model (especially smoking, pack-years, diabetes status). Present both unadjusted and fully adjusted ORs with 95% CIs. Justify the selection of confounders based on a directed acyclic graph (DAG) or prior literature."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The manuscript fails to define the eligibility criteria for controls or describe the selection process in sufficient detail. It states controls were \"other patients admitted to the same hospital\" but does not specify which diagnoses were included or excluded.\n\n**Why it matters**: In hospital-based case-control studies, control selection is a primary source of selection bias (Berkson’s bias). If controls are selected from conditions associated with coffee consumption (e.g., gastrointestinal disorders, cardiovascular issues) or where coffee might be contraindicated, the odds ratio will be biased. Without knowing the control diagnoses, it is impossible to assess whether the controls represent the source population.\n\n**Action**: Explicitly list the diagnostic categories included and excluded for the control group. Justify why these conditions are unlikely to be associated with coffee consumption or provide data on coffee intake prevalence in similar populations for these conditions."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The study lacks a clear definition of exposure timing and assessment method relative to diagnosis. It states lifetime consumption was ascertained by interview \"after diagnosis\" but does not address recall bias or specify if pre-diagnostic intake was estimated.\n\n**Why it matters**: Pancreatic cancer is often associated with weight loss and appetite changes prior to diagnosis. Cases may alter their coffee intake before diagnosis (reverse causation) or recall past habits differently than controls (recall bias). Without specifying how \"lifetime\" was operationalized or steps taken to minimize bias, the exposure metric is ambiguous and validity is threatened.\n\n**Action**: Describe the specific questions asked to assess pre-diagnostic coffee consumption. Explain steps taken to minimize recall bias (e.g., using validated food frequency questionnaires, asking about habitual intake 5+ years prior). Clarify if any cases with recent onset of symptoms affecting appetite were excluded."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: No sample size calculation or power analysis is provided.\n\n**Why it matters**: STROBE-10 requires explanation of how the study size was arrived at. With 240 cases, the study may be underpowered to detect small-to-moderate effects after adjustment for multiple confounders, increasing the risk of Type II error or unstable estimates (overfitting).\n\n**Action**: Provide a post-hoc power calculation or justify the sample size based on expected effect sizes and prevalence of exposure. Discuss the limitations of small sample size in the discussion."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract / Title",
+      "content_md": "**Problem**: The title and abstract do not clearly indicate the study design as \"case-control\" in a way that aligns with STROBE-1a, and the abstract lacks balanced reporting of limitations.\n\n**Why it matters**: Readers need to immediately understand the observational nature of the study to interpret the evidence correctly. The current abstract is misleadingly definitive and omits key methodological details (setting, time period, confounders).\n\n**Action**: Revise the title to include \"A Case-Control Study\". Expand the abstract to include the study setting, time frame, specific exposure definition, key confounders adjusted for, 95% CIs for the main result, and a sentence on key limitations (e.g., small sample size, potential confounding)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The discussion fails to acknowledge major limitations, specifically recall bias (exposure ascertained after diagnosis), selection bias regarding control recruitment, and residual confounding.\n\n**Why it matters**: Ignoring these standard limitations in case-control studies undermines the credibility of the findings. A balanced discussion is required by STROBE-19 to contextualize the results appropriately.\n\n**Action**: Add a dedicated limitations section discussing potential recall bias, selection bias regarding control recruitment, and residual confounding (particularly by smoking). Avoid causal interpretations."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: Funding sources are not declared.\n\n**Why it matters**: STROBE-22 requires disclosure of funding sources and their role. Even if there is no conflict, the source of funds must be stated to ensure transparency.\n\n**Action**: Add a specific statement: \"This study received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.\""
+    }
+  ]
+}

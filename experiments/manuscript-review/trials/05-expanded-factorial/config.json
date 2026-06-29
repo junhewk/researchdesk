@@ -1,0 +1,10 @@
+{
+  "trial": "05-expanded-factorial",
+  "date": "2026-06-29",
+  "purpose": "Scale the persona-vs-context factorial for inference (CIs). 6 new manuscripts (case-control, cross-sectional, diagnostic, prediction/TRIPOD, scoping review, RCT) pooled with trial 02 (4 manuscripts) → 10 manuscripts x 6 arms x 2 reps on the deployable model.",
+  "base_model": "qwen3.6-27b-mtp-q8 (local llama-server)",
+  "context_arm_grounding": "reporting-guideline checklist (identical to trials 01/02 — pools with trial 02)",
+  "judge": "Claude (blinded)",
+  "manuscripts": 6, "reps": 2, "arm_runs": 72,
+  "pools_with": "trials/02-qwen3_6-27b-checklist (4 manuscripts) → 10 manuscripts total for the mixed-effects analysis"
+}

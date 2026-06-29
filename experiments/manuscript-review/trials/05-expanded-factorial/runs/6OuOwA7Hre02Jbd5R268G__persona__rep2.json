@@ -1,0 +1,51 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is critically underreported and lacks reproducibility. The manuscript states only that PubMed was searched without providing specific search strings, Boolean operators, MeSH terms, date ranges, or filters. Furthermore, no protocol registration (e.g., PROSPERO, OSF) is mentioned.\n\n**Why it matters:** In scoping reviews, transparency and reproducibility are paramount. Without a detailed search strategy, the review cannot be replicated, and selection bias cannot be assessed. Relying solely on PubMed may miss relevant literature in other databases (e.g., ERIC, CINAHL, Embase, Scopus), leading to an incomplete scope.\n\n**Suggested Action:** Provide the full search syntax for PubMed, including keywords and filters. Justify the choice of database(s) or expand the search to include multidisciplinary and education-specific databases. Register the protocol prior to or alongside submission."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Inclusion and exclusion criteria are vague and lack operational definitions. Key terms such as \"Artificial Intelligence,\" \"undergraduate medical education,\" and study types (e.g., empirical vs. editorial) are not explicitly defined. There is no mention of language restrictions, publication date limits, or how studies were screened (e.g., single vs. dual reviewers, conflict resolution).\n\n**Why it matters:** Ambiguous criteria lead to inconsistent selection of papers and high risk of reviewer bias. Without clear definitions, non-AI technologies might be included, or sophisticated AI excluded based on subjective interpretation. The lack of a documented screening process prevents assessment of inter-rater reliability.\n\n**Suggested Action:** Define \"Artificial Intelligence\" and \"undergraduate medical education\" explicitly. Detail all inclusion/exclusion criteria (language, study design, dates). Describe the screening process, including the number of reviewers and conflict resolution methods. Provide a PRISMA flow diagram detailing the numbers of records identified, screened, assessed for eligibility, and included."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** No data extraction or synthesis methodology is described. The manuscript states findings were summarized but provides no protocol for how data was extracted, who performed it, or how conflicts were resolved. Consequently, the Results section lacks a structured synthesis.\n\n**Why it matters:** Scoping reviews require systematic charting of evidence. Lack of a documented extraction process introduces measurement bias and reduces reliability. It is impossible to assess if the included studies were analyzed consistently or if the synthesis reflects the actual body of evidence.\n\n**Suggested Action:** Describe the data extraction framework (variables extracted). State whether dual independent review was used for screening and extraction. Report any inter-rater reliability metrics if applicable."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section is devoid of substantive data and fails to map the evidence base. It merely lists broad categories (tutoring, assessment, chatbots) without reporting key variables such as study design, sample sizes, AI modalities, educational outcomes, or quality of evidence for the included 38 papers.\n\n**Why it matters:** A scoping review aims to map the extent and nature of research. Simply listing topics does not allow readers to understand the quantity, distribution, or gaps in existing research. Without data extraction tables or thematic/quantitative synthesis, the summary is anecdotal rather than analytical.\n\n**Suggested Action:** Present a structured summary of the included studies (e.g., table with author, year, AI type, educational context, key findings). Use narrative synthesis supported by tables or figures to describe the distribution of evidence types and outcomes. Report on the heterogeneity of the included studies."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract & Discussion",
+      "content_md": "**Problem:** The conclusion that AI \"is widely beneficial\" and \"should be integrated into all undergraduate curricula immediately\" is a strong policy recommendation not supported by the descriptive nature of the review. The results provide no data on efficacy, safety, comparative effectiveness, or student outcomes.\n\n**Why it matters:** Making causal or prescriptive claims from a scoping review overstates the evidence. It ignores potential harms, implementation barriers, cost-effectiveness, or lack of efficacy in the included studies. This misleads readers about the strength of the evidence and constitutes a logical fallacy given the lack of synthesized outcome data.\n\n**Suggested Action:** Reframe the Abstract and Discussion to highlight gaps in the current literature and suggest areas for future rigorous empirical research (e.g., RCTs). Avoid prescriptive policy recommendations unless supported by high-quality evidence within the included studies. Use cautious language reflecting that the review maps applications rather than proving benefit."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Methods",
+      "content_md": "**Problem:** The manuscript does not adhere to standard reporting guidelines for scoping reviews (PRISMA-ScR). Key elements such as protocol registration, eligibility criteria details, information sources, search strategy, selection process, and data charting process are missing or inadequately reported.\n\n**Why it matters:** Adherence to PRISMA-ScR ensures that all critical elements of the review process are reported, enhancing transparency and utility for readers and policymakers. Its absence suggests a lack of methodological rigor and makes it difficult to assess the validity of the review.\n\n**Suggested Action:** Structure the manuscript according to the PRISMA-ScR checklist. Include explicit sections or statements on protocol registration, eligibility criteria, information sources, search strategy, selection process, and data charting process."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion makes prescriptive claims without addressing limitations, risks, or ethical considerations associated with AI in education. It presents a skewed view by ignoring potential drawbacks such as bias in AI algorithms, lack of faculty training, equity issues, or implementation barriers.\n\n**Why it matters:** A balanced review must acknowledge the complexity of the topic. Ignoring potential drawbacks undermines the credibility of the review and fails to provide a comprehensive overview for stakeholders.\n\n**Suggested Action:** Add a paragraph discussing limitations of the current literature and the review itself. Include a discussion on challenges to implementation, such as ethical concerns, equity issues, or the need for further empirical research before widespread integration."
+    }
+  ]
+}

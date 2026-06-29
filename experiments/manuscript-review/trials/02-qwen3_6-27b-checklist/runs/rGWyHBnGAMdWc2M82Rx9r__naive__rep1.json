@@ -1,0 +1,45 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract, Discussion",
+      "content_md": "**Problem:** The manuscript claims that physical activity *directly lowers* depression risk and should be prescribed as *first-line prevention*, implying causality. However, the study is an observational prospective cohort with self-reported exposure.\n\n**Why it matters:** Observational studies cannot establish causality due to potential confounding (e.g., baseline health status, socioeconomic factors, social engagement) and reverse causation (though incident depression was measured, subclinical symptoms at baseline could influence activity levels). Claiming 'first-line prevention' is a strong clinical recommendation not supported by this level of evidence.\n\n**Suggested action:** Tone down causal language throughout the Abstract and Discussion. Use terms like 'associated with lower risk' rather than 'lowers risk.' Remove the recommendation for 'first-line prevention' or qualify it heavily as hypothesis-generating, noting that randomized controlled trials are needed to confirm efficacy before clinical guidelines can be updated."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The manuscript fails to report adjustment for confounders. The Methods state Cox models were fit with 'activity tertile as the exposure' but do not list covariates (e.g., age, sex, BMI, comorbidities, socioeconomic status) included in the model.\n\n**Why it matters:** Without adjusting for key confounders, the observed association (HR 0.72) may be spurious or biased. For example, more active older adults may have better overall health and social support, which are independent protective factors against depression.\n\n**Suggested action:** Clearly specify all covariates included in the multivariable Cox models. Provide a table comparing baseline characteristics across activity tertiles to demonstrate balance or justify adjustments. If no adjustment was made, acknowledge this as a major limitation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The outcome definition relies partly on a self-reported Geriatric Depression Scale (GDS) score ≥ 5 at annual follow-up, without mentioning clinical verification for all cases.\n\n**Why it matters:** Self-report questionnaires are subject to recall bias and may not distinguish between transient low mood and clinical depression. While the Methods mention 'new clinical diagnosis' as an alternative criterion, it is unclear how many cases were diagnosed clinically vs. by questionnaire alone. This affects the validity of the outcome measure.\n\n**Suggested action:** Clarify the proportion of incident cases identified by clinical diagnosis versus GDS score alone. Consider conducting sensitivity analyses excluding cases identified only by GDS if clinical verification was not performed for all."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** Exposure (physical activity) is measured only at baseline and categorized into tertiles. There is no mention of assessing changes in activity over time or handling missing data for follow-up visits.\n\n**Why it matters:** Physical activity levels can change significantly over 4.2 years, especially in older adults due to health declines. Using only baseline exposure may lead to misclassification bias (non-differential or differential). Additionally, excluding 14 participants from the initial 512 without explanation raises concerns about selection bias.\n\n**Suggested action:** Report reasons for exclusion of the 14 participants. Discuss the limitation of using only baseline activity measures. If possible, present sensitivity analyses using time-updated exposure data if available."
+    },
+    {
+      "category": "evidence",
+      "severity": "minor",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section lacks confidence intervals for the hazard ratio and does not report results for intermediate tertiles.\n\n**Why it matters:** Confidence intervals are essential to assess the precision of the estimate. Reporting only the highest vs. lowest tertile hides potential dose-response relationships or non-linear effects.\n\n**Suggested action:** Include 95% confidence intervals for all reported hazard ratios. Present results for each activity tertile (e.g., HR for middle tertile vs. lowest) to evaluate trend."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The Introduction is extremely brief and lacks a clear hypothesis statement or review of prior literature gaps.\n\n**Why it matters:** A strong introduction should contextualize the study within existing evidence, identify specific gaps (e.g., 'limited prospective data in community-dwelling adults aged 65+'), and state the research question/hypothesis clearly.\n\n**Suggested action:** Expand the Introduction to include a brief review of relevant prior studies, explicitly state the gap this study addresses, and articulate the primary hypothesis."
+    }
+  ]
+}

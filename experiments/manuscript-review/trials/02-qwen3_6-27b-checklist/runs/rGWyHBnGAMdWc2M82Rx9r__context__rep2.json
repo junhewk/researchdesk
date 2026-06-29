@@ -1,0 +1,51 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods/Results",
+      "content_md": "**Missing Confounder Adjustment and Reporting (STROBE-12, STROBE-16)**\n\nThe manuscript reports a crude hazard ratio (HR 0.72) derived from Cox models but fails to describe or present any adjustment for potential confounders. In observational studies of physical activity and depression, key confounders such as age, sex, socioeconomic status, baseline health status/comorbidities, social isolation, and cognitive function are critical. Without adjustment, the observed association is likely biased by these factors.\n\n**Why it matters:** This violates STROBE-12 (statistical methods for controlling confounding) and STROBE-16 (reporting adjusted estimates). A crude HR in this context is scientifically insufficient to support causal inference or clinical recommendations. The claim that activity \"directly lowers\" risk is unsupported by unadjusted data.\n\n**Suggested Action:**\n1. Perform multivariable Cox regression adjusting for key confounders (e.g., age, sex, education, comorbidities).\n2. Report both crude and adjusted hazard ratios with 95% confidence intervals in the Results.\n3. Revise the Discussion to reflect the observational nature of the association, avoiding causal language like \"directly lowers\" unless mediation analysis or rigorous confounding control is demonstrated."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Inadequate Definition of Exposure and Outcome (STROBE-7)**\n\nThe Methods state that physical activity was \"categorized into tertiles\" but do not define the metric used (e.g., MET-minutes/week, frequency, intensity). Similarly, incident depression is defined as GDS ≥ 5 or new clinical diagnosis, but there is no clarification on how \"new clinical diagnosis\" was verified (medical records vs. self-report) or if GDS scores were validated against a gold-standard diagnostic interview.\n\n**Why it matters:** STROBE-7 requires clear definitions of exposures and outcomes. Without knowing the intensity/duration threshold for the \"highest tertile,\" the findings cannot be replicated or translated into clinical guidelines (e.g., \"how much\" exercise is needed?). Ambiguity in outcome ascertainment introduces misclassification bias.\n\n**Suggested Action:**\n1. Specify the physical activity metric and the values defining each tertile (e.g., Tertile 1: <150 min/week).\n2. Clarify the source of data for \"clinical diagnosis\" (e.g., physician records, pharmacy claims) and whether GDS was used as a screening tool only or diagnostic proxy."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Missing Sample Size Justification (STROBE-10)**\n\nThe manuscript does not explain how the sample size of 512 participants was determined. There is no mention of a power calculation or rationale for the chosen cohort size.\n\n**Why it matters:** STROBE-10 requires explanation of study size derivation. Without this, readers cannot assess whether the study had adequate power to detect the reported effect size (HR 0.72) or if the null findings in subgroups (if any) are due to type II error.\n\n**Suggested Action:** Add a sentence in the Methods describing the sample size calculation, including assumptions about event rate, effect size, alpha, and power."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Failure to Discuss Limitations and Bias (STROBE-19)**\n\nThe Discussion makes strong causal claims (\"clinicians should prescribe structured exercise\") but omits any discussion of limitations. Key issues such as reverse causation (subclinical depression reducing activity before baseline), residual confounding, self-reported exposure bias, and loss to follow-up are not addressed.\n\n**Why it matters:** STROBE-19 mandates discussion of limitations. Overstating causal inference in an observational study without acknowledging bias sources undermines scientific integrity and may mislead clinical practice.\n\n**Suggested Action:** Add a dedicated paragraph discussing limitations, including: (1) potential reverse causation, (2) reliance on self-reported physical activity, (3) residual confounding despite adjustments, and (4) generalizability to community-dwelling older adults only."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Incomplete Participant Flow and Attrition Reporting (STROBE-13)**\n\nThe Results state that 498 of 512 participants were included, but do not explain why 14 were excluded. Furthermore, there is no mention of loss to follow-up during the 4.2-year period or how missing data were handled.\n\n**Why it matters:** STROBE-13 requires reporting numbers at each stage. Exclusion criteria and attrition rates impact internal validity (selection bias) and external validity. Without this, the risk of bias cannot be assessed.\n\n**Suggested Action:**\n1. Provide a flow diagram or text description detailing: number screened, excluded (with reasons), analyzed, and lost to follow-up.\n2. Report the number of participants with complete data for all variables used in the final model."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Abstract/Introduction",
+      "content_md": "**Vague Study Objectives (STROBE-3)**\n\nThe Introduction states the aim is to \"examine the association\" but does not specify pre-specified hypotheses or secondary outcomes. The Abstract mentions \"older adults\" but the Methods specify \"65 and older,\" which is inconsistent in precision.\n\n**Why it matters:** STROBE-3 requires specific objectives. Clear hypotheses help distinguish exploratory from confirmatory analyses, reducing data dredging concerns.\n\n**Suggested Action:** Clearly state the primary hypothesis (e.g., \"We hypothesized that higher leisure-time physical activity is associated with lower incident depression risk\") and list any secondary analyses."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Missing Funding Source (STROBE-22)**\n\nThe Declarations state \"no competing interests\" but omit the funding source. STROBE-22 requires disclosure of funding sources and their role.\n\n**Why it matters:** Transparency regarding funding is essential for assessing potential bias.\n\n**Suggested Action:** Add a statement identifying the funding agency (or stating 'self-funded' if applicable) and confirming that funders had no role in study design, analysis, or writing."
+    }
+  ]
+}

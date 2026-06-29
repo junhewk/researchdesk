@@ -1,0 +1,51 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "ensemble_naive",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is critically under-specified and potentially biased. The manuscript states only that \"PubMed\" was searched, omitting essential details such as specific search terms/keywords, Boolean operators, MeSH terms, date ranges, and inclusion/exclusion criteria. Furthermore, there is no justification for limiting the search to a single database (PubMed), which likely introduces significant selection bias by missing relevant literature in education-specific or multidisciplinary databases (e.g., ERIC, Scopus, Web of Science). There is also no mention of protocol registration (e.g., Open Science Framework).\n\n**Why it matters:** Without a reproducible search strategy and justification for database selection, the review cannot be verified or replicated. Limiting the search to PubMed alone compromises the validity of the claim that this is a comprehensive \"scoping\" review.\n\n**Suggested Action:** Provide the full search string used for PubMed. Specify the date range of the search. Justify why only PubMed was used or explain if other databases were searched but yielded no additional results (preferably, expand the search to include relevant multidisciplinary/education databases). Register the review protocol if not already done."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The methodology lacks description of the study selection process (screening) and data extraction procedures. There is no mention of whether two independent reviewers screened titles/abstracts and full texts, nor how disagreements were resolved. No data extraction form, variables, or quality appraisal/charting approach are described. Additionally, there is no PRISMA flow diagram or narrative describing the number of records identified, screened, assessed for eligibility, and included.\n\n**Why it matters:** Single-reviewer screening introduces high risk of bias and error. Without a clear data extraction framework and transparent selection process (e.g., PRISMA-ScR compliance), the synthesis of findings is arbitrary, unreliable, and unverifiable.\n\n**Suggested Action:** Describe the screening process (e.g., two independent reviewers, use of PRISMA flow diagram). Detail the data extraction fields used (e.g., study design, AI type, educational outcome, sample size) and any quality appraisal methods. Include a PRISMA flow diagram or equivalent narrative detailing the selection stages."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section is severely deficient. It merely lists the number of included papers (38) and three broad categories (tutoring, assessment, chatbots). It fails to provide a descriptive synthesis of the evidence, such as study designs, sample sizes, specific AI technologies used, reported outcomes, effect sizes, or quality of evidence. There is no quantitative or qualitative data presented from the included studies.\n\n**Why it matters:** A scoping review aims to map the existing literature. Simply counting papers and listing categories does not fulfill this purpose. Readers cannot understand the scope, depth, nature, or effectiveness of AI applications in medical education without detailed results.\n\n**Suggested Action:** Present a comprehensive summary of the included studies. Use tables or charts to display study characteristics (year, country, design, sample size). Synthesize findings by theme or AI application type, detailing what each study found regarding effectiveness, implementation challenges, student perceptions, and specific educational outcomes."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes an unsupported, absolute claim: \"AI... should be integrated into all undergraduate curricula immediately.\" This conclusion is not grounded in the results presented (which are barely described) and ignores potential risks, ethical concerns (e.g., data privacy, algorithmic bias), cost barriers, faculty readiness, or evidence of ineffectiveness/harm that may exist in the literature.\n\n**Why it matters:** Scoping reviews typically map knowledge gaps rather than make definitive policy recommendations. Making a strong prescriptive claim without critical appraisal of the evidence quality or discussion of limitations is scientifically unsound and potentially misleading for educators.\n\n**Suggested Action:** Tone down the recommendation to reflect the exploratory nature of a scoping review. Discuss the variability in findings, potential barriers to implementation (e.g., infrastructure, faculty training), and ethical considerations. Recommend further research rather than immediate universal integration."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The manuscript lacks a section on limitations of the review itself (e.g., single database, potential publication bias, heterogeneity of included studies) and implications for future research. It also fails to critically analyze methodological limitations of the included studies or identify specific research gaps.\n\n**Why it matters:** Acknowledging limitations is crucial for interpreting the validity of the findings. Identifying gaps in the literature and critiquing the state of the field are key outputs of scoping reviews. Ignoring these aspects undermines the scholarly value of the manuscript.\n\n**Suggested Action:** Add a subsection detailing the methodological limitations of this review. Discuss specific gaps identified in the literature (e.g., lack of long-term outcome studies, limited diversity in AI types) and propose directions for future research. Critically appraise the limitations of the primary studies included."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is overly brief and lacks structure (Background, Methods, Results, Conclusion). It does not mention the review protocol, specific search dates, key methodological details, or specific thematic findings beyond a general statement.\n\n**Why it matters:** A structured abstract allows readers to quickly assess the relevance and rigor of the study. Missing details reduce the utility of the abstract for indexing and screening, failing to convey the scope or nuanced findings of the review.\n\n**Suggested Action:** Rewrite the abstract using a standard structure (e.g., PRISMA-S or journal-specific guidelines). Include key methodological details (databases, dates, number of screened vs. included studies) and specific thematic findings from the results."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Manuscript (General)",
+      "content_md": "**Problem:** The manuscript lacks references to the 38 included papers.\n\n**Why it matters:** Readers cannot verify the sources or explore the literature further without a reference list. This is a fundamental requirement for academic integrity and reproducibility.\n\n**Suggested Action:** Include a complete reference list of all 38 included studies, formatted according to the target journal's guidelines."
+    }
+  ]
+}

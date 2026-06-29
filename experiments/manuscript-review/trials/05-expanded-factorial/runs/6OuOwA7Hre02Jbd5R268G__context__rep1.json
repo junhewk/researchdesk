@@ -1,0 +1,45 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is unstructured and lacks the required components of a scoping review summary. It fails to report eligibility criteria, sources searched, charting methods, or detailed results.\n\n**Why it matters:** PRISMA-ScR Item 2 requires a structured summary including background, objectives, eligibility, sources, charting, results, and conclusions. Without this, readers cannot assess the scope or validity of the review.\n\n**Suggested Action:** Rewrite the abstract using a structured format with explicit headings: Background, Objectives, Eligibility Criteria, Information Sources, Methods (Charting), Results, and Conclusions."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction lacks a clear rationale contextualizing the review within existing literature and does not state objectives using the PCC (Population, Concept, Context) framework.\n\n**Why it matters:** PRISMA-ScR Items 3 and 4 require the authors to justify why the review is needed now and to clearly define the scope using PCC. This ensures the review addresses a specific gap rather than being a general overview.\n\n**Suggested Action:** Add a paragraph summarizing current knowledge gaps regarding AI in medical education. Explicitly state the review objectives by defining the Population (e.g., undergraduate medical students), Concept (AI applications), and Context (undergraduate curricula)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The methods section omits critical details: protocol registration, full search strategy, screening process, data charting procedures, and synthesis methods.\n\n**Why it matters:** PRISMA-ScR Items 5, 8, 9, 10, 11, and 13 are essential for reproducibility. Without the full search string, date of last search, and description of how studies were screened and data extracted, the review cannot be replicated or verified.\n\n**Suggested Action:** Include a statement on protocol registration (e.g., OSF). Provide the full electronic search strategy for PubMed (including MeSH terms and keywords). Describe the screening process (number of reviewers, conflict resolution), data charting fields, and how findings were synthesized."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section lacks a PRISMA flow diagram, a charting table of included studies, and quantitative/qualitative synthesis aligned with objectives.\n\n**Why it matters:** PRISMA-ScR Items 14, 15, and 18 require transparent reporting of the selection process (screened vs. included), characteristics of the evidence base, and a synthesis of findings. The current text provides only a count and vague categories.\n\n**Suggested Action:** Insert a PRISMA flow diagram showing the number of records identified, screened, assessed for eligibility, and included. Provide a table summarizing key characteristics of the 38 included studies (author, year, AI type, educational outcome). Synthesize results by theme or PCC element."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes unsupported, absolute claims ('AI is broadly beneficial... should be integrated... immediately') without acknowledging limitations or nuances.\n\n**Why it matters:** PRISMA-ScR Item 21 requires reporting limitations of the scoping process. Furthermore, scoping reviews map evidence; they do not typically provide definitive practice guidelines unless supported by rigorous synthesis. The claim lacks critical appraisal of study quality (Item 12) and ignores potential harms or implementation barriers.\n\n**Suggested Action:** Tone down absolute recommendations. Discuss the heterogeneity of the included studies, limitations of the scoping approach (e.g., lack of quality assessment), and gaps in the literature. Frame conclusions as 'AI shows promise in X areas' rather than mandating immediate integration."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Manuscript End",
+      "content_md": "**Problem:** Funding sources and the role of funders are not reported.\n\n**Why it matters:** PRISMA-ScR Item 22 requires disclosure of funding to assess potential conflicts of interest.\n\n**Suggested Action:** Add a 'Funding' section stating whether the work was funded, by whom, and the funder's role in study design, analysis, or writing."
+    }
+  ]
+}

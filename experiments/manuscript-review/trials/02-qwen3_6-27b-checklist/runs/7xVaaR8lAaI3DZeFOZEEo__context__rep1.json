@@ -1,0 +1,45 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Verification Bias (Workup Bias) invalidates diagnostic accuracy estimates.**\n\n**Why it matters:** The manuscript states that the reference standard (ophthalmologist examination) was performed *only* on participants flagged as referable by the AI and a sample of those cleared. This is a classic verification bias design. Participants who tested negative on the index test (AI) but were not sampled for the reference standard are assumed to be true negatives without verification. If the AI misses cases (false negatives), these will be incorrectly classified as true negatives, artificially inflating sensitivity and deflating specificity. Consequently, the reported sensitivity of 0.89 and specificity of 0.91 are likely biased and unreliable.\n\n**Suggested Action:** The authors must acknowledge this bias in the Discussion as a major limitation. Ideally, they should re-analyze the data using methods that account for verification bias (e.g., multiple imputation or Bayesian latent class models) if the 'sample of those cleared' allows for statistical adjustment. If not, the claims of accuracy must be significantly tempered, and the study should be framed as a preliminary pilot requiring validation with full reference standard verification for all participants."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results / Discussion",
+      "content_md": "**Problem: Unsupported clinical recommendation and overstatement of readiness.**\n\n**Why it matters:** The Discussion concludes that \"smartphone AI can replace specialist screening in primary care\" and that \"wider rollout should proceed.\" This conclusion is not supported by the evidence provided. First, due to the verification bias noted above, the accuracy metrics are unreliable. Second, a single-center study with 410 participants does not establish generalizability across different demographics, lighting conditions, or smartphone models. Third, replacing specialist screening requires rigorous evaluation of safety, cost-effectiveness, and workflow integration, which are absent here.\n\n**Suggested Action:** Rewrite the Discussion to reflect the preliminary nature of the findings. Remove the call for immediate wider rollout. Instead, recommend that these findings justify a larger, multi-center validation study with full reference standard verification before considering clinical deployment."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Inadequate reporting of Index Test and Reference Standard details (STARD 10a, 11).**\n\n**Why it matters:** The manuscript lacks sufficient detail for replication. It does not specify the smartphone model, camera specifications, lighting conditions, or the specific AI algorithm version used. For the reference standard, it does not define how 'referable' diabetic retinopathy was graded (e.g., ETDRS scale level), nor does it state whether the ophthalmologist was masked to the AI result.\n\n**Suggested Action:** Provide detailed specifications of the smartphone hardware and software version. Clearly define the reference standard criteria for referable DR (e.g., moderate non-proliferative DR or worse). State explicitly whether the reference standard assessment was blinded to the index test results."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing cross-tabulation of results (STARD 17).**\n\n**Why it matters:** The Results section reports only sensitivity and specificity. It does not provide the contingency table (true positives, false positives, true negatives, false negatives). Without this, readers cannot verify the calculations, assess the prevalence of disease in the sample, or calculate predictive values.\n\n**Suggested Action:** Include a 2x2 table showing the number of participants in each category: TP, FP, TN, FN. If some participants were excluded due to poor image quality or indeterminate results, report these numbers separately as per STARD 14."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem: Unclear handling of indeterminate or poor-quality images (STARD 14).**\n\n**Why it matters:** Smartphone photography is prone to motion blur and poor focus. The manuscript does not state how many images were rejected due to poor quality, nor how these were handled in the analysis. Excluding poor-quality images without reporting can introduce selection bias.\n\n**Suggested Action:** Report the number of participants excluded due to non-diagnostic image quality. Describe the criteria for 'non-diagnostic' and explain whether these exclusions were applied before or after reference standard verification."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Abstract / Title",
+      "content_md": "**Problem: Lack of clarity on study design in Title/Abstract (STARD 1).**\n\n**Why it matters:** The abstract does not clearly identify the study as a diagnostic accuracy study with specific limitations. It presents the findings as definitive.\n\n**Suggested Action:** Modify the Abstract to explicitly state the study design (e.g., 'single-center diagnostic accuracy study') and briefly mention the verification bias limitation in the conclusion."
+    }
+  ]
+}

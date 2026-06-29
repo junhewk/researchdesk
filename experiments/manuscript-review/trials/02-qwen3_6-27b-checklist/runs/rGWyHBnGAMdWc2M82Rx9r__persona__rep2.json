@@ -1,0 +1,63 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion, Abstract",
+      "content_md": "**Problem:** The manuscript makes unwarranted causal claims, stating that physical activity \"directly lowers depression risk\" and recommending it as \"first-line prevention.\" \n\n**Why it matters:** This is an observational cohort study, which cannot establish causality due to potential residual confounding (e.g., healthy user bias, socioeconomic status) and reverse causation (e.g., subclinical symptoms reducing activity prior to diagnosis). Such strong causal language overstates the evidence and may mislead clinical guidelines. \n\n**Suggested Action:** Rewrite the discussion and abstract to reflect associative findings only (e.g., \"associated with lower risk\"). Acknowledge that causal inference is limited by study design and recommend further randomized controlled trials before endorsing definitive first-line preventive interventions."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Outcomes",
+      "content_md": "**Problem:** The outcome definition for incident depression relies on a self-reported screening tool (GDS ≥ 5) without verification by clinical interview or diagnostic criteria (e.g., DSM-5/ICD-10). \n\n**Why it matters:** A GDS cutoff of 5 is a screening threshold, not a diagnostic one. Using this as the sole definition for 'incident depression' introduces significant measurement error and misclassification bias, likely inflating incidence rates with subclinical symptoms or transient mood states rather than true clinical depression. This severely undermines internal validity.\n\n**Suggested Action:** Clarify if GDS-positive participants underwent confirmatory clinical assessment. If not, reframe the outcome as 'screening-positive for depressive symptoms' rather than 'incident depression,' and discuss the limitation regarding diagnostic specificity."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** Inadequate adjustment for confounding. The Methods state that Cox models were fit with activity tertile as the exposure, but do not list the specific covariates included (e.g., age, sex, baseline comorbidities, socioeconomic status, social isolation). \n\n**Why it matters:** Observational associations between lifestyle factors and health outcomes are highly susceptible to confounding by indication and healthy user bias. Without multivariable adjustment for these strong confounders, the reported Hazard Ratio (0.72) is likely biased, and the inference that physical activity *itself* is protective is invalid.\n\n**Suggested Action:** Report the specific covariates included in the multivariable Cox models. Provide both unadjusted and adjusted Hazard Ratios with 95% Confidence Intervals (CIs). If no adjustment was made, this study cannot support its conclusions and must be re-analyzed or significantly downgraded in interpretation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Exposure",
+      "content_md": "**Problem:** Leisure-time physical activity is measured only at baseline using a self-reported questionnaire, with no mention of updates during follow-up or objective validation.\n\n**Why it matters:** Physical activity is highly dynamic. A single baseline measure in a 4.2-year cohort leads to non-differential misclassification (bias toward the null) and fails to capture changes in activity levels that may precede depression onset (reverse causality bias). Self-report is also subject to recall and social desirability bias.\n\n**Suggested Action:** Acknowledge the limitation of single-time-point self-reported exposure. If possible, perform sensitivity analyses excluding events occurring within the first 1–2 years to mitigate reverse causality."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** Missing handling of missing data, exclusion criteria, and participant flow. The Abstract states 512 participants were followed, but the Results state 498 were included in the analysis (14 excluded). The manuscript does not explain why these 14 participants were excluded or how missing data during follow-up were handled.\n\n**Why it matters:** Excluding participants without justification can introduce selection bias. If the 14 excluded individuals differed systematically from those retained (e.g., had higher depression risk), the incidence rate and hazard ratios may be biased. Furthermore, unknown attrition rates prevent assessment of selection bias; if those who dropped out were less active or more depressed, results may be skewed.\n\n**Suggested Action:** Provide a CONSORT-style flow diagram or table detailing participant inclusion/exclusion. Explicitly state how missing data at baseline and during follow-up were handled. Conduct a sensitivity analysis to assess if exclusions impacted the results."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** Lack of statistical precision and reporting standards. The Abstract and Results report Hazard Ratios with p-values (p < 0.05) but omit 95% Confidence Intervals (CIs). Additionally, the effect is reported as a single HR for the highest tertile vs. lowest, without testing for trend or providing estimates for the middle tertile.\n\n**Why it matters:** P-values alone do not convey the precision of the estimate or the clinical magnitude of the effect. CIs are essential for assessing whether the result is statistically significant and practically meaningful. Reporting only the highest vs. lowest tertile obscures the dose-response relationship (if any) and reduces transparency.\n\n**Suggested Action:** Report 95% Confidence Intervals for all Hazard Ratios. Present HRs for both the middle and highest tertiles compared to the reference group. Include a test for linear trend if appropriate."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Attrition",
+      "content_md": "**Problem:** There is no reporting of participant attrition, loss to follow-up, or competing risks (e.g., death) over the 4.2-year period.\n\n**Why it matters:** In older adults, mortality is a significant competing risk for depression. Ignoring this can bias hazard ratios. Additionally, unknown attrition rates prevent assessment of selection bias.\n\n**Suggested Action:** Report the number of participants lost to follow-up and reasons for loss. Consider using Fine-Gray subdistribution hazards models to account for death as a competing risk, or at least discuss this limitation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** No justification of sample size or power calculation. The manuscript does not state whether the study was powered to detect the observed effect size (HR 0.72).\n\n**Why it matters:** With only 96 events, the study may be underpowered to detect modest effects or adjust for multiple covariates without overfitting. Overfitting can lead to optimistic bias in the estimated hazard ratios.\n\n**Suggested Action:** Provide a post-hoc power calculation or event-per-variable (EPV) ratio analysis to demonstrate that the model was not overfitted."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Potential violation of proportional hazards assumption. The Methods state Cox models were used but do not report whether the proportional hazards (PH) assumption was tested or met.\n\n**Why it matters:** If the PH assumption is violated, the single Hazard Ratio does not accurately represent the association over time. This is particularly relevant in older adults where risk profiles may change rapidly.\n\n**Suggested Action:** Report tests for proportionality (e.g., Schoenfeld residuals). If violated, consider stratified Cox models or time-dependent covariates."
+    }
+  ]
+}

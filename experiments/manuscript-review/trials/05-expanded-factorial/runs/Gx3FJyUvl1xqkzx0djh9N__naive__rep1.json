@@ -1,0 +1,51 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication by the treating team) was not blinded to the index test results. The manuscript states: \"The reference standard was clinical adjudication of sepsis by the treating team, who were aware of the panel result.\" This introduces severe incorporation bias and review expectancy bias.\n\n**Why it matters:** In diagnostic accuracy studies, knowledge of the index test result by those determining the reference standard artificially inflates sensitivity and specificity. Clinicians are likely to label a patient as septic if the biomarker is positive, regardless of clinical signs, leading to an overestimation of the test's true performance. This invalidates the core findings of the study.\n\n**Suggested Action:** The study design is fundamentally flawed for determining diagnostic accuracy. The authors must either: (1) exclude this data from claims of diagnostic accuracy and reframe as a preliminary pilot; or (2) if possible, re-adjudicate cases using a blinded committee independent of the biomarker results. If neither is possible, the limitations section must explicitly state that performance estimates are likely overestimated due to unblinded reference standard assessment, and no clinical deployment should be recommended based on this data."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy in the same sample used to evaluate performance. The manuscript states: \"The decision threshold was selected to maximize accuracy in this sample.\"\n\n**Why it matters:** This constitutes 'optimism bias' or overfitting. Using the same dataset for both threshold selection and performance estimation yields overly optimistic sensitivity and specificity values that will not generalize to new patients. The reported 0.92 sensitivity and 0.88 specificity are likely significantly higher than what would be observed in an independent validation cohort.\n\n**Suggested Action:** The authors must perform internal validation (e.g., bootstrapping or cross-validation) to correct for overfitting, or ideally, validate the threshold in a separate, independent cohort. If neither is possible, the results must be labeled as 'apparent' performance only, with a strong warning that external validity is unknown and likely lower."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of the reference standard ('clinical adjudication') is vague and lacks objective criteria. There is no mention of using standardized definitions (e.g., Sepsis-3) or specific clinical endpoints.\n\n**Why it matters:** 'Clinical adjudication' by a team aware of test results is subjective and variable. Without clear, pre-specified criteria for what constitutes 'sepsis' in this study, the reference standard itself is unreliable. This makes the diagnostic accuracy metrics meaningless as there is no consistent truth against which to measure the biomarker.\n\n**Suggested Action:** Clearly define the criteria used for sepsis diagnosis (e.g., SOFA score increase + suspected infection per Sepsis-3). If the adjudication was purely subjective, this must be acknowledged as a major limitation that compromises the validity of the reference standard."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results lack confidence intervals (CIs) and other essential statistics. Only point estimates for sensitivity (0.92) and specificity (0.88) are provided.\n\n**Why it matters:** Without CIs, the precision of the estimates is unknown. Given the sample size (N=310), the uncertainty around these estimates could be substantial. Reporting only point estimates prevents readers from assessing the reliability of the findings.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity, specificity, and any other performance metrics. Include a contingency table (true positives, false positives, etc.) to allow independent verification."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Abstract/Results",
+      "content_md": "**Problem:** The term 'early sepsis' is used but not defined. There is no time window specified for 'early' detection.\n\n**Why it matters:** 'Early sepsis' is a critical concept in the title and abstract, but without a definition (e.g., within 2 hours of onset, before vasopressor initiation), the clinical relevance and applicability of the biomarker are unclear. It also makes comparison with other studies impossible.\n\n**Suggested Action:** Define 'early sepsis' operationally in the methods (e.g., time from symptom onset or ICU admission). If no such definition was used, remove the term 'early' from the title and abstract to avoid misleading claims."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes strong clinical recommendations ('ready for bedside use') unsupported by the study design. The study is a single-center, unblinded, non-validated diagnostic accuracy study.\n\n**Why it matters:** Recommending clinical deployment based on an unblinded, overfitted pilot study is dangerous and unethical. It ignores the significant biases identified above and lacks evidence of clinical utility or impact on patient outcomes.\n\n**Suggested Action:** Remove all statements suggesting readiness for clinical use. The discussion should focus on the limitations of the study design (unblinded reference standard, lack of validation) and propose future steps: blinded external validation, assessment of clinical utility, and cost-effectiveness analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** No information is provided on patient selection, inclusion/exclusion criteria, or the prevalence of sepsis in the cohort.\n\n**Why it matters:** Without knowing the case mix and prevalence, the applicability of the results to other ICU settings is unknown. High prevalence can inflate positive predictive value (PPV), while low prevalence affects negative predictive value (NPV). The lack of demographic and clinical data prevents assessment of spectrum bias.\n\n**Suggested Action:** Provide detailed inclusion/exclusion criteria, baseline characteristics of the cohort, and the final proportion of patients diagnosed with sepsis. Include a flow diagram showing patient recruitment and exclusion."
+    }
+  ]
+}

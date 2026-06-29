@@ -1,0 +1,51 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "ensemble_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods (STARD-11)",
+      "content_md": "**Problem:** The reference standard is invalid due to severe incorporation/review bias. The treating team performing clinical adjudication was aware of the index test (biomarker panel) results.\n\n**Why it matters:** This lack of blinding means the 'gold standard' diagnosis was influenced by the test being evaluated, artificially inflating sensitivity and specificity. This invalidates the reported diagnostic accuracy metrics (0.92/0.88) and renders them non-generalizable.\n\n**Suggested Action:** The study design is fundamentally flawed for a diagnostic accuracy claim. Authors must either: 1) Re-analyze data using a blinded reference standard (e.g., retrospective adjudication by experts unaware of panel results, or application of objective criteria like Sepsis-3 without knowledge of the biomarker); or 2) Reframe the manuscript as a preliminary exploratory study, removing claims of definitive diagnostic accuracy and acknowledging that metrics are likely overestimated."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods (STARD-13a)",
+      "content_md": "**Problem:** The decision threshold for the biomarker panel was selected by maximizing accuracy in the same sample used for evaluation (data-driven cutoff selection without validation).\n\n**Why it matters:** This constitutes 'overfitting' or data dredging, leading to severe optimism bias. The reported performance metrics are likely significantly higher than what would be observed in an independent cohort. Reporting single-sample optimized metrics without correction is unacceptable for clinical deployment claims.\n\n**Suggested Action:** Validate the threshold using internal validation methods (e.g., bootstrapping, cross-validation, or split-sample training/testing) to report optimism-corrected accuracy, or validate in an independent external cohort. If neither is possible, clearly state that current estimates are 'apparent' performance and require external validation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results (STARD-17)",
+      "content_md": "**Problem:** The manuscript fails to provide the 2x2 cross-tabulation (contingency table) of index test results against the reference standard.\n\n**Why it matters:** Reporting only sensitivity and specificity prevents readers from verifying calculations, assessing confidence intervals, evaluating the impact of disease prevalence on predictive values, or performing meta-analyses. It also hides the handling of indeterminate results.\n\n**Suggested Action:** Include a table showing the raw counts of True Positives, False Positives, True Negatives, and False Negatives. Report 95% confidence intervals for all accuracy metrics."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods (STARD-10a)",
+      "content_md": "**Problem:** Insufficient detail on the index test protocol. The 'three-marker serum panel' is not defined.\n\n**Why it matters:** Replicability is a cornerstone of scientific research. Without knowing which specific biomarkers were measured, the assays used, and the algorithm combining them, other researchers cannot validate or compare these findings.\n\n**Suggested Action:** Explicitly list the three specific biomarkers, describe the analytical platforms/assays used (e.g., ELISA, immunoassay), and detail the mathematical or logical algorithm used to combine individual marker results into a positive/negative panel classification."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (STARD-6 & STARD-7)",
+      "content_md": "**Problem:** Eligibility criteria and participant identification methods are missing.\n\n**Why it matters:** Without clear inclusion/exclusion criteria (e.g., age, ICU type, length of stay) and a description of how consecutive patients were screened, the applicability (generalizability) of the findings is unknown. It is impossible to assess selection bias or determine if the population represents the target clinical setting for early sepsis detection.\n\n**Suggested Action:** Add a section detailing: 1) Specific inclusion and exclusion criteria; 2) The setting (type of ICU); 3) The recruitment period; and 4) How participants were identified and screened."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The conclusion that the panel is 'ready for bedside use' is unsupported and premature.\n\n**Why it matters:** Given the critical methodological flaws (unblinded reference standard, data-driven cutoff without validation), the evidence does not support clinical deployment. Such strong claims can mislead clinicians and potentially harm patients if adopted prematurely.\n\n**Suggested Action:** Tone down the conclusions significantly. State that the panel shows 'preliminary promise' or 'exploratory accuracy' only. Emphasize the need for external validation in a blinded, prospective cohort before any consideration of clinical implementation."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods (STARD-14)",
+      "content_md": "**Problem:** No reporting on how indeterminate or missing results were handled.\n\n**Why it matters:** In diagnostic studies, excluding patients with missing data can bias accuracy estimates if the missingness is not random. STARD requires explicit description of flow and handling of incomplete data.\n\n**Suggested Action:** Provide a STARD flow diagram showing the number of participants at each stage (identification, eligibility, inclusion, analysis). Explicitly state how many tests were indeterminate/failed and whether these were excluded or assigned to a specific category."
+    }
+  ]
+}

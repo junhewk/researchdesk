@@ -1,0 +1,45 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "ensemble_naive",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The manuscript makes definitive causal claims (e.g., \"physical activity directly lowers depression risk\") and strong clinical recommendations (\"should be prescribed as first-line prevention\") based on observational cohort data.\n\n**Why it matters:** Observational studies cannot establish causality due to potential residual confounding, reverse causation, and healthy user bias. Claiming direct causal effects and prescribing first-line interventions overstates the evidence provided by a non-randomized design, potentially misleading clinicians. This violates standard reporting guidelines for observational studies (e.g., STROBE).\n\n**Suggested Action:** Rewrite the Discussion and Abstract to use cautious, associative language (e.g., \"associated with lower risk,\" \"suggests a protective role\"). Remove causal phrases like \"directly lowers.\" Qualify clinical recommendations as supportive of activity promotion rather than definitive first-line prescriptions, acknowledging the need for randomized controlled trials to confirm efficacy."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript lacks critical methodological details regarding statistical adjustment and exposure definition. Specifically, it does not list the covariates (e.g., age, sex, baseline health status, socioeconomic factors) included in the Cox proportional-hazards models, nor does it describe the source population, recruitment dates, or the specific validated questionnaire used to quantify physical activity (e.g., MET-hours/week). It also fails to report whether the proportional hazards assumption was tested.\n\n**Why it matters:** Without knowing which confounders were adjusted for, it is impossible to determine if the observed association is spurious due to residual confounding. The lack of exposure definition details prevents readers from understanding what constitutes 'high' activity. This violates standard reporting guidelines (STROBE) and undermines the validity and reproducibility of the study.\n\n**Suggested Action:** Expand the Methods section to include: 1) A detailed description of participant recruitment and exclusion criteria; 2) The specific name and validation status of the physical activity questionnaire, including how categories/tertiles were derived; 3) A complete list of covariates included in the Cox models with rationale for selection; 4) Results of tests for the proportional hazards assumption; 5) Handling of missing data."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The outcome definition for \"incident depression\" is ambiguous and potentially misclassified. It combines a self-reported screening tool (GDS ≥ 5) with \"a new clinical diagnosis,\" but does not specify how the clinical diagnosis was ascertained (e.g., medical records, physician interview) or if it was blinded to exposure status. Additionally, there is no justification for the discrepancy between the baseline exclusion criterion (GDS < 5) and the incident case definition threshold.\n\n**Why it matters:** The GDS is a screening tool, not a diagnostic instrument; using GDS ≥ 5 without clinical verification may lead to outcome misclassification (including mild symptoms rather than clinical depression). Unclear ascertainment methods introduce measurement error and threaten internal validity. The threshold discrepancy may create classification bias.\n\n**Suggested Action:** Clarify the outcome definition: 1) Specify if 'clinical diagnosis' was verified by chart review or physician report; 2) Explain how GDS scores were interpreted (e.g., did all GDS ≥ 5 count as events, or only those confirmed by a clinician?); 3) Justify the use of GDS ≥ 5 for incident cases compared to baseline exclusion criteria. Consider sensitivity analyses using stricter diagnostic criteria (e.g., clinical diagnosis only)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section is severely under-reported. It provides only a single hazard ratio (HR 0.72) for the highest vs. lowest tertile without confidence intervals (CIs), exact p-values, or estimates for the middle tertile. It also fails to report baseline characteristics of participants across activity tertiles or the number of events/person-years in each group.\n\n**Why it matters:** Confidence intervals are necessary to assess the precision of the estimate and clinical significance. Without the middle tertile results, the dose-response relationship cannot be evaluated. Lack of baseline characteristics prevents assessment of group comparability at baseline. This omission renders the results incomplete and unverifiable.\n\n**Suggested Action:** Add a table summarizing baseline characteristics by activity tertile. Report hazard ratios with 95% confidence intervals and exact p-values for all three tertiles (or a test for trend). Include person-years of follow-up and event counts per group."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Physical activity was measured only at baseline. There is no mention of how changes in activity levels over the 4.2-year follow-up were handled, nor any assessment of time-varying confounding.\n\n**Why it matters:** Physical activity levels often change with age and health status. Treating a single baseline measurement as fixed for the entire follow-up period can lead to misclassification bias, especially in older adults who may become less active due to emerging health issues (which also increase depression risk). This limits the validity of the long-term association claim.\n\n**Suggested Action:** Discuss the limitations of using baseline-only exposure data. If repeated measures were available, describe how they were incorporated (e.g., time-dependent covariates). If not, acknowledge this as a significant limitation that may attenuate or bias the observed association. Consider sensitivity analyses (e.g., excluding early events) to mitigate reverse causation."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** There is a discrepancy between the abstract (512 participants followed) and the results (498 included in analysis). The reason for the exclusion of 14 participants is not provided, nor is there any reporting on handling missing data or loss to follow-up.\n\n**Why it matters:** Transparency in participant flow is essential to assess selection bias. Readers need to know why participants were excluded (e.g., missing data, ineligible at baseline) to judge the generalizability of the results. Differential loss to follow-up can introduce significant bias.\n\n**Suggested Action:** Include a CONSORT-style flow diagram or a clear statement in the Methods/Results explaining the exclusion of 14 participants and any loss to follow-up. Compare baseline characteristics of those included vs. excluded to assess potential selection bias."
+    }
+  ]
+}

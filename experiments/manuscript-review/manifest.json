@@ -1,0 +1,437 @@
+{
+  "schema": "review-manifest/v1",
+  "meta": {
+    "baseModel": "Claude (workflow agents)",
+    "note": "context arm grounded in reporting checklist; no protocol-diff handed over"
+  },
+  "instruction": "Create review findings for substantive problems in this manuscript. Each finding must include the problem, why it matters, and a concrete suggested action. Return JSON with `items` (each: category one of mechanical|rewrite|structural|evidence; severity one of minor|major|critical; section_ref; content_md) and a short `summary_md`.",
+  "arms": {
+    "naive": {
+      "grounding": false,
+      "persona": false,
+      "ensemble": false,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "single",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "persona": {
+      "grounding": false,
+      "persona": true,
+      "ensemble": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "statistician",
+          "system": "You are a journal-article review assistant.\n\n- You are a biostatistician. Review strictly from a statistical lens — study design, sample-size justification and power, choice and assumptions of analyses, multiplicity, effect sizes, confidence intervals, missing-data handling, and honest reporting of uncertainty. Surface only issues your statistical expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "methodologist",
+          "system": "You are a journal-article review assistant.\n\n- You are a research-methodology specialist. Review strictly from a methods lens — internal/external validity, bias (selection, measurement, confounding), protocol adherence, eligibility and comparator definition, outcome specification and timing, and reporting-guideline conformance. Surface only issues your methodological expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "domain_expert",
+          "system": "You are a journal-article review assistant.\n\n- You are a senior domain expert in this manuscript's clinical/scientific field. Review strictly from a substantive lens — plausibility of mechanisms and claims, clinical relevance, consistency with established evidence, and whether the conclusions are warranted by the data. Surface only issues your domain expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "writer_editor",
+          "system": "You are a journal-article review assistant.\n\n- You are a scientific writer/editor. Review strictly from a communication lens — structure, clarity, internal consistency between abstract/results/tables, citation/reporting mechanics, and whether each claim is stated precisely. Surface only issues your editorial expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "context": {
+      "grounding": true,
+      "persona": false,
+      "ensemble": false,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "single",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "persona_context": {
+      "grounding": true,
+      "persona": true,
+      "ensemble": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "statistician",
+          "system": "You are a journal-article review assistant.\n\n- You are a biostatistician. Review strictly from a statistical lens — study design, sample-size justification and power, choice and assumptions of analyses, multiplicity, effect sizes, confidence intervals, missing-data handling, and honest reporting of uncertainty. Surface only issues your statistical expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "methodologist",
+          "system": "You are a journal-article review assistant.\n\n- You are a research-methodology specialist. Review strictly from a methods lens — internal/external validity, bias (selection, measurement, confounding), protocol adherence, eligibility and comparator definition, outcome specification and timing, and reporting-guideline conformance. Surface only issues your methodological expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "domain_expert",
+          "system": "You are a journal-article review assistant.\n\n- You are a senior domain expert in this manuscript's clinical/scientific field. Review strictly from a substantive lens — plausibility of mechanisms and claims, clinical relevance, consistency with established evidence, and whether the conclusions are warranted by the data. Surface only issues your domain expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "writer_editor",
+          "system": "You are a journal-article review assistant.\n\n- You are a scientific writer/editor. Review strictly from a communication lens — structure, clarity, internal consistency between abstract/results/tables, citation/reporting mechanics, and whether each claim is stated precisely. Surface only issues your editorial expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "ensemble_naive": {
+      "grounding": false,
+      "persona": false,
+      "ensemble": true,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "reviewer_1",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_2",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_3",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_4",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "ensemble_context": {
+      "grounding": true,
+      "persona": false,
+      "ensemble": true,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "reviewer_1",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_2",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_3",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_4",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    }
+  },
+  "manuscripts": {
+    "KAa-iuCcKrsCLV0CKIX5M": {
+      "title": "Effectiveness of digital CBT for insomnia: a systematic review",
+      "userContext": "Title: Effectiveness of digital CBT for insomnia: a systematic review\nDomain: sleep medicine\nResearch type: systematic_review\nTarget journal: clinical\nManuscript:\n# Effectiveness of digital cognitive behavioural therapy for insomnia: a systematic review\n\n## Abstract\nWe conducted a systematic review of digital cognitive behavioural therapy for insomnia (dCBT-I). We searched PubMed and included 14 trials. dCBT-I improved insomnia severity across studies. dCBT-I is effective and should replace pharmacotherapy as first-line treatment for chronic insomnia.\n\n## Introduction\nChronic insomnia is highly prevalent. Digital delivery of cognitive behavioural therapy could expand access. We systematically reviewed the effectiveness of dCBT-I in adults.\n\n## Methods\nWe searched PubMed for randomised trials of digital cognitive behavioural therapy for insomnia in adults. Studies were included if they reported insomnia severity outcomes. Two reviewers screened titles. Eligibility criteria required a randomised design and an adult population. Outcomes were summarised narratively.\n\n## Results\nFourteen trials were included. Most reported reductions in insomnia severity favouring dCBT-I over control. Effect sizes varied across studies.\n\n## Discussion\nDigital CBT for insomnia was effective across the included trials. On this basis, dCBT-I should replace pharmacotherapy as first-line treatment. Health systems should adopt dCBT-I broadly.\n\n## Declarations\nThe authors declare no competing interests.\n",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: PRISMA.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### PRISMA 2020\n- PRISMA-1 (Title): Identify the report as a systematic review.\n- PRISMA-2 (Abstract): Structured summary including objectives, data sources, eligibility criteria, study selection, synthesis methods, results, limitations, and registration.\n- PRISMA-3 (Introduction): Rationale for the review.\n- PRISMA-4 (Introduction): Explicit, answerable objectives (PICO).\n- PRISMA-5 (Methods): Eligibility criteria including study characteristics and report characteristics.\n- PRISMA-7 (Methods): Search strategy with full electronic search of at least one database including dates and limits.\n- PRISMA-12 (Methods): Risk-of-bias assessment method for individual studies.\n- PRISMA-14 (Methods): Synthesis methods including measures of consistency (I²) where applicable.\n- PRISMA-17 (Results): Flow diagram of study selection (PRISMA flow).\n- PRISMA-24 (Results): Risk of bias across studies.\n- PRISMA-27 (Funding): Funding sources and role of funders.\n",
+      "guidelines": [
+        "PRISMA"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:funding:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:ethics:2",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:3",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:PRISMA-7",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Search strategy with full electronic search of at least one database including dates and limits."
+        },
+        {
+          "id": "checklist:PRISMA-12",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Risk-of-bias assessment method for individual studies."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No protocol registration (e.g., PROSPERO) reported (PRISMA)."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No PRISMA flow diagram of study selection (PRISMA-17)."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Heterogeneity of effect sizes acknowledged but not assessed or explained."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Overclaim: 'should replace pharmacotherapy as first-line treatment' is not supported by a narrative review without risk-of-bias or comparative analysis."
+        }
+      ]
+    },
+    "7xVaaR8lAaI3DZeFOZEEo": {
+      "title": "Diagnostic accuracy of a smartphone retinal-photo AI for diabetic retinopathy",
+      "userContext": "Title: Diagnostic accuracy of a smartphone retinal-photo AI for diabetic retinopathy\nDomain: ophthalmology\nResearch type: diagnostic_accuracy\nTarget journal: clinical\nManuscript:\n# Diagnostic accuracy of a smartphone-based retinal-photograph AI for diabetic retinopathy screening\n\n## Abstract\nA smartphone camera with an embedded deep-learning classifier was evaluated for detecting referable diabetic retinopathy. Against an ophthalmologist reference, the classifier achieved a sensitivity of 0.89 and a specificity of 0.91. Smartphone AI screening is accurate and ready for deployment in primary care.\n\n## Introduction\nDiabetic retinopathy is a leading cause of preventable blindness, and screening coverage is low. Smartphone-based artificial-intelligence screening could extend access. We evaluated the diagnostic accuracy of one such system.\n\n## Methods\nConsecutive adults with diabetes attending an endocrinology clinic were screened with the smartphone classifier. Images were graded automatically as referable or non-referable. The reference standard was dilated fundus examination by an ophthalmologist; however, ophthalmologist examination was performed only on participants the classifier flagged as referable, and a sample of those it cleared. Sensitivity and specificity were computed against the reference.\n\n## Results\nOf 410 participants imaged, the classifier flagged 132 as referable. Sensitivity was 0.89 and specificity was 0.91. The system processed each image in under five seconds.\n\n## Discussion\nThe smartphone classifier was accurate for referable diabetic retinopathy. Given these results, smartphone AI can replace specialist screening in primary care. Wider rollout should proceed.\n\n## Declarations\nThe authors declare no conflicts of interest. This work was supported by a departmental grant.\n",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: STARD.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### STARD 2015\n- STARD-1 (Title/Abstract): Identification as a study of diagnostic accuracy using sensitivity, specificity, predictive values.\n- STARD-5 (Methods): Whether data collection was planned before the index test and reference standard (prospective vs retrospective).\n- STARD-6 (Methods): Eligibility criteria for participants.\n- STARD-7 (Methods): On what basis potentially eligible participants were identified.\n- STARD-10a (Index test): Index test, in sufficient detail to allow replication.\n- STARD-11 (Reference standard): Reference standard, in sufficient detail to allow replication.\n- STARD-13a (Analysis): Methods for estimating or comparing measures of diagnostic accuracy.\n- STARD-14 (Analysis): How indeterminate index test or reference standard results were handled.\n- STARD-17 (Results): Cross-tabulation of index test results by results of reference standard.\n",
+      "guidelines": [
+        "STARD"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:conflict_of_interest:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No conflict-of-interest declaration found."
+        },
+        {
+          "id": "gate:funding:2",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:ethics:3",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:4",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Partial verification / differential-verification bias: the reference standard was applied only to classifier-positives and a sample of negatives, biasing sensitivity and specificity upward (STARD)."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Sensitivity (0.89) and specificity (0.91) reported without 95% confidence intervals."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No participant flow diagram / 2x2 cross-tabulation of index test vs reference standard (STARD)."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Indeterminate/ungradable images not reported (STARD)."
+        },
+        {
+          "id": "ledger:5",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Conclusion 'can replace specialist screening' overreaches the single-clinic accuracy data (no impact/outcome study)."
+        },
+        {
+          "id": "ledger:6",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Spectrum bias: single-clinic endocrinology sample may not reflect screening population."
+        }
+      ]
+    },
+    "rGWyHBnGAMdWc2M82Rx9r": {
+      "title": "Leisure-time physical activity and incident depression in older adults",
+      "userContext": "Title: Leisure-time physical activity and incident depression in older adults\nDomain: geriatrics\nResearch type: cohort\nTarget journal: clinical\nManuscript:\n# Leisure-time physical activity and incident depression in community-dwelling older adults: a prospective cohort study\n\n## Abstract\nWe followed 512 community-dwelling adults aged 65 and older for a mean of 4.2 years to examine whether leisure-time physical activity predicts incident depression. Higher baseline activity was associated with substantially lower depression risk (hazard ratio 0.72, p < 0.05). Regular physical activity reduces the risk of late-life depression and should be prescribed as first-line prevention.\n\n## Introduction\nDepression in older adults is common and disabling. Observational data have linked physical activity to better mood, but prospective evidence in the oldest old is limited. We examined the association between leisure-time physical activity and incident depression in a community cohort.\n\n## Methods\nParticipants were recruited from two primary-care registries. Eligible participants were aged 65 or older, free of depression at baseline (Geriatric Depression Scale < 5), and able to complete questionnaires. Leisure-time physical activity was self-reported at baseline using a validated questionnaire and categorized into tertiles. Incident depression was defined as a Geriatric Depression Scale score of 5 or higher, or a new clinical diagnosis, at annual follow-up. We fit Cox proportional-hazards models with activity tertile as the exposure.\n\n## Results\nOf the participants, 498 were included in the analysis. Over follow-up, 96 participants developed incident depression. Compared with the lowest activity tertile, the highest tertile had a markedly lower hazard of depression (hazard ratio 0.72, p < 0.05). The association persisted across age strata.\n\n## Discussion\nIn this prospective cohort, older adults who were more physically active were far less likely to become depressed. Because physical activity directly lowers depression risk, clinicians should prescribe structured exercise to prevent late-life depression. Our findings support population-level activity promotion.\n\n## Declarations\nThe authors report no competing interests.\n",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: STROBE.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### STROBE 2007\n- STROBE-1a (Title/Abstract): Indicate the study's design in the title or abstract.\n- STROBE-1b (Title/Abstract): Informative, balanced summary in the abstract.\n- STROBE-3 (Introduction): State specific objectives, including pre-specified hypotheses.\n- STROBE-4 (Methods): Present key elements of study design early in the paper.\n- STROBE-6 (Methods): Eligibility criteria, sources, methods of selection.\n- STROBE-7 (Methods): Clearly define outcomes, exposures, predictors, confounders, effect modifiers.\n- STROBE-10 (Methods): Explain how the study size was arrived at.\n- STROBE-12 (Methods): Describe all statistical methods including those used to control for confounding.\n- STROBE-13 (Results): Numbers of participants at each stage; flow diagram encouraged.\n- STROBE-16 (Results): Report unadjusted and confounder-adjusted estimates with precision (95% CI).\n- STROBE-19 (Discussion): Discuss limitations, including sources of bias.\n- STROBE-22 (Other): Funding source and role of funders.\n",
+      "guidelines": [
+        "STROBE"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:funding:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:ethics:2",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:3",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:STROBE-6",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Eligibility criteria, sources, methods of selection."
+        },
+        {
+          "id": "checklist:STROBE-10",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Explain how the study size was arrived at."
+        },
+        {
+          "id": "checklist:STROBE-16",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Report unadjusted and confounder-adjusted estimates with precision (95% CI)."
+        },
+        {
+          "id": "checklist:STROBE-19",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Discuss limitations, including sources of bias."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured (no Background/Methods/Results/Conclusion headings)."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Sample-size inconsistency: abstract states 512 followed but Methods/Results analyze 498, with no account of the 14 lost (no attrition/missing-data handling)."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No confounder adjustment: estimates appear unadjusted (no covariates for age, sex, comorbidity, baseline function) yet causal claims are drawn."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Causal overclaim from observational data: 'physical activity directly lowers depression risk', 'should be prescribed' — unwarranted causal/clinical language."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Reverse causation/confounding by indication not addressed (less active participants may be more frail/already prodromal)."
+        }
+      ]
+    },
+    "LrOfxJE1433uOfuh0MQNn": {
+      "title": "Efficacy of LLM-assisted counseling in type-2 diabetes",
+      "userContext": "Title: Efficacy of LLM-assisted counseling in type-2 diabetes\nDomain: endocrinology\nResearch type: randomized-trial\nTarget journal: JMIR Diabetes\nManuscript:\n# Efficacy of LLM-assisted counseling in type-2 diabetes\n\n## Abstract\n**Background:** Digital tools may support diabetes self-management. **Methods:** We\nrandomized adults with type 2 diabetes to an LLM counseling chatbot or a control\narm and measured glycaemic control. **Results:** HbA1c improved in the chatbot\narm at 8 weeks. **Conclusions:** LLM-assisted counseling is effective for\nglycaemic control in type 2 diabetes.\n\n## Introduction\nType 2 diabetes management depends on sustained self-care. Conversational agents\nhave shown promise for patient education, and large language models (LLMs) now\nmake richer counseling possible. We evaluated whether an LLM counseling chatbot\nimproves glycaemic control.\n\n## Methods\nAdults with type 2 diabetes and a smartphone were enrolled in primary care and\nrandomized 1:1. The intervention arm received an LLM counseling chatbot; a\ncontrol arm received standard printed diabetes education materials. The primary\noutcome was change in HbA1c, assessed at 8 weeks. Secondary outcomes included\nmedication adherence and treatment satisfaction. Analyses followed an\nintention-to-treat principle using a linear mixed model.\n\nThe study received institutional review board (IRB) approval and all participants\nprovided written informed consent.\n\n## Results\nOf 220 randomized participants, 198 completed follow-up. Mean HbA1c reduction was\ngreater in the chatbot arm at 8 weeks. Medication adherence and treatment\nsatisfaction also favoured the intervention.\n\n## Discussion\nLLM-assisted counseling improved glycaemic control and was well received. These\nfindings show that LLM counseling is effective and should be adopted in routine\ndiabetes care.\n\n### Limitations\nParticipants were unblinded, follow-up was short, and the trial was conducted at a\nsingle centre.\n\n## Declarations\n**Funding:** Supported by an institutional research grant.\n**Competing interests:** The authors declare no competing interests.\n**Data availability:** De-identified data are available from the corresponding\nauthor on reasonable request.\n",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: CONSORT, CONSORT-AI.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### CONSORT 2010\n- CONSORT-1a (Title): Identification as a randomized trial in the title.\n- CONSORT-3a (Trial design): Description of trial design (parallel, factorial, crossover) with allocation ratio.\n- CONSORT-4a (Participants): Eligibility criteria for participants.\n- CONSORT-5 (Interventions): Interventions for each group with detail to allow replication.\n- CONSORT-6a (Outcomes): Completely defined pre-specified primary and secondary outcome measures.\n- CONSORT-7a (Sample size): How sample size was determined.\n- CONSORT-8a (Randomisation): Method used to generate the random allocation sequence.\n- CONSORT-9 (Allocation): Mechanism to implement the allocation sequence (concealment).\n- CONSORT-11a (Blinding): If done, who was blinded after assignment (participants, providers, assessors) and how.\n- CONSORT-13a (Flow): Flow diagram showing numbers randomized, receiving intended treatment, analysed.\n- CONSORT-17a (Outcomes/estimation): For each outcome, results for each group with estimated effect size and 95% CI.\n- CONSORT-23 (Registration): Registration number and name of trial registry.\n- CONSORT-24 (Protocol): Where the full trial protocol can be accessed.\n\n#### CONSORT-AI 2020\n- CONSORT-AI-1a (Title/Abstract): Indicate that the intervention involves artificial intelligence/machine learning and specify the type of model.\n- CONSORT-AI-4a (Participants): State the inclusion and exclusion criteria at the level of the input data.\n- CONSORT-AI-4b (Participants): Describe how the AI intervention was integrated into the trial setting, including any onsite or offsite requirements.\n- CONSORT-AI-5i (Interventions): State which version of the AI algorithm was used.\n- CONSORT-AI-5ii (Interventions): Describe how the input data were acquired and selected for the AI intervention.\n- CONSORT-AI-5iii (Interventions): Describe how poor-quality or unavailable input data were assessed and handled.\n- CONSORT-AI-5iv (Interventions): Specify whether there was human–AI interaction in the handling of input data, and the level of expertise required of users.\n- CONSORT-AI-5v (Interventions): Specify the output of the AI intervention.\n- CONSORT-AI-5vi (Interventions): Explain how the AI intervention's outputs contributed to decision-making or other elements of clinical practice.\n- CONSORT-AI-19 (Harms): Describe results of any analysis of performance errors and how errors were identified; state if no such analysis was planned or done.\n- CONSORT-AI-25 (Other): State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use.\n",
+      "guidelines": [
+        "CONSORT",
+        "CONSORT-AI"
+      ],
+      "gold": [
+        {
+          "id": "gate:outcome_timing_ambiguity:0",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "Protocol measures the primary outcome at 12 weeks, but the manuscript does not report this timepoint."
+        },
+        {
+          "id": "gate:comparator_mismatch:1",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "Protocol comparator (\"Usual care\") does not appear in the manuscript."
+        },
+        {
+          "id": "gate:exclusion_drift:2",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "The protocol pre-specifies exclusion criteria, but the manuscript reports no exclusions."
+        },
+        {
+          "id": "gate:data_dictionary_inconsistency:3",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "Secondary outcomes defined in the protocol (\"Diabetes self-efficacy; medication adherence; treatment satisfaction\") are not reflected in the manuscript."
+        },
+        {
+          "id": "gate:reporting_checklist_gap:4",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "Protocol commits to CONSORT-AI-25 (CONSORT-AI) — State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use. — but the manuscript does not appear to report it."
+        },
+        {
+          "id": "checklist:CONSORT-7a",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "How sample size was determined."
+        },
+        {
+          "id": "checklist:CONSORT-23",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Registration number and name of trial registry."
+        },
+        {
+          "id": "checklist:CONSORT-AI-25",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use."
+        }
+      ]
+    }
+  }
+}

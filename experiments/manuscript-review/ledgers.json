@@ -1,0 +1,536 @@
+{
+  "rGWyHBnGAMdWc2M82Rx9r": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement for a study of human participants.",
+      "maps_to": "gate:ethics"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured (no Background/Methods/Results/Conclusion headings).",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No funding statement.",
+      "maps_to": "gate:funding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Sample-size inconsistency: abstract states 512 followed but Methods/Results analyze 498, with no account of the 14 lost (no attrition/missing-data handling).",
+      "maps_to": "consistency"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No sample-size or power justification (STROBE-10).",
+      "maps_to": "checklist:STROBE-10"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Hazard ratio 0.72 reported with only 'p < 0.05' and no 95% confidence interval (STROBE-16).",
+      "maps_to": "checklist:STROBE-16"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No confounder adjustment: estimates appear unadjusted (no covariates for age, sex, comorbidity, baseline function) yet causal claims are drawn.",
+      "maps_to": "evidence:confounding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Causal overclaim from observational data: 'physical activity directly lowers depression risk', 'should be prescribed' — unwarranted causal/clinical language.",
+      "maps_to": "evidence:overclaim"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Reverse causation/confounding by indication not addressed (less active participants may be more frail/already prodromal).",
+      "maps_to": "evidence:bias"
+    }
+  ],
+  "7xVaaR8lAaI3DZeFOZEEo": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement.",
+      "maps_to": "gate:ethics"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured.",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Partial verification / differential-verification bias: the reference standard was applied only to classifier-positives and a sample of negatives, biasing sensitivity and specificity upward (STARD).",
+      "maps_to": "evidence:verification_bias"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Sensitivity (0.89) and specificity (0.91) reported without 95% confidence intervals.",
+      "maps_to": "evidence:no_CI"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No participant flow diagram / 2x2 cross-tabulation of index test vs reference standard (STARD).",
+      "maps_to": "checklist:STARD_flow"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Indeterminate/ungradable images not reported (STARD).",
+      "maps_to": "checklist:STARD_indeterminate"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Conclusion 'can replace specialist screening' overreaches the single-clinic accuracy data (no impact/outcome study).",
+      "maps_to": "evidence:overclaim"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Spectrum bias: single-clinic endocrinology sample may not reflect screening population.",
+      "maps_to": "evidence:bias"
+    }
+  ],
+  "KAa-iuCcKrsCLV0CKIX5M": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No protocol registration (e.g., PROSPERO) reported (PRISMA).",
+      "maps_to": "checklist:PRISMA-P-3/registration"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No risk-of-bias assessment of included studies (PRISMA-12).",
+      "maps_to": "checklist:PRISMA-12"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No PRISMA flow diagram of study selection (PRISMA-17).",
+      "maps_to": "checklist:PRISMA-17"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Inadequate search: a single database (PubMed) with no dates, no full search strategy, and screening of titles only (PRISMA-7).",
+      "maps_to": "checklist:PRISMA-7"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No funding statement.",
+      "maps_to": "gate:funding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured.",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Heterogeneity of effect sizes acknowledged but not assessed or explained.",
+      "maps_to": "evidence:heterogeneity"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Overclaim: 'should replace pharmacotherapy as first-line treatment' is not supported by a narrative review without risk-of-bias or comparative analysis.",
+      "maps_to": "evidence:overclaim"
+    }
+  ],
+  "LkcAkZEGLVafBHw-4Jwe1": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement.",
+      "maps_to": "gate:ethics"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No funding statement.",
+      "maps_to": "gate:funding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured.",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "critical",
+      "description": "Recall bias: exposure (coffee) was self-reported by interview AFTER cancer diagnosis, so cases may over-report differently than controls.",
+      "maps_to": "evidence:recall_bias"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Selection bias: hospital controls may not represent the source population's exposure distribution.",
+      "maps_to": "evidence:selection_bias"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Odds ratio 1.8 reported with no 95% confidence interval.",
+      "maps_to": "checklist:STROBE-16"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "critical",
+      "description": "No adjustment for smoking — a strong confounder associated with both coffee and pancreatic cancer; estimate is likely confounded.",
+      "maps_to": "evidence:confounding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Causal overclaim: 'coffee increases/raises the risk' from an unadjusted case-control study.",
+      "maps_to": "evidence:overclaim"
+    }
+  ],
+  "wr0ecKa9GNTstwfLUKsuh": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement.",
+      "maps_to": "gate:ethics"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No funding statement.",
+      "maps_to": "gate:funding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "critical",
+      "description": "Causal claim ('screen time causes myopia') from a cross-sectional design that cannot establish temporality.",
+      "maps_to": "evidence:overclaim"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Reverse causation not addressed: myopic children may use screens more (near work), not the reverse.",
+      "maps_to": "evidence:reverse_causation"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Odds ratio 2.1 reported with no 95% confidence interval.",
+      "maps_to": "checklist:STROBE-16"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No sample-size/power justification.",
+      "maps_to": "checklist:STROBE-10"
+    }
+  ],
+  "Gx3FJyUvl1xqkzx0djh9N": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement.",
+      "maps_to": "gate:ethics"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured.",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Sensitivity (0.92) and specificity (0.88) reported without 95% confidence intervals.",
+      "maps_to": "evidence:no_CI"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No participant flow diagram / 2x2 table of index test vs reference standard (STARD).",
+      "maps_to": "checklist:STARD_flow"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "critical",
+      "description": "Incorporation/review bias: the reference standard (clinical adjudication) was made with knowledge of the panel result, inflating accuracy.",
+      "maps_to": "evidence:review_bias"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Optimistic threshold: the decision threshold was chosen to maximize accuracy in the same sample (overfitting); no validation set.",
+      "maps_to": "evidence:threshold_overfit"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Spectrum bias: ICU-only sample may not generalize to earlier presentation.",
+      "maps_to": "evidence:spectrum_bias"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Conclusion 'ready for bedside use' overreaches a single-sample accuracy study with no impact data.",
+      "maps_to": "evidence:overclaim"
+    }
+  ],
+  "HeabcaqsNJagBNtgXG9kK": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured.",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "critical",
+      "description": "No calibration reported (TRIPOD) — only discrimination (AUC); a score targeting interventions needs calibration.",
+      "maps_to": "checklist:TRIPOD_calibration"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "critical",
+      "description": "Overfitting: 22 candidate predictors with only 60 events (~3 events per variable) plus stepwise selection; AUC 0.78 is optimistic.",
+      "maps_to": "evidence:overfitting"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No internal validation (bootstrap/cross-validation) or external validation; 'validated' in the abstract is unsupported.",
+      "maps_to": "evidence:no_validation"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "AUC 0.78 reported with no 95% confidence interval.",
+      "maps_to": "evidence:no_CI"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Handling of missing predictor data not described.",
+      "maps_to": "evidence:missing_data"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Conclusion 'ready for clinical use' / 'validated' is unwarranted given no validation and likely optimism.",
+      "maps_to": "evidence:overclaim"
+    }
+  ],
+  "6OuOwA7Hre02Jbd5R268G": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No funding statement.",
+      "maps_to": "gate:funding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No registered protocol (e.g., OSF) reported for the scoping review.",
+      "maps_to": "checklist:PRISMA-ScR_registration"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Inadequate search: a single database (PubMed), no full search strategy, dates, or second reviewer (PRISMA-ScR).",
+      "maps_to": "checklist:PRISMA-ScR_search"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No PRISMA-ScR flow diagram of source selection.",
+      "maps_to": "checklist:PRISMA-ScR_flow"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No data-charting method described (how items were extracted).",
+      "maps_to": "checklist:PRISMA-ScR_charting"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Overbroad conclusion ('integrate into all curricula immediately') unsupported by a descriptive scoping review.",
+      "maps_to": "evidence:overclaim"
+    }
+  ],
+  "rVaGFWm6dYLlb-juTfVW2": [
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "maps_to": "gate:data_availability"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No funding statement.",
+      "maps_to": "gate:funding"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "Abstract is unstructured.",
+      "maps_to": "gate:abstract_structure"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No limitations section.",
+      "maps_to": "gate:limitations"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No trial registration reported (CONSORT).",
+      "maps_to": "checklist:CONSORT_registration"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "No CONSORT participant flow diagram or randomization/allocation/blinding details.",
+      "maps_to": "checklist:CONSORT_flow"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Primary outcome not defined: no instrument (e.g., NRS/ODI) or timepoint specified.",
+      "maps_to": "evidence:outcome_undefined"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Effect reported only as 'p = 0.02' with no effect size or 95% confidence interval.",
+      "maps_to": "checklist:CONSORT_effect"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "minor",
+      "description": "No sample-size/power justification.",
+      "maps_to": "checklist:CONSORT_samplesize"
+    },
+    {
+      "layer": "ledger",
+      "gold_severity": "major",
+      "description": "Conclusion 'should become standard care' overreaches a single unregistered trial.",
+      "maps_to": "evidence:overclaim"
+    }
+  ]
+}

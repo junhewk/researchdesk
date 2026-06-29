@@ -1,0 +1,51 @@
+{
+  "mid": "wr0ecKa9GNTstwfLUKsuh",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract, Discussion",
+      "content_md": "**Problem:** The manuscript makes causal claims (\"Screen time causes myopia\") based on a cross-sectional study design. Cross-sectional studies measure exposure and outcome simultaneously, making it impossible to establish temporal precedence or rule out reverse causality (e.g., children with myopia may use screens more due to visual needs or behavioral traits).\n\n**Why it matters:** Causal language is scientifically invalid for this design and misleads clinicians and policymakers. This violates STROBE-1b (balanced summary) and STROBE-19 (limitations/bias discussion).\n\n**Suggested Action:** Remove all causal language. Replace \"causes\" with \"is associated with.\" Explicitly state in the Discussion that causality cannot be inferred from this design."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The study fails to define or adjust for key confounders such as age, sex, parental myopia history, and time spent outdoors. Myopia is strongly associated with these factors. Without adjustment, the reported odds ratio (2.1) is likely biased.\n\n**Why it matters:** Omitted variable bias invalidates the primary finding. This violates STROBE-7 (define confounders) and STROBE-12 (statistical methods for confounding).\n\n**Suggested Action:** Collect data on key confounders (age, parental history, outdoor time). Perform multivariable logistic regression adjusting for these factors. If data is missing, acknowledge this as a critical limitation that prevents valid inference."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results report only an odds ratio (2.1) without precision estimates (95% confidence intervals) or p-values. It is unclear if the association is statistically significant.\n\n**Why it matters:** Readers cannot assess the statistical reliability of the finding. This violates STROBE-16 (report estimates with precision).\n\n**Suggested Action:** Report the 95% CI and p-value for the odds ratio. If the CI includes 1.0, the association is not statistically significant."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript does not describe how screen time was measured (e.g., self-report questionnaire vs. device logs), nor does it define the exposure metric clearly (hours/day? type of screen?).\n\n**Why it matters:** Measurement error in self-reported screen time is common and can bias results. Lack of definition prevents replication. This violates STROBE-7 (define exposures).\n\n**Suggested Action:** Specify the instrument used to measure screen time, the recall period, and how \"screen time\" was operationalized (e.g., total hours, educational vs. recreational)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem:** The study lacks information on participant flow, including response rates, exclusion criteria, and reasons for non-participation. It is unclear if the 600 children represent a random sample or convenience sample.\n\n**Why it matters:** Selection bias may affect generalizability. This violates STROBE-6 (eligibility/selection) and STROBE-13 (participant flow).\n\n**Suggested Action:** Include a flow diagram showing the number of eligible participants, those excluded, and reasons for exclusion. Report the response rate."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The sample size justification is missing.\n\n**Why it matters:** Readers cannot assess if the study was adequately powered to detect the reported effect. This violates STROBE-10 (study size).\n\n**Suggested Action:** Provide a post-hoc power calculation or justify the sample size based on prior literature."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Discussion, Other",
+      "content_md": "**Problem:** Funding sources and potential conflicts of interest are not disclosed.\n\n**Why it matters:** Transparency regarding funding is essential for assessing potential bias. This violates STROBE-22 (funding).\n\n**Suggested Action:** Add a section disclosing all funding sources and the role of funders in study design, analysis, and reporting."
+    }
+  ]
+}

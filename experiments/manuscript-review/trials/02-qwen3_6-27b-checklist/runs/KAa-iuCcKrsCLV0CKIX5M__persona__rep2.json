@@ -1,0 +1,69 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 10,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The manuscript concludes that dCBT-I \"should replace pharmacotherapy as first-line treatment.\" This claim is unsupported because the review compares dCBT-I primarily against control groups (e.g., waitlist, placebo, usual care) rather than direct head-to-head comparisons with pharmacotherapy. There is no meta-analysis demonstrating non-inferiority or superiority over active drug treatments.\n\n**Why it matters:** Extrapolating superiority over passive controls to recommend replacing standard-of-care pharmacotherapy is a logical fallacy and constitutes dangerous clinical advice. It exceeds the statistical and clinical evidence provided, potentially misleading clinicians and policymakers.\n\n**Action:** Remove the recommendation to replace pharmacotherapy. Restructure conclusions to state that dCBT-I is effective compared to control conditions used in the included studies. If direct comparative evidence against pharmacotherapy exists, it must be explicitly analyzed; otherwise, acknowledge this limitation and avoid prescriptive policy recommendations."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is critically insufficient for a systematic review. Only PubMed was searched, with no mention of other major databases (e.g., Embase, Cochrane Central, PsycINFO), grey literature, or trial registries. Furthermore, the full search strategy (keywords, MeSH terms, date ranges, filters) is not provided, preventing reproducibility.\n\n**Why it matters:** Relying on a single database significantly increases the risk of publication bias and missing relevant studies, particularly those in non-English journals or specialized sleep/psychology literature. This compromises the comprehensiveness and validity of the review's findings.\n\n**Action:** Expand the search to include at least two additional major bibliographic databases (e.g., Embase and Cochrane Library). Provide the complete search strategy for each database in an appendix or supplementary material."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript lacks a formal assessment of risk of bias (RoB) for the included trials. Standard tools such as Cochrane RoB 2 were not used to evaluate methodological quality (e.g., allocation concealment, blinding, incomplete outcome data).\n\n**Why it matters:** Without assessing RoB, the review cannot distinguish between high-quality evidence and results potentially inflated by biased studies. This undermines the credibility of any claims regarding effectiveness, especially given the strong conclusions drawn.\n\n**Action:** Perform a formal risk of bias assessment for each included trial using a validated tool (e.g., Cochrane RoB 2). Present these assessments in a table or figure and discuss how they influence the interpretation of the findings."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study selection process is incompletely described. Only title screening by two reviewers is mentioned; there is no description of abstract and full-text screening stages, resolution of disagreements, or adherence to PRISMA flow requirements.\n\n**Why it matters:** Incomplete description of the selection process raises concerns about eligibility errors and reduces transparency. PRISMA guidelines require reporting on all stages of study selection to ensure reproducibility and minimize selection bias.\n\n**Action:** Describe the full screening process, including abstract and full-text reviews by two independent reviewers, and how disagreements were resolved. Include a PRISMA flow diagram detailing records identified, screened, eligible, and included."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript fails to report whether a protocol was registered (e.g., in PROSPERO) or if the review followed PRISMA guidelines. No pre-specified analysis plan is mentioned.\n\n**Why it matters:** Registration and adherence to reporting guidelines are essential for transparency and reproducibility. Lack of registration increases the risk of selective reporting of outcomes and post-hoc changes to inclusion criteria.\n\n**Action:** State whether a protocol was registered prior to conducting the review. If not, acknowledge this as a limitation. Ensure the final manuscript aligns with PRISMA 2020 checklist requirements."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Eligibility criteria are vaguely defined. \"Digital cognitive behavioural therapy\" is not operationally defined (e.g., app-based, web-based, telehealth), and \"adults\" lacks specific age ranges or diagnostic criteria for insomnia. Comparator arms are also not specified.\n\n**Why it matters:** Vague definitions introduce ambiguity in study inclusion, potentially mixing heterogeneous interventions and populations. This threatens internal validity and the interpretability of the results.\n\n**Action:** Clearly define the intervention (format, delivery mode), population (age range, diagnosis criteria), and acceptable comparator arms in the Methods section using PICO format."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** No quantitative data synthesis (meta-analysis) was performed despite including 14 trials with a common outcome (insomnia severity). The results are summarized only narratively.\n\n**Why it matters:** Narrative summaries alone do not allow for quantitative assessment of effect size heterogeneity or precision. A meta-analysis would provide a more robust estimate of effectiveness and help identify sources of variation.\n\n**Action:** Conduct a random-effects meta-analysis if clinical and methodological heterogeneity allows, reporting pooled effect sizes (e.g., standardized mean difference) with 95% confidence intervals. If meta-analysis is not feasible, provide a detailed quantitative assessment of heterogeneity (e.g., I² statistic) and justify the narrative approach."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section is vague, stating \"Effect sizes varied across studies\" without providing numerical data. No specific effect sizes, confidence intervals, p-values, or study characteristics (sample sizes, control types) are reported.\n\n**Why it matters:** Readers cannot assess the magnitude of the treatment effect, its precision, or the consistency of findings. \"Varied\" is not a statistical finding; it requires quantification.\n\n**Action:** Report the effect size and 95% confidence interval for each included study in a forest plot or table. Include details on follow-up duration, adherence rates, and control conditions. If meta-analysis is performed, report pooled estimates and heterogeneity statistics."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract & Introduction",
+      "content_md": "**Problem:** The abstract and introduction lack context on existing evidence. They do not mention that CBT-I is already established as first-line treatment in major guidelines, nor do they clarify the specific gap this review fills (e.g., focusing on *digital* delivery).\n\n**Why it matters:** Readers need to understand the rationale for the review. If dCBT-I's effectiveness is already well-established, the review should focus on implementation barriers, cost-effectiveness, or specific subpopulations rather than re-proving efficacy.\n\n**Action:** Clearly state the rationale, citing key guidelines and prior reviews. Clarify how this review contributes to the field (e.g., synthesizing evidence specifically on digital delivery modes)."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract / Introduction",
+      "content_md": "**Problem:** The acronym 'dCBT-I' is used in the Abstract and Discussion without being defined at first use.\n\n**Why it matters:** Ensures accessibility for readers outside the immediate sub-specialty who may not be familiar with the abbreviation.\n\n**Action:** Define 'digital cognitive behavioural therapy for insomnia (dCBT-I)' at first mention in both the Abstract and Introduction."
+    }
+  ]
+}

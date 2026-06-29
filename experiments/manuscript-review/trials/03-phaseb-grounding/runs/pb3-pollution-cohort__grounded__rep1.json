@@ -1,0 +1,27 @@
+{
+  "mid": "pb3-pollution-cohort",
+  "arm": "grounded",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 3,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results, Abstract, Discussion",
+      "content_md": "**Selective Reporting of Primary Outcome (Protocol Deviation)**\n\n**Problem:** The manuscript reports a hazard ratio (HR) of 1.42 (95% CI 1.28–1.57) as the primary finding. However, the Registered Analysis Plan explicitly pre-specified that the PRIMARY model must adjust for age, sex, education, smoking, and **APOE ε4 genotype**. The Verified Grounding Pack confirms that the reported HR corresponds to an age/sex-only model, while the pre-specified APOE-adjusted HR was 1.11 (95% CI 0.98–1.26), which is non-significant.\n\n**Why it matters:** This constitutes selective reporting (p-hacking or outcome switching). By presenting an unadjusted/less-adjusted model as the primary result, the authors have misrepresented the study’s findings. The association disappears when controlling for the pre-specified genetic confounder (APOE ε4), meaning the observed effect in the manuscript is likely due to confounding by indication or genetic susceptibility rather than air pollution alone. This fundamentally invalidates the conclusion that air pollution is an \"independent cause\" of dementia in this cohort.\n\n**Suggested Action:** The authors must report the pre-specified primary analysis (APOE-adjusted model) as the main result. They should transparently discuss the attenuation of the effect after adjustment for APOE ε4. If they wish to present the age/sex-only model, it must be clearly labeled as a secondary/sensitivity analysis, not the primary finding. The conclusion must be tempered to reflect that the association was not robust to pre-specified adjustments."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion, Abstract (Conclusions)",
+      "content_md": "**Overstated Causal Language**\n\n**Problem:** The Discussion states, \"PM2.5 directly causes dementia,\" and the Abstract concludes, \"Air pollution is a strong, independent cause of dementia.\" \n\n**Why it matters:** First, this language is causally inappropriate for an observational study, which cannot establish direct causality due to residual confounding and lack of randomization. Second, given the critical finding that the association attenuates to non-significance after adjusting for APOE ε4 (as per the protocol), claiming \"direct cause\" is factually unsupported by the data provided in the grounding pack. The term \"independent\" is also misleading if the effect disappears when key confounders are included.\n\n**Suggested Action:** Replace causal language with associative language (e.g., \"associated with,\" \"linked to\"). Specifically, revise the conclusion to state that while an association was observed in minimally adjusted models, it was attenuated and became non-significant after adjustment for APOE ε4 status. Avoid claims of direct causality."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Missing Description of Pre-Specified Adjustment Strategy**\n\n**Problem:** The Methods section states, \"Cox models estimated hazard ratios,\" but fails to specify which covariates were included in the primary analysis. It does not mention APOE ε4 genotype, education, or smoking, despite these being part of the pre-specified protocol.\n\n**Why it matters:** Without explicitly listing the covariates in the primary model, readers cannot assess whether the reported HR (1.42) matches the protocol. This omission hides the selective reporting issue. Transparency regarding the adjustment strategy is essential for reproducibility and validity assessment.\n\n**Suggested Action:** Rewrite the Methods section to explicitly list all covariates included in the pre-specified primary model (age, sex, education, smoking, APOE ε4). Clearly distinguish between the primary adjusted model and any secondary/sensitivity models. Report the results of the primary adjusted model (HR 1.11, CI 0.98–1.26) alongside or instead of the current reported result."
+    }
+  ]
+}

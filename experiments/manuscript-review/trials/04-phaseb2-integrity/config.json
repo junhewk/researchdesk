@@ -1,0 +1,16 @@
+{
+  "trial": "04-phaseb2-integrity",
+  "date": "2026-06-29",
+  "phase": "B-2 — two new pre-defined grounding items",
+  "base_model": "qwen3.6-27b-mtp-q8 (local llama-server)",
+  "new_grounding": [
+    "(a) statistical-impossibility battery — GRIM + statcheck, computed by scripts/experiment/lib/integrity.mjs",
+    "(b) tortured-phrase / AI-tell text-integrity lexicon + scanner"
+  ],
+  "grounding_pack": "COMPUTED by the real tools on each manuscript (not hand-written) — fixes Phase B's '1.00 by construction' caveat; tools confirmed all 11 planted errors",
+  "arms": ["naive", "persona (4-lens + merge)", "ensemble (4 identical + merge)", "grounded (1 reviewer + computed integrity report)"],
+  "judge": "Claude (blinded)",
+  "manuscripts": 3, "reps": 2, "arm_runs": 24,
+  "gold": "11 errors: GRIM-impossible means (3), statcheck p-value mismatches (3), tortured phrases (3), AI boilerplate left in text (2)",
+  "question": "Do the stat-impossibility battery and the tortured-phrase lexicon add catchable, categorical errors — i.e., does grounding catch them while naive/persona/ensemble miss? (User is skeptical the phrase list helps; this tests it.)"
+}

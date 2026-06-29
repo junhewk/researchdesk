@@ -1,0 +1,45 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The methodology is entirely non-compliant with scoping review standards (e.g., PRISMA-ScR). There is no mention of a pre-defined protocol, specific search strings, inclusion/exclusion criteria beyond a vague description, or data extraction methods.\n**Why it matters:** Without transparent and reproducible methods, the review cannot be trusted. Readers cannot verify if the 38 papers were selected without bias or if relevant literature was missed.\n**Action:** Rewrite the Methods section to include: (1) registration of a protocol (e.g., PROSPERO); (2) detailed search strategy including databases, date ranges, and exact search terms; (3) explicit inclusion/exclusion criteria; (4) description of the screening process (e.g., dual review); and (5) data extraction and synthesis methods."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Only PubMed was searched. Scoping reviews typically require comprehensive searches across multiple databases (e.g., ERIC, CINAHL, Embase, Web of Science) to capture the full scope of educational literature.\n**Why it matters:** Medical education research is published in diverse journals not always indexed in PubMed. Limiting to one database introduces significant selection bias and undermines the 'scoping' nature of the review.\n**Action:** Expand the search to include at least three additional relevant databases (e.g., ERIC for education, Embase for biomedical literature) and report the number of results from each."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section is insufficiently detailed. It merely lists categories (tutoring, assessment, chatbots) without providing any data on the volume of studies per category, study designs, quality of evidence, or specific findings.\n**Why it matters:** A scoping review aims to map the extent and nature of research. Without quantitative summaries (e.g., n=10 tutoring systems) or qualitative synthesis of themes, the results do not inform the reader about the state of the field.\n**Action:** Present a PRISMA flow diagram showing study selection. Provide a table summarizing included studies (author, year, country, study design, AI type). Include charts or tables detailing the distribution of AI applications and key outcomes/findings from each category."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The conclusion that AI 'should be integrated into all undergraduate curricula immediately' is an unsupported overgeneralization. The manuscript does not assess the quality of evidence, potential harms, ethical concerns, or implementation barriers.\n**Why it matters:** Medical education decisions require robust evidence. Claiming immediate universal integration based on a poorly conducted review risks promoting ineffective or harmful practices. It ignores nuances such as validity, reliability, and equity issues associated with AI tools.\n**Action:** Tone down the recommendations to reflect the actual findings. Discuss limitations of the current evidence base (e.g., lack of RCTs, small sample sizes). Address ethical considerations, potential biases in AI, and the need for further rigorous evaluation before widespread adoption."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The Abstract lacks structure and key information. It does not include background, objectives, detailed methods, specific results, or a balanced conclusion.\n**Why it matters:** A structured abstract is required for indexing and allows readers to quickly assess the paper's relevance and rigor. The current abstract misrepresents the study by presenting opinions as facts without methodological context.\n**Action:** Rewrite the Abstract using a structured format (Background, Objectives, Methods, Results, Conclusion). Include specific numbers (e.g., '38 studies identified') and avoid definitive policy recommendations in the abstract unless strongly supported by high-quality evidence."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** There is no discussion of limitations. The manuscript does not acknowledge the potential for publication bias, the heterogeneity of AI definitions, or the low quality of many included studies.\n**Why it matters:** Ignoring limitations misleads readers into thinking the evidence base is stronger and more consistent than it likely is. Transparency about limitations is crucial for interpreting the review's findings.\n**Action:** Add a dedicated paragraph on limitations, discussing issues such as database selection, potential publication bias, variability in AI tool definitions, and the predominance of low-quality study designs (if applicable)."
+    }
+  ]
+}

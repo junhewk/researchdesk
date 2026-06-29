@@ -1,0 +1,41 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "Gx3FJyUvl1xqkzx0djh9N",
+  "title": "A serum biomarker panel for early sepsis detection: a diagnostic accuracy study",
+  "research_type": "diagnostic_accuracy",
+  "study_id": null,
+  "guidelines": [
+    "STARD"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:ethics:1",
+      "layer": "gate",
+      "source_ref": "ethics",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:2",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 3,
+    "checklist": 0
+  },
+  "reviewer_letters": []
+}

@@ -1,0 +1,45 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "persona_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract / PRISMA-2",
+      "content_md": "**Problem**: The abstract is unstructured and omits required PRISMA elements, including data sources (beyond vague mention of PubMed), eligibility criteria details, synthesis methods, limitations, and registration information.\n**Why it matters**: Clinical journals require structured abstracts to ensure transparency and allow readers to quickly assess the review's validity. Missing registration and methodology details raises concerns about protocol adherence and potential bias.\n**Suggested Action**: Rewrite the abstract into a structured format (Background, Methods, Results, Conclusion). Explicitly state the search dates, specific databases searched, inclusion/exclusion criteria, the number of studies screened/assessed for eligibility/included, the synthesis method (e.g., meta-analysis vs. narrative), and any limitations."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / PRISMA-7 & PRISMA-14",
+      "content_md": "**Problem**: The Methods section lacks a reproducible search strategy (no search terms, dates, or limits provided) and fails to describe synthesis methods (e.g., meta-analysis models, heterogeneity measures like I²).\n**Why it matters**: Without a full search strategy, the review cannot be replicated. Without specifying synthesis methods, readers cannot evaluate how results were aggregated or interpreted, especially given the claim of varied effect sizes.\n**Suggested Action**: Provide the complete electronic search strategy for at least one database (including keywords and filters). Describe the data extraction process and the statistical methods used for synthesis (or explain why a narrative synthesis was chosen and how it was conducted)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / PRISMA-12 & PRISMA-24",
+      "content_md": "**Problem**: The discussion makes a strong clinical recommendation (replacing pharmacotherapy) without reporting risk-of-bias assessments for individual studies or across the review. The Methods also omit any mention of quality appraisal.\n**Why it matters**: Systematic reviews must assess the certainty of evidence before making practice-changing recommendations. Ignoring risk of bias invalidates the strength of the conclusions, as poor-quality trials may inflate effect sizes.\n**Suggested Action**: Add a section in Methods describing the tool used for risk-of-bias assessment (e.g., Cochrane RoB 2). Report these findings in the Results and integrate them into the Discussion to qualify the recommendations based on evidence quality."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Abstract & Discussion / PRISMA-2",
+      "content_md": "**Problem**: The conclusion that dCBT-I \"should replace pharmacotherapy as first-line treatment\" is an overstatement not supported by the provided text. The review does not compare dCBT-I directly to pharmacotherapy in a head-to-head meta-analysis, nor does it address safety, cost, or patient preference.\n**Why it matters**: Unsupported clinical recommendations can mislead practitioners and policymakers. A systematic review of effectiveness against controls (e.g., waitlist) does not automatically imply superiority over existing active treatments like medication without direct comparative evidence.\n**Suggested Action**: Tone down the conclusion to reflect the actual findings (e.g., \"dCBT-I is an effective alternative to control conditions\"). If pharmacotherapy comparison was not part of the review scope, explicitly state this limitation. Avoid prescriptive language about replacing standard care unless supported by direct comparative data within the review."
+    },
+    {
+      "category": "mechanical",
+      "severity": "major",
+      "section_ref": "Results / PRISMA-17",
+      "content_md": "**Problem**: The Results section mentions 14 trials were included but does not provide a PRISMA flow diagram or text describing the screening process (records identified, screened, excluded).\n**Why it matters**: The flow of study selection is critical for transparency. Without it, readers cannot assess potential selection bias or understand the scope of the literature search.\n**Suggested Action**: Include a PRISMA 2020 flow diagram in the Results section or Appendix. Provide a textual summary of the number of records identified, screened, assessed for eligibility, and included, along with reasons for exclusions."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Declarations / PRISMA-27",
+      "content_md": "**Problem**: The Declarations section states no competing interests but does not explicitly mention funding sources.\n**Why it matters**: PRISMA 2020 requires disclosure of funding sources and their role in the study design, conduct, analysis, and writing.\n**Suggested Action**: Explicitly state whether the review received any funding. If unfunded, state \"This research received no specific grant from any funding agency...\""
+    }
+  ]
+}

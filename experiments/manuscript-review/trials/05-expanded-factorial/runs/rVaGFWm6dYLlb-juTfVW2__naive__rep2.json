@@ -1,0 +1,33 @@
+{
+  "mid": "rVaGFWm6dYLlb-juTfVW2",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 4,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The Methods section lacks essential details required to assess the validity and reproducibility of a randomized controlled trial (RCT). Specifically, it omits: participant eligibility criteria (inclusion/exclusion), sample size calculation/power analysis, randomization procedure and allocation concealment methods, blinding status of participants/personnel/outcome assessors, detailed description of the telehealth intervention (frequency, duration, modality) versus usual care, and statistical analysis plan.\n\n**Why it matters**: Without these details, it is impossible to evaluate selection bias, performance bias, detection bias, or attrition bias. The clinical community cannot determine if the study was adequately powered or if the intervention was described sufficiently for replication. This violates core reporting standards (e.g., CONSORT).\n\n**Suggested Action**: Completely rewrite the Methods section to include: 1) Eligibility criteria; 2) Sample size justification; 3) Randomization and allocation concealment details; 4) Blinding procedures; 5) Detailed intervention protocols for both arms; 6) Statistical methods used for analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The Results section provides insufficient data. It reports only a p-value (p = 0.02) and states that the mean difference favored telehealth, but fails to provide: baseline characteristics of participants in both groups (to assess comparability), actual outcome values (means/medians with confidence intervals or standard deviations) for both groups at follow-up, the specific pain scale used, participant flow (randomized, completed, analyzed), and any adverse events.\n\n**Why it matters**: A p-value alone does not convey clinical significance or effect size. Without baseline data, we cannot know if groups were balanced. Without confidence intervals, precision is unknown. Without participant flow, attrition bias cannot be assessed. This prevents any meaningful interpretation of the findings.\n\n**Suggested Action**: Expand the Results section to include: 1) A CONSORT flow diagram or text describing participant flow; 2) Table of baseline demographics and clinical characteristics for both groups; 3) Primary outcome results with effect sizes (e.g., mean difference), confidence intervals, and p-values; 4) Secondary outcomes if applicable; 5) Adverse events."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract & Discussion",
+      "content_md": "**Problem**: The manuscript structure is severely deficient. The Abstract is overly brief and lacks structured components (Background, Methods, Results, Conclusion). The Discussion section is a single sentence that merely restates the conclusion without interpreting findings, discussing limitations, comparing with existing literature, or addressing implications for practice.\n\n**Why it matters**: A standard clinical journal requires a comprehensive discussion to contextualize results. Omitting limitations and context undermines the credibility of the claim that telehealth \"should be standard care.\" The lack of structure in the Abstract prevents quick assessment of the study's quality.\n\n**Suggested Action**: 1) Rewrite the Abstract as a structured abstract with clear headings (Objective, Methods, Results, Conclusion). 2) Expand the Discussion to include: interpretation of results in context of prior literature, limitations of the study (e.g., short follow-up, lack of blinding), implications for clinical practice and policy, and future research directions."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: The Declarations section is incomplete. It lists an IRB number but lacks details on informed consent, trial registration (essential for RCTs), and funding sources.\n\n**Why it matters**: Trial registration is a standard requirement for ethical reporting of RCTs to prevent selective reporting of outcomes. Funding disclosure is necessary to assess potential conflicts of interest beyond the stated 'none'.\n\n**Suggested Action**: Add details on: 1) How informed consent was obtained; 2) The trial registration number and registry name (e.g., ClinicalTrials.gov); 3) Source(s) of funding for the study."
+    }
+  ]
+}

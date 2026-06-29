@@ -1,0 +1,45 @@
+{
+  "mid": "pb3-pollution-cohort",
+  "arm": "ensemble",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract / Discussion / Declarations",
+      "content_md": "**Problem:** The manuscript asserts that PM2.5 \"directly causes\" dementia and is a \"strong, independent cause.\" However, the study design is explicitly identified as observational in the Declarations.\n\n**Why it matters:** Observational studies cannot establish causality due to potential unmeasured confounding, reverse causation, or selection bias. Asserting direct causation violates fundamental epidemiological principles (e.g., Hill's criteria) and misleads readers regarding the strength of the evidence. This is a significant scientific overstatement.\n\n**Suggested Action:** Revise language throughout the Abstract, Results, and Discussion to reflect association rather than causation. Replace phrases like \"directly causes\" with \"is associated with\" or \"predicts.\" Add a discussion section on limitations regarding causal inference."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section lacks critical details necessary for reproducibility and validity assessment. Specifically, it does not specify: (1) the covariates adjusted for in the Cox models (e.g., age, sex, education, socioeconomic status, smoking, comorbidities); (2) how exposure misclassification was handled or validated; (3) the specific definition of dementia used (e.g., ICD codes, clinical diagnosis criteria); or (4) how competing risks (e.g., death before dementia onset) were addressed.\n\n**Why it matters:** Without knowing the adjustment variables, it is impossible to determine if the reported hazard ratio (1.42) is truly \"independent\" or driven by confounding factors. The magnitude of the effect suggests potential residual confounding if key variables are missing. Lack of diagnostic criteria details raises concerns about outcome misclassification.\n\n**Suggested Action:** Provide a detailed table of baseline characteristics and a list of all covariates included in the final model. Describe the validation of PM2.5 exposure estimates. Specify the diagnostic criteria for dementia and explain how competing risks were handled (e.g., Fine-Gray models or cause-specific hazards)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results / Methods",
+      "content_md": "**Problem:** The Results section provides only the primary hazard ratio without presenting stratified analyses, sensitivity analyses, or interaction tests. There is no description of baseline characteristics of the cohort (e.g., mean age, sex distribution, prevalence of comorbidities) to contextualize the generalizability of the findings. Additionally, there is no mention of how missing data were handled or the attrition rate during follow-up.\n\n**Why it matters:** Readers cannot assess the robustness of the finding without seeing if the association holds across different subgroups or after sensitivity checks. The absence of baseline data makes it difficult to compare this cohort with prior studies cited in the Discussion. Misclassification of dementia outcomes and loss to follow-up can introduce significant bias.\n\n**Suggested Action:** Include a table summarizing participant baseline characteristics. Report results from sensitivity analyses (e.g., excluding cases diagnosed in the first 2 years to address reverse causation) and any subgroup analyses performed. Add a subsection detailing outcome ascertainment methods and describe the handling of missing covariate data and participant attrition."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Limitations",
+      "content_md": "**Problem:** The Discussion is extremely brief and lacks critical interpretation. It fails to discuss potential mechanisms, compare the magnitude of the effect size with previous literature (citing [1,2] but not comparing HRs), or address alternative explanations for the observed association. The Limitations section is overly brief, stating only \"observational,\" and fails to address specific biases such as survival bias, residual confounding, exposure misclassification, or generalizability.\n\n**Why it matters:** A robust discussion should contextualize findings within the broader scientific landscape. Ignoring specific limitations undermines the credibility of the strong conclusions drawn. The current text reads more like a press release than a scientific interpretation.\n\n**Suggested Action:** Expand the Discussion to include: (1) a comparison of the effect size with other major cohorts; (2) a discussion of biological plausibility; (3) an acknowledgment of residual confounding as a limitation; and (4) a nuanced policy recommendation that reflects the observational nature of the data. Explicitly discuss limitations regarding causality, such as unmeasured confounding and reverse causation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results / Methods",
+      "content_md": "**Problem:** The manuscript lacks details on the exposure-response relationship. It reports only the overall hazard ratio per 5 µg/m³ increment without providing baseline PM2.5 levels, range of exposure, or analysis of non-linearity/threshold effects. It also lacks subgroup results by dementia subtype (e.g., Alzheimer's vs. Vascular).\n\n**Why it matters:** A linear assumption may not hold across all exposure ranges. Knowing the mean/median PM2.5 helps contextualize public health relevance. Without assessing the shape of the exposure-response curve or heterogeneity by subtype, the clinical specificity and public health implications are unclear.\n\n**Suggested Action:** Report the mean and standard deviation of PM2.5 exposure in the cohort. Include results for specific dementia subtypes if available. Discuss whether the relationship was tested for non-linearity using spline models or categorized exposure groups."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations / Data Availability",
+      "content_md": "**Problem:** The Data Availability statement says \"on request,\" which is increasingly considered non-compliant with open science standards and journal policies requiring data sharing plans or repositories. There is also no mention of pre-registration or an analysis plan.\n\n**Why it matters:** Transparency in data sharing allows for independent verification of results. Vague availability statements hinder reproducibility. Lack of pre-registration raises concerns about data dredging or selective reporting.\n\n**Suggested Action:** Specify if data can be shared due to privacy constraints, but provide a clear protocol for how qualified researchers can request access, or deposit de-identified data in a trusted repository (e.g., Dryad, Zenodo). Reference any pre-analysis plan if one exists."
+    }
+  ]
+}

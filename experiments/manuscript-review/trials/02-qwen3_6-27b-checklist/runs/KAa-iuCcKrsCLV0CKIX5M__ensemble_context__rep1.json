@@ -1,0 +1,57 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "ensemble_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Missing PRISMA Flow Diagram (PRISMA-17)**\n\nThe manuscript does not include a flow diagram detailing the study selection process. The results state that 14 trials were included but do not report the number of records identified, screened, assessed for eligibility, or excluded with reasons.\n\n**Why it matters:** The flow diagram is essential for transparency, allowing readers to understand how studies were filtered and why exclusions occurred. Its absence makes it impossible to verify the robustness of the selection process or assess potential selection bias.\n\n**Suggested Action:** Create and include a PRISMA 2020-compliant flow diagram showing the number of records identified, screened, assessed for eligibility, and included, with reasons for exclusions at each stage."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Incomplete Search Strategy (PRISMA-7)**\n\nThe methods state only that 'PubMed' was searched, without providing the full electronic search strategy (keywords, MeSH terms, dates, limits). Searching a single database increases the risk of publication bias and missing relevant studies indexed in other major databases (e.g., Embase, Cochrane Central, PsycINFO).\n\n**Why it matters:** A comprehensive search across multiple databases is required to minimize selection bias. The lack of a reproducible search string prevents verification and replication of the review.\n\n**Suggested Action:** Expand the search to include at least one additional relevant database (e.g., Embase or Cochrane Library). Provide the full search string for at least one database in an appendix or supplementary material, including date ranges and any filters applied."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Missing Risk-of-Bias Assessment (PRISMA-12 & 24)**\n\nThe manuscript does not describe any method for assessing the risk of bias in the included studies, nor does it report these results. This is critical given that insomnia trials often suffer from issues like lack of blinding or high attrition.\n\n**Why it matters:** Without assessing study quality (e.g., using Cochrane RoB 2), the validity of the conclusions is unknown. Ignoring risk of bias can lead to overestimation of treatment effects, particularly if results are driven by methodologically flawed studies.\n\n**Suggested Action:** Implement a standard risk-of-bias tool (e.g., Cochrane RoB 2 or ROBINS-I) for all included studies. Report the results in a table and figure, and discuss how bias may have influenced the findings."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Inadequate Synthesis Methods (PRISMA-14)**\n\nThe methods state that outcomes were summarized 'narratively,' and the results mention that effect sizes 'varied' without providing quantitative synthesis or measures of consistency (e.g., I²). There is no justification for why meta-analysis was not performed.\n\n**Why it matters:** A narrative summary alone is insufficient for a systematic review claiming to establish effectiveness across 14 trials. It prevents readers from assessing the magnitude and precision of the treatment effect or the heterogeneity between studies, undermining the scientific rigor of the review.\n\n**Suggested Action:** Perform a meta-analysis if data permit, reporting pooled effect sizes with confidence intervals and heterogeneity statistics (I², tau²). If meta-analysis is not possible due to heterogeneity, provide a structured narrative synthesis using a framework (e.g., SWiM guidelines) rather than vague statements about variation."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Unsupported Clinical Recommendation**\n\nThe abstract and discussion conclude that dCBT-I 'should replace pharmacotherapy as first-line treatment.' This is a strong clinical policy recommendation not supported by the review's methodology or results, which appear to compare dCBT-I only to control groups (e.g., waitlist) rather than head-to-head with pharmacotherapy.\n\n**Why it matters:** Clinical guidelines require direct comparative evidence or robust indirect comparisons to recommend replacing a standard treatment. Making such a strong recommendation based solely on superiority over inactive controls is misleading and potentially harmful to patient care decisions, especially without assessing safety, cost-effectiveness, or long-term adherence relative to medication.\n\n**Suggested Action:** Restrict conclusions to what the data show: that dCBT-I is effective compared to control groups. Avoid prescriptive language about replacing pharmacotherapy unless the review explicitly included and synthesized head-to-head trials comparing dCBT-I to medication."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract / Methods",
+      "content_md": "**Missing Registration, Protocol Details, and Structured Abstract (PRISMA-2)**\n\nThe abstract is unstructured and does not mention registration or protocol details. PRISMA 2020 Item 2 requires reporting whether the review was registered, where, and the registration number. Additionally, the abstract lacks standard headings (Background, Methods, Results, Conclusion) and key elements like specific data sources and limitations.\n\n**Why it matters:** Registration minimizes bias from selective reporting of outcomes and changes in eligibility criteria post-hoc. A structured abstract allows readers to quickly assess the relevance and quality of the review. Lack of transparency regarding registration raises concerns about the rigor of the review process.\n\n**Suggested Action:** Restructure the abstract into standard sections: Background, Objective, Data Sources, Eligibility Criteria, Results, Limitations, and Conclusion. If registered (e.g., PROSPERO), provide the registration number in the abstract and methods. If not registered, acknowledge this as a limitation."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Vague Eligibility Criteria (PRISMA-5)**\n\nThe eligibility criteria are described broadly ('randomised design', 'adult population') but lack specificity. It is unclear what constitutes 'digital' CBT-I (e.g., app-only, web-based with therapist support?), what control conditions were accepted, and if there were restrictions on comorbidities or insomnia duration.\n\n**Why it matters:** Clear PICO criteria are essential for defining the scope of the review and ensuring reproducibility. Vague criteria hinder understanding of the review's applicability and may introduce selection bias.\n\n**Suggested Action:** Clearly define the PICO criteria in the Methods. Specify the definition of dCBT-I, the types of control groups included/excluded, and any clinical exclusion criteria (e.g., minimum duration of insomnia symptoms)."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Missing Funding Information (PRISMA-27)**\n\nThe declarations state no competing interests but do not explicitly list funding sources or the role of funders. PRISMA 2020 Item 27 requires disclosing all sources of financial and non-financial support.\n\n**Why it matters:** Transparency regarding funding is essential to assess potential conflicts of interest, especially when recommending broad health system adoption. Even if unfunded, this must be explicitly stated.\n\n**Suggested Action:** Add a specific statement: 'This study received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.' If funded, provide details and confirm the funder had no role in design, analysis, or writing."
+    }
+  ]
+}

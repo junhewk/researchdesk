@@ -1,0 +1,63 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "context",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is critically incomplete. Only PubMed was searched, and no search dates, limits, or full search strings are provided (PRISMA-7). **Why it matters:** Systematic reviews require comprehensive literature retrieval to minimize selection bias. Relying on a single database without reporting parameters makes the review non-reproducible and likely misses relevant trials indexed in Embase, Cochrane CENTRAL, or PsycINFO. **Action:** Expand the search to include at least two major databases (e.g., PubMed/MEDLINE and Embase). Report the full search strategy for each database, including dates of last search and any limits applied."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** There is no description of risk-of-bias (RoB) assessment methods for individual studies, nor are RoB results reported (PRISMA-12, PRISMA-24). **Why it matters:** Without assessing the methodological quality of included trials (e.g., using Cochrane RoB 2.0), the review cannot determine if the observed effects are reliable or driven by biased studies. This undermines the validity of the conclusion that dCBT-I is effective. **Action:** Define the tool used for RoB assessment in the Methods section. Present a summary of RoB judgments for each included study in the Results section (e.g., via a figure or table) and discuss how bias may influence the findings."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The synthesis method is described only as 'narrative,' with no mention of meta-analysis, heterogeneity assessment (I²), or consistency measures (PRISMA-14). **Why it matters:** With 14 trials included, a narrative summary alone is insufficient and prone to subjective interpretation. Quantitative synthesis (meta-analysis) should be attempted if data permit, or a rigorous framework for narrative synthesis must be described. Heterogeneity assessment is essential to understand variability in effect sizes. **Action:** If outcome data are comparable, perform a meta-analysis and report pooled effect sizes with confidence intervals. If not, explicitly describe the narrative synthesis framework used (e.g., SWiM guidelines) and assess heterogeneity qualitatively or statistically where possible."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The PRISMA flow diagram is missing (PRISMA-17). **Why it matters:** The flow diagram is essential for transparency in study selection, showing the number of records identified, screened, assessed for eligibility, and included. Its absence prevents readers from evaluating potential selection bias or errors in the screening process. **Action:** Create and include a PRISMA 2020 flow diagram detailing the study selection process from identification through to inclusion."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem:** The conclusion that 'dCBT-I should replace pharmacotherapy as first-line treatment' is unsupported by the review's scope and methods. **Why it matters:** The review included trials comparing dCBT-I to control conditions (which may include waitlist, usual care, or placebo), but there is no indication that head-to-head comparisons with pharmacotherapy were analyzed or that the evidence base supports a direct replacement claim. This overgeneralizes findings beyond the data presented. **Action:** Restrict conclusions to the effectiveness of dCBT-I compared to the specific control conditions used in the included trials. Avoid prescriptive clinical recommendations (e.g., replacing first-line treatment) unless supported by direct comparative evidence or a separate economic/clinical guideline analysis."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract / Introduction",
+      "content_md": "**Problem:** The abstract is unstructured and lacks key PRISMA-2 elements: objectives, data sources, eligibility criteria, study selection details, synthesis methods, limitations, and registration information. **Why it matters:** A structured abstract allows readers to quickly assess the review's scope, methodology, and validity. Missing these elements reduces transparency and usability. **Action:** Restructure the abstract into standard sections (Background, Objectives, Data Sources, Eligibility Criteria, Study Selection, Data Extraction/Synthesis, Results, Limitations, Conclusion). Include registration details (e.g., PROSPERO number) if applicable."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction lacks explicit, answerable objectives using the PICO framework (PRISMA-4). **Why it matters:** Clear PICO definitions (Population, Intervention, Comparison, Outcome) are necessary to ensure the review addresses a focused clinical question and guides eligibility criteria. **Action:** Revise the Introduction to explicitly state the PICO elements: e.g., Population (adults with chronic insomnia), Intervention (digital CBT-I), Comparison (active or passive controls), and Outcomes (insomnia severity, sleep latency, etc.)."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Funding sources and the role of funders are not reported (PRISMA-27). **Why it matters:** Transparency regarding funding is essential to assess potential conflicts of interest. Even if no funding was received, this must be explicitly stated. **Action:** Add a 'Funding' section declaring the source of support for the review and stating whether funders had any role in study design, data collection, analysis, interpretation, or writing."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Eligibility criteria are vaguely described ('adult population', 'insomnia severity outcomes') without specifying study characteristics (e.g., trial duration, type of dCBT-I) or report characteristics (e.g., language, publication status) (PRISMA-5). **Why it matters:** Precise eligibility criteria ensure reproducibility and clarify the scope of the review. **Action:** Detail all inclusion/exclusion criteria, including specific outcome measures, minimum follow-up duration, types of digital interventions accepted, and any restrictions on study design or publication language."
+    }
+  ]
+}

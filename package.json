@@ -34,7 +34,14 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test \"src/**/*.test.ts\"",
     "seed:demo": "tsx scripts/seed-diabetes-demo.ts",
-    "seed:methods-demo": "tsx scripts/seed-methods-workbench-demo.ts"
+    "seed:methods-demo": "tsx scripts/seed-methods-workbench-demo.ts",
+    "exp:seed-corpus": "tsx scripts/experiment/seed-corpus.ts",
+    "exp:seed-expand": "tsx scripts/experiment/seed-corpus-expand.ts",
+    "exp:run": "tsx scripts/experiment/run-arms.ts",
+    "exp:keys": "tsx scripts/experiment/build-answer-keys.ts",
+    "exp:manifest": "tsx scripts/experiment/build-manifest.ts",
+    "exp:judge": "tsx scripts/experiment/judge.ts",
+    "exp:packets": "tsx scripts/experiment/export-rating-packets.ts"
   },
   "dependencies": {
     "@codemirror/commands": "^6.8.0",

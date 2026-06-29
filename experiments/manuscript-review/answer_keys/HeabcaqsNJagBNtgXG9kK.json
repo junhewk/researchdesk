@@ -1,0 +1,41 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "HeabcaqsNJagBNtgXG9kK",
+  "title": "Development of a 30-day hospital readmission risk score: a prediction model study",
+  "research_type": "prediction_model",
+  "study_id": null,
+  "guidelines": [
+    "TRIPOD"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:1",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:TRIPOD-8",
+      "layer": "checklist",
+      "source_ref": "TRIPOD TRIPOD-8 (Sample size)",
+      "gold_severity": "minor",
+      "description": "Explain how the study size was arrived at (events-per-variable rationale).",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 2,
+    "checklist": 1
+  },
+  "reviewer_letters": []
+}

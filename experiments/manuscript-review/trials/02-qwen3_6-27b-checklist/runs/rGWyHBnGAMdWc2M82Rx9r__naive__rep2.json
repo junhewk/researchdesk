@@ -1,0 +1,45 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript lacks critical details regarding the statistical analysis, specifically how potential confounders were handled. It states that Cox models were fit with activity tertile as exposure but does not specify which covariates (e.g., age, sex, comorbidities, socioeconomic status, baseline health) were adjusted for in 'adjusted' models.\n\n**Why it matters:** In observational studies of physical activity and depression, confounding by indication and healthy user bias are major threats to validity. Without knowing what was adjusted for, the reported hazard ratio (0.72) cannot be interpreted as causal or even robustly associative. The claim that activity 'directly lowers' risk is unsupported without rigorous control for these factors.\n\n**Suggested Action:** Explicitly list all covariates included in the multivariable models. Provide a table comparing baseline characteristics across activity tertiles to demonstrate balance or highlight imbalances. Clarify whether the reported HR is from an unadjusted or adjusted model, and provide both if possible."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes causal claims ('physical activity directly lowers depression risk', 'should be prescribed as first-line prevention') based on a single observational cohort study with significant limitations (self-reported exposure, potential confounding).\n\n**Why it matters:** Observational data cannot establish causality. Claiming direct reduction of risk and recommending first-line prescription overstates the evidence and may mislead clinicians and policymakers. This violates standards for interpreting non-randomized evidence.\n\n**Suggested Action:** Tone down causal language. Replace 'directly lowers' with 'is associated with a lower risk of'. Acknowledge that while findings support promotion, they do not yet justify replacing established first-line interventions (like psychotherapy or medication) without further RCT evidence. Frame recommendations as supportive rather than definitive."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of incident depression relies on a Geriatric Depression Scale (GDS) score ≥5 or a 'new clinical diagnosis' without specifying how diagnoses were verified (e.g., chart review, diagnostic interview). Additionally, the cut-off for GDS (≥5) is not standard for clinical depression in all contexts; often ≥10 or ≥11 is used for probable depression.\n\n**Why it matters:** Misclassification of outcomes can bias results. If 'clinical diagnosis' is self-reported or not validated against medical records, the outcome measure is unreliable. Using a low GDS threshold may capture sub-syndromal symptoms rather than clinical depression, altering the public health interpretation.\n\n**Suggested Action:** Specify the source and verification method for 'clinical diagnoses'. Justify the choice of GDS ≥5 as the threshold for incident depression, referencing prior literature or validation studies in this population. Consider sensitivity analyses using stricter thresholds (e.g., GDS ≥10) to test robustness."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section is overly sparse. It reports only the hazard ratio for the highest vs. lowest tertile and mentions persistence across age strata, but provides no data on the middle tertile, confidence intervals, p-values for trends, or baseline characteristics of the cohort.\n\n**Why it matters:** Readers cannot assess the dose-response relationship, precision of estimates, or generalizability without these details. The absence of confidence intervals makes the statistical significance claim (p < 0.05) less informative.\n\n**Suggested Action:** Include a table with baseline characteristics by activity tertile. Report hazard ratios and 95% confidence intervals for all tertiles (middle and highest vs. lowest). Provide a p-value for trend. Detail the age-stratified analyses with specific HRs for each stratum."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study uses self-reported leisure-time physical activity at baseline only, without accounting for changes in activity over the 4.2-year follow-up period.\n\n**Why it matters:** Physical activity is dynamic; using only baseline exposure introduces misclassification bias, especially in older adults who may become less active due to emerging health issues (reverse causality). This weakens the validity of the association.\n\n**Suggested Action:** Discuss this limitation explicitly. If possible, conduct sensitivity analyses excluding participants who developed depression in the first year or two to mitigate reverse causality. Consider mentioning whether activity was re-measured at follow-up and how it was handled if so."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract states 'Higher baseline activity was associated with substantially lower depression risk' but does not provide the confidence interval for the hazard ratio.\n\n**Why it matters:** Precision is essential for interpreting effect sizes. Without CIs, readers cannot determine if the effect is clinically meaningful or statistically robust.\n\n**Suggested Action:** Add the 95% confidence interval to the abstract's result statement (e.g., 'HR 0.72, 95% CI [X.X–Y.Y]')."
+    }
+  ]
+}

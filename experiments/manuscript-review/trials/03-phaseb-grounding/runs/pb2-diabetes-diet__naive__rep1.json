@@ -1,0 +1,45 @@
+{
+  "mid": "pb2-diabetes-diet",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section lacks essential details regarding the study design, randomization process, and intervention specification. It states participants were randomized but does not describe the allocation sequence generation, concealment, or blinding status (beyond the 'open-label' limitation noted in Declarations). Furthermore, 'standard low-carb guidance [1]' is cited without defining specific carbohydrate limits (e.g., grams per day), meal plans, or the frequency/duration of telehealth coaching sessions.\n\n**Why it matters:** Without this information, the study cannot be replicated, and the internal validity is questionable. Readers cannot assess if the observed effects are due to the low-carbohydrate diet itself or other components of the 'coaching' (e.g., increased attention, behavioral support). The lack of randomization details raises concerns about selection bias.\n\n**Suggested Action:** Expand the Methods section to include: 1) A detailed description of the randomization method (e.g., computer-generated sequence, block size); 2) Specifics of the intervention (carbohydrate targets, coaching frequency, duration, modality details); 3) Description of the 'usual care' control group; and 4) Clarification on who was blinded (if anyone) and why blinding was not feasible for participants/providers."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The manuscript does not report baseline characteristics (e.g., age, sex, BMI, duration of diabetes, baseline HbA1c) or confirm balance between groups at randomization. It also fails to report attrition rates or use of intention-to-treat (ITT) vs per-protocol analysis.\n\n**Why it matters:** Without baseline data, it is impossible to determine if the groups were comparable at the start. Significant imbalances in baseline HbA1c or disease severity could confound the results. Additionally, without attrition data and analysis type clarification, the risk of bias due to missing data and selective reporting cannot be assessed.\n\n**Suggested Action:** Add a 'Baseline Characteristics' table (or text summary) comparing demographics and clinical variables between arms. Report the number of participants who completed the study vs. those lost to follow-up, and specify whether primary analyses were conducted using intention-to-treat principles."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section reports point estimates (risk ratio, weight loss) but omits confidence intervals (CIs) for the primary outcome and secondary outcomes. It also does not report statistical power or sample size calculation justification.\n\n**Why it matters:** Confidence intervals provide crucial information about the precision of the estimate and the range of plausible effects. A p-value alone does not indicate clinical significance. The absence of a sample size calculation raises questions about whether the study was adequately powered to detect clinically meaningful differences, especially for secondary outcomes like weight loss.\n\n**Suggested Action:** Report 95% confidence intervals for the risk ratio and mean difference in weight loss. Include a statement on the sample size calculation performed prior to the study (including alpha, power, and expected effect size) in the Methods section."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results/Discussion",
+      "content_md": "**Problem:** The manuscript does not report adverse events (AEs) or safety outcomes. Low-carbohydrate diets can have side effects (e.g., hypoglycemia, lipid changes, gastrointestinal issues), especially in patients on diabetes medications.\n\n**Why it matters:** Safety is a critical component of clinical trials. Recommending low-carb coaching as 'standard care' without reporting safety data is potentially harmful and scientifically irresponsible. Clinicians need to know the risk-benefit profile.\n\n**Suggested Action:** Add a section in Results detailing the incidence and severity of adverse events in both groups, particularly hypoglycemic episodes and changes in lipid profiles. Discuss these safety findings in the Discussion."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion is extremely brief and makes an overly strong recommendation ('should become standard care') without adequately addressing limitations, mechanisms, or comparison with existing guidelines. It cites only two references.\n\n**Why it matters:** A robust discussion should interpret findings in the context of existing literature, acknowledge limitations (beyond just 'open-label'), discuss potential biases, and propose cautious recommendations rather than sweeping policy changes based on a single short-term trial.\n\n**Suggested Action:** Expand the Discussion to: 1) Interpret the magnitude of the HbA1c improvement in clinical terms; 2) Compare findings with other recent diabetes dietary trials; 3) Discuss limitations in depth (e.g., short duration, lack of blinding, generalizability); 4) Temper the conclusion to suggest further research or conditional recommendation rather than immediate adoption as standard care."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Data availability is stated as 'on request.'\n\n**Why it matters:** Modern scientific standards and many journals require data to be made publicly available in repositories to ensure transparency and reproducibility. 'On request' limits accessibility and verification.\n\n**Suggested Action:** Deposit de-identified participant-level data in a public repository (e.g., Dryad, Figshare) and provide the accession number/link in the Declarations section."
+    }
+  ]
+}

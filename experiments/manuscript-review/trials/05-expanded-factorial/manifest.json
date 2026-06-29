@@ -1,0 +1,613 @@
+{
+  "schema": "review-manifest/v1",
+  "meta": {
+    "baseModel": "Claude (workflow agents)",
+    "note": "context arm grounded in reporting checklist; no protocol-diff handed over"
+  },
+  "instruction": "Create review findings for substantive problems in this manuscript. Each finding must include the problem, why it matters, and a concrete suggested action. Return JSON with `items` (each: category one of mechanical|rewrite|structural|evidence; severity one of minor|major|critical; section_ref; content_md) and a short `summary_md`.",
+  "arms": {
+    "naive": {
+      "grounding": false,
+      "persona": false,
+      "ensemble": false,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "single",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "persona": {
+      "grounding": false,
+      "persona": true,
+      "ensemble": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "statistician",
+          "system": "You are a journal-article review assistant.\n\n- You are a biostatistician. Review strictly from a statistical lens — study design, sample-size justification and power, choice and assumptions of analyses, multiplicity, effect sizes, confidence intervals, missing-data handling, and honest reporting of uncertainty. Surface only issues your statistical expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "methodologist",
+          "system": "You are a journal-article review assistant.\n\n- You are a research-methodology specialist. Review strictly from a methods lens — internal/external validity, bias (selection, measurement, confounding), protocol adherence, eligibility and comparator definition, outcome specification and timing, and reporting-guideline conformance. Surface only issues your methodological expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "domain_expert",
+          "system": "You are a journal-article review assistant.\n\n- You are a senior domain expert in this manuscript's clinical/scientific field. Review strictly from a substantive lens — plausibility of mechanisms and claims, clinical relevance, consistency with established evidence, and whether the conclusions are warranted by the data. Surface only issues your domain expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "writer_editor",
+          "system": "You are a journal-article review assistant.\n\n- You are a scientific writer/editor. Review strictly from a communication lens — structure, clarity, internal consistency between abstract/results/tables, citation/reporting mechanics, and whether each claim is stated precisely. Surface only issues your editorial expertise is best placed to catch.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "context": {
+      "grounding": true,
+      "persona": false,
+      "ensemble": false,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "single",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "persona_context": {
+      "grounding": true,
+      "persona": true,
+      "ensemble": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "statistician",
+          "system": "You are a journal-article review assistant.\n\n- You are a biostatistician. Review strictly from a statistical lens — study design, sample-size justification and power, choice and assumptions of analyses, multiplicity, effect sizes, confidence intervals, missing-data handling, and honest reporting of uncertainty. Surface only issues your statistical expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "methodologist",
+          "system": "You are a journal-article review assistant.\n\n- You are a research-methodology specialist. Review strictly from a methods lens — internal/external validity, bias (selection, measurement, confounding), protocol adherence, eligibility and comparator definition, outcome specification and timing, and reporting-guideline conformance. Surface only issues your methodological expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "domain_expert",
+          "system": "You are a journal-article review assistant.\n\n- You are a senior domain expert in this manuscript's clinical/scientific field. Review strictly from a substantive lens — plausibility of mechanisms and claims, clinical relevance, consistency with established evidence, and whether the conclusions are warranted by the data. Surface only issues your domain expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "writer_editor",
+          "system": "You are a journal-article review assistant.\n\n- You are a scientific writer/editor. Review strictly from a communication lens — structure, clarity, internal consistency between abstract/results/tables, citation/reporting mechanics, and whether each claim is stated precisely. Surface only issues your editorial expertise is best placed to catch.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "ensemble_naive": {
+      "grounding": false,
+      "persona": false,
+      "ensemble": true,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "reviewer_1",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_2",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_3",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_4",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "ensemble_context": {
+      "grounding": true,
+      "persona": false,
+      "ensemble": true,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "reviewer_1",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_2",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_3",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_4",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.\n- Never generate novel research content or unsupported claims.\n- Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.\n- Prefer concrete, actionable findings over generic advice.\n- If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    }
+  },
+  "manuscripts": {
+    "LkcAkZEGLVafBHw-4Jwe1": {
+      "title": "Coffee consumption and pancreatic cancer risk: a hospital-based case-control study",
+      "userContext": "Title: Coffee consumption and pancreatic cancer risk: a hospital-based case-control study\nDomain: oncology\nResearch type: case_control\nTarget journal: clinical\nManuscript:\n# Coffee consumption and pancreatic cancer risk: a hospital-based case-control study\n\n## Abstract\nWe compared coffee intake between pancreatic cancer cases and hospital controls. Heavy coffee drinkers had higher odds of pancreatic cancer (odds ratio 1.8). Coffee increases pancreatic cancer risk and intake should be reduced.\n\n## Methods\nCases were patients newly diagnosed with pancreatic cancer at one hospital. Controls were other patients admitted to the same hospital. Lifetime coffee consumption was ascertained by interview after diagnosis. Odds ratios were estimated by logistic regression.\n\n## Results\n240 cases and 240 controls were enrolled. Heavy coffee drinkers (>3 cups/day) had an odds ratio of 1.8 for pancreatic cancer compared with non-drinkers.\n\n## Discussion\nCoffee raises the risk of pancreatic cancer. Public-health messaging should discourage heavy coffee consumption.\n\n## Declarations\nCompeting interests: none.",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: STROBE.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### STROBE 2007\n- STROBE-1a (Title/Abstract): Indicate the study's design in the title or abstract.\n- STROBE-1b (Title/Abstract): Informative, balanced summary in the abstract.\n- STROBE-3 (Introduction): State specific objectives, including pre-specified hypotheses.\n- STROBE-4 (Methods): Present key elements of study design early in the paper.\n- STROBE-6 (Methods): Eligibility criteria, sources, methods of selection.\n- STROBE-7 (Methods): Clearly define outcomes, exposures, predictors, confounders, effect modifiers.\n- STROBE-10 (Methods): Explain how the study size was arrived at.\n- STROBE-12 (Methods): Describe all statistical methods including those used to control for confounding.\n- STROBE-13 (Results): Numbers of participants at each stage; flow diagram encouraged.\n- STROBE-16 (Results): Report unadjusted and confounder-adjusted estimates with precision (95% CI).\n- STROBE-19 (Discussion): Discuss limitations, including sources of bias.\n- STROBE-22 (Other): Funding source and role of funders.\n",
+      "guidelines": [
+        "STROBE"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:funding:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:ethics:2",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:3",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:STROBE-6",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Eligibility criteria, sources, methods of selection."
+        },
+        {
+          "id": "checklist:STROBE-10",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Explain how the study size was arrived at."
+        },
+        {
+          "id": "checklist:STROBE-16",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Report unadjusted and confounder-adjusted estimates with precision (95% CI)."
+        },
+        {
+          "id": "checklist:STROBE-19",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Discuss limitations, including sources of bias."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "critical",
+          "description": "Recall bias: exposure (coffee) was self-reported by interview AFTER cancer diagnosis, so cases may over-report differently than controls."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Selection bias: hospital controls may not represent the source population's exposure distribution."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "critical",
+          "description": "No adjustment for smoking — a strong confounder associated with both coffee and pancreatic cancer; estimate is likely confounded."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Causal overclaim: 'coffee increases/raises the risk' from an unadjusted case-control study."
+        }
+      ]
+    },
+    "wr0ecKa9GNTstwfLUKsuh": {
+      "title": "Daily screen time and myopia among schoolchildren: a cross-sectional study",
+      "userContext": "Title: Daily screen time and myopia among schoolchildren: a cross-sectional study\nDomain: ophthalmology\nResearch type: cross_sectional\nTarget journal: clinical\nManuscript:\n# Daily screen time and myopia among schoolchildren: a cross-sectional study\n\n## Abstract\nWe surveyed schoolchildren and measured refraction. Children with more daily screen time were more likely to be myopic (odds ratio 2.1). Screen time causes myopia and should be limited.\n\n## Methods\nChildren at three schools completed a screen-time questionnaire on a single day; refraction was measured the same day. Myopia was defined as spherical equivalent <= -0.5 D. Associations were estimated with logistic regression.\n\n## Results\nOf 600 children surveyed, those in the highest screen-time tertile had an odds ratio of 2.1 for myopia versus the lowest.\n\n## Discussion\nScreen time causes myopia in children. Schools should restrict device use to prevent myopia.",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: STROBE.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### STROBE 2007\n- STROBE-1a (Title/Abstract): Indicate the study's design in the title or abstract.\n- STROBE-1b (Title/Abstract): Informative, balanced summary in the abstract.\n- STROBE-3 (Introduction): State specific objectives, including pre-specified hypotheses.\n- STROBE-4 (Methods): Present key elements of study design early in the paper.\n- STROBE-6 (Methods): Eligibility criteria, sources, methods of selection.\n- STROBE-7 (Methods): Clearly define outcomes, exposures, predictors, confounders, effect modifiers.\n- STROBE-10 (Methods): Explain how the study size was arrived at.\n- STROBE-12 (Methods): Describe all statistical methods including those used to control for confounding.\n- STROBE-13 (Results): Numbers of participants at each stage; flow diagram encouraged.\n- STROBE-16 (Results): Report unadjusted and confounder-adjusted estimates with precision (95% CI).\n- STROBE-19 (Discussion): Discuss limitations, including sources of bias.\n- STROBE-22 (Other): Funding source and role of funders.\n",
+      "guidelines": [
+        "STROBE"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:conflict_of_interest:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No conflict-of-interest declaration found."
+        },
+        {
+          "id": "gate:funding:2",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:ethics:3",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:4",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:STROBE-6",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Eligibility criteria, sources, methods of selection."
+        },
+        {
+          "id": "checklist:STROBE-10",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Explain how the study size was arrived at."
+        },
+        {
+          "id": "checklist:STROBE-16",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Report unadjusted and confounder-adjusted estimates with precision (95% CI)."
+        },
+        {
+          "id": "checklist:STROBE-19",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Discuss limitations, including sources of bias."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "critical",
+          "description": "Causal claim ('screen time causes myopia') from a cross-sectional design that cannot establish temporality."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Reverse causation not addressed: myopic children may use screens more (near work), not the reverse."
+        }
+      ]
+    },
+    "Gx3FJyUvl1xqkzx0djh9N": {
+      "title": "A serum biomarker panel for early sepsis detection: a diagnostic accuracy study",
+      "userContext": "Title: A serum biomarker panel for early sepsis detection: a diagnostic accuracy study\nDomain: critical care\nResearch type: diagnostic_accuracy\nTarget journal: clinical\nManuscript:\n# A serum biomarker panel for early sepsis detection: a diagnostic accuracy study\n\n## Abstract\nA three-marker serum panel was evaluated for early sepsis detection in ICU patients. The panel had sensitivity 0.92 and specificity 0.88 against clinical adjudication. The panel is accurate and ready for bedside use.\n\n## Methods\nConsecutive ICU patients had the panel measured. The reference standard was clinical adjudication of sepsis by the treating team, who were aware of the panel result. The decision threshold was selected to maximize accuracy in this sample.\n\n## Results\nAmong 310 ICU patients, sensitivity was 0.92 and specificity was 0.88.\n\n## Discussion\nThe panel accurately detects early sepsis and can be deployed at the bedside.\n\n## Declarations\nFunding: none. Competing interests: none.",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: STARD.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### STARD 2015\n- STARD-1 (Title/Abstract): Identification as a study of diagnostic accuracy using sensitivity, specificity, predictive values.\n- STARD-5 (Methods): Whether data collection was planned before the index test and reference standard (prospective vs retrospective).\n- STARD-6 (Methods): Eligibility criteria for participants.\n- STARD-7 (Methods): On what basis potentially eligible participants were identified.\n- STARD-10a (Index test): Index test, in sufficient detail to allow replication.\n- STARD-11 (Reference standard): Reference standard, in sufficient detail to allow replication.\n- STARD-13a (Analysis): Methods for estimating or comparing measures of diagnostic accuracy.\n- STARD-14 (Analysis): How indeterminate index test or reference standard results were handled.\n- STARD-17 (Results): Cross-tabulation of index test results by results of reference standard.\n",
+      "guidelines": [
+        "STARD"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:ethics:1",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:2",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Sensitivity (0.92) and specificity (0.88) reported without 95% confidence intervals."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No participant flow diagram / 2x2 table of index test vs reference standard (STARD)."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "critical",
+          "description": "Incorporation/review bias: the reference standard (clinical adjudication) was made with knowledge of the panel result, inflating accuracy."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Optimistic threshold: the decision threshold was chosen to maximize accuracy in the same sample (overfitting); no validation set."
+        },
+        {
+          "id": "ledger:5",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Spectrum bias: ICU-only sample may not generalize to earlier presentation."
+        },
+        {
+          "id": "ledger:6",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Conclusion 'ready for bedside use' overreaches a single-sample accuracy study with no impact data."
+        }
+      ]
+    },
+    "HeabcaqsNJagBNtgXG9kK": {
+      "title": "Development of a 30-day hospital readmission risk score: a prediction model study",
+      "userContext": "Title: Development of a 30-day hospital readmission risk score: a prediction model study\nDomain: health services\nResearch type: prediction_model\nTarget journal: clinical\nManuscript:\n# Development of a 30-day hospital readmission risk score: a prediction model study\n\n## Abstract\nWe developed a logistic risk score for 30-day readmission using 22 candidate predictors. The model discriminated well (AUC 0.78). The score is ready for clinical use to target interventions.\n\n## Methods\nWe used records from one hospital. 22 candidate predictors were entered; there were 60 readmission events. The final model was selected by stepwise selection. Discrimination was assessed by the area under the ROC curve.\n\n## Results\nThe final model included 12 predictors and achieved an AUC of 0.78 in the development data.\n\n## Discussion\nThis validated score is ready for clinical use to target readmission-reduction programs.\n\n## Declarations\nEthics: IRB #2020-9. Funding: none. Competing interests: none.",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: TRIPOD.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### TRIPOD 2015\n- TRIPOD-1 (Title): Identify development/validation of prediction model, target population, and outcome.\n- TRIPOD-4a (Source of data): Describe the study design or source of data.\n- TRIPOD-5a (Participants): Specify key elements of the study setting and eligibility criteria.\n- TRIPOD-6a (Outcome): Clearly define the outcome predicted.\n- TRIPOD-7a (Predictors): Clearly define all predictors used in developing the model, including measurement timing.\n- TRIPOD-8 (Sample size): Explain how the study size was arrived at (events-per-variable rationale).\n- TRIPOD-9 (Missing data): Describe handling of missing data (e.g., complete-case, multiple imputation).\n- TRIPOD-10b (Statistical analysis): Specify type of model, all model-building procedures, and method of internal validation.\n- TRIPOD-16 (Performance): Report performance measures (discrimination and calibration) with confidence intervals.\n",
+      "guidelines": [
+        "TRIPOD"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:limitations:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:TRIPOD-8",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Explain how the study size was arrived at (events-per-variable rationale)."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "critical",
+          "description": "No calibration reported (TRIPOD) — only discrimination (AUC); a score targeting interventions needs calibration."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "critical",
+          "description": "Overfitting: 22 candidate predictors with only 60 events (~3 events per variable) plus stepwise selection; AUC 0.78 is optimistic."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No internal validation (bootstrap/cross-validation) or external validation; 'validated' in the abstract is unsupported."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "AUC 0.78 reported with no 95% confidence interval."
+        },
+        {
+          "id": "ledger:5",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Handling of missing predictor data not described."
+        },
+        {
+          "id": "ledger:6",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Conclusion 'ready for clinical use' / 'validated' is unwarranted given no validation and likely optimism."
+        }
+      ]
+    },
+    "6OuOwA7Hre02Jbd5R268G": {
+      "title": "Artificial intelligence in undergraduate medical education: a scoping review",
+      "userContext": "Title: Artificial intelligence in undergraduate medical education: a scoping review\nDomain: medical education\nResearch type: scoping_review\nTarget journal: clinical\nManuscript:\n# Artificial intelligence in undergraduate medical education: a scoping review\n\n## Abstract\nWe reviewed the literature on artificial intelligence in undergraduate medical education. We searched PubMed and included 38 papers. AI is widely beneficial and should be integrated into all medical curricula.\n\n## Methods\nWe searched PubMed for papers on AI in medical education. Papers were included if they described an AI application in undergraduate medical education. Findings were summarized.\n\n## Results\nThirty-eight papers were included, describing tutoring systems, assessment tools, and chatbots.\n\n## Discussion\nAI is broadly beneficial in medical education and should be integrated into all undergraduate curricula immediately.",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: PRISMA-ScR.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### PRISMA-ScR 2018\n- PRISMA-ScR-1 (Title): Identify the report as a scoping review.\n- PRISMA-ScR-2 (Abstract): Structured summary (background, objectives, eligibility, sources, charting, results, conclusions).\n- PRISMA-ScR-3 (Introduction): Rationale for the review in the context of what is already known.\n- PRISMA-ScR-4 (Introduction): Objectives / questions stated with the PCC (Population, Concept, Context) frame.\n- PRISMA-ScR-5 (Methods): Protocol and registration — whether a protocol exists and where it can be accessed.\n- PRISMA-ScR-6 (Methods): Eligibility criteria and rationale (PCC, years, sources, evidence types).\n- PRISMA-ScR-7 (Methods): Information sources described, with the date of the last search.\n- PRISMA-ScR-8 (Methods): Full electronic search strategy for at least one database, including limits.\n- PRISMA-ScR-9 (Methods): Selection of sources of evidence — the screening process (duplication, conflicts).\n- PRISMA-ScR-10 (Methods): Data charting process (independent/duplicate, iterative refinement).\n- PRISMA-ScR-11 (Methods): Data items charted from each source of evidence.\n- PRISMA-ScR-12 (Methods): Critical appraisal of sources of evidence (optional in scoping reviews).\n- PRISMA-ScR-13 (Methods): Methods of summarizing/synthesizing the charted data.\n- PRISMA-ScR-14 (Results): Numbers of sources screened/included with a flow diagram (PRISMA-ScR flow).\n- PRISMA-ScR-15 (Results): Characteristics of the sources of evidence (charting table).\n- PRISMA-ScR-18 (Results): Results synthesized in relation to the review objectives/questions.\n- PRISMA-ScR-20 (Discussion): Summary of the main results relative to the objectives.\n- PRISMA-ScR-21 (Discussion): Limitations of the scoping process.\n- PRISMA-ScR-22 (Funding): Sources of funding and role of funders.\n",
+      "guidelines": [
+        "PRISMA-ScR"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:conflict_of_interest:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No conflict-of-interest declaration found."
+        },
+        {
+          "id": "gate:funding:2",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:ethics:3",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No ethics/IRB approval statement found."
+        },
+        {
+          "id": "gate:limitations:4",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:PRISMA-ScR-4",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Objectives / questions stated with the PCC (Population, Concept, Context) frame."
+        },
+        {
+          "id": "checklist:PRISMA-ScR-5",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Protocol and registration — whether a protocol exists and where it can be accessed."
+        },
+        {
+          "id": "checklist:PRISMA-ScR-8",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Full electronic search strategy for at least one database, including limits."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No registered protocol (e.g., OSF) reported for the scoping review."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Inadequate search: a single database (PubMed), no full search strategy, dates, or second reviewer (PRISMA-ScR)."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No PRISMA-ScR flow diagram of source selection."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "No data-charting method described (how items were extracted)."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Overbroad conclusion ('integrate into all curricula immediately') unsupported by a descriptive scoping review."
+        }
+      ]
+    },
+    "rVaGFWm6dYLlb-juTfVW2": {
+      "title": "Telehealth-delivered physiotherapy for chronic low back pain: a randomized controlled trial",
+      "userContext": "Title: Telehealth-delivered physiotherapy for chronic low back pain: a randomized controlled trial\nDomain: rehabilitation\nResearch type: rct\nTarget journal: clinical\nManuscript:\n# Telehealth-delivered physiotherapy for chronic low back pain: a randomized controlled trial\n\n## Abstract\nAdults with chronic low back pain were randomized to telehealth physiotherapy or usual care. Pain improved more with telehealth. Telehealth physiotherapy is effective and should be standard care.\n\n## Methods\nParticipants were randomized to telehealth physiotherapy or usual care for 12 weeks. Pain was assessed. Outcomes were compared between groups.\n\n## Results\nPain improved more in the telehealth group than usual care (mean difference favored telehealth, p = 0.02).\n\n## Discussion\nTelehealth physiotherapy is effective for chronic low back pain and should become standard care.\n\n## Declarations\nEthics: IRB #2021-44. Competing interests: none.",
+      "groundingBlock": "### Reporting-standard grounding\nApply the following reporting guideline(s) to this manuscript: CONSORT, CONSORT-AI.\nCheck whether each item below is adequately reported; flag any that are missing or inadequate.\n\n#### CONSORT 2010\n- CONSORT-1a (Title): Identification as a randomized trial in the title.\n- CONSORT-3a (Trial design): Description of trial design (parallel, factorial, crossover) with allocation ratio.\n- CONSORT-4a (Participants): Eligibility criteria for participants.\n- CONSORT-5 (Interventions): Interventions for each group with detail to allow replication.\n- CONSORT-6a (Outcomes): Completely defined pre-specified primary and secondary outcome measures.\n- CONSORT-7a (Sample size): How sample size was determined.\n- CONSORT-8a (Randomisation): Method used to generate the random allocation sequence.\n- CONSORT-9 (Allocation): Mechanism to implement the allocation sequence (concealment).\n- CONSORT-11a (Blinding): If done, who was blinded after assignment (participants, providers, assessors) and how.\n- CONSORT-13a (Flow): Flow diagram showing numbers randomized, receiving intended treatment, analysed.\n- CONSORT-17a (Outcomes/estimation): For each outcome, results for each group with estimated effect size and 95% CI.\n- CONSORT-23 (Registration): Registration number and name of trial registry.\n- CONSORT-24 (Protocol): Where the full trial protocol can be accessed.\n\n#### CONSORT-AI 2020\n- CONSORT-AI-1a (Title/Abstract): Indicate that the intervention involves artificial intelligence/machine learning and specify the type of model.\n- CONSORT-AI-4a (Participants): State the inclusion and exclusion criteria at the level of the input data.\n- CONSORT-AI-4b (Participants): Describe how the AI intervention was integrated into the trial setting, including any onsite or offsite requirements.\n- CONSORT-AI-5i (Interventions): State which version of the AI algorithm was used.\n- CONSORT-AI-5ii (Interventions): Describe how the input data were acquired and selected for the AI intervention.\n- CONSORT-AI-5iii (Interventions): Describe how poor-quality or unavailable input data were assessed and handled.\n- CONSORT-AI-5iv (Interventions): Specify whether there was human–AI interaction in the handling of input data, and the level of expertise required of users.\n- CONSORT-AI-5v (Interventions): Specify the output of the AI intervention.\n- CONSORT-AI-5vi (Interventions): Explain how the AI intervention's outputs contributed to decision-making or other elements of clinical practice.\n- CONSORT-AI-19 (Harms): Describe results of any analysis of performance errors and how errors were identified; state if no such analysis was planned or done.\n- CONSORT-AI-25 (Other): State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use.\n",
+      "guidelines": [
+        "CONSORT",
+        "CONSORT-AI"
+      ],
+      "gold": [
+        {
+          "id": "gate:data_availability:0",
+          "layer": "gate",
+          "gold_severity": "major",
+          "description": "No data-availability statement."
+        },
+        {
+          "id": "gate:funding:1",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No funding statement found."
+        },
+        {
+          "id": "gate:limitations:2",
+          "layer": "gate",
+          "gold_severity": "minor",
+          "description": "No explicit limitations section."
+        },
+        {
+          "id": "checklist:CONSORT-7a",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "How sample size was determined."
+        },
+        {
+          "id": "checklist:CONSORT-23",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "Registration number and name of trial registry."
+        },
+        {
+          "id": "checklist:CONSORT-AI-25",
+          "layer": "checklist",
+          "gold_severity": "minor",
+          "description": "State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use."
+        },
+        {
+          "id": "ledger:0",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "Abstract is unstructured."
+        },
+        {
+          "id": "ledger:1",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No trial registration reported (CONSORT)."
+        },
+        {
+          "id": "ledger:2",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "No CONSORT participant flow diagram or randomization/allocation/blinding details."
+        },
+        {
+          "id": "ledger:3",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Primary outcome not defined: no instrument (e.g., NRS/ODI) or timepoint specified."
+        },
+        {
+          "id": "ledger:4",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Effect reported only as 'p = 0.02' with no effect size or 95% confidence interval."
+        },
+        {
+          "id": "ledger:5",
+          "layer": "ledger",
+          "gold_severity": "minor",
+          "description": "No sample-size/power justification."
+        },
+        {
+          "id": "ledger:6",
+          "layer": "ledger",
+          "gold_severity": "major",
+          "description": "Conclusion 'should become standard care' overreaches a single unregistered trial."
+        }
+      ]
+    }
+  }
+}

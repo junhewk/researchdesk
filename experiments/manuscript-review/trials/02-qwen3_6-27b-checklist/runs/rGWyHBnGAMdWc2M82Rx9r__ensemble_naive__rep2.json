@@ -1,0 +1,57 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "ensemble_naive",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes causal claims (e.g., \"physical activity directly lowers depression risk\") and strong clinical recommendations (e.g., \"should be prescribed as first-line prevention\") based on a single observational cohort study.\n\n**Why it matters:** Observational studies cannot establish causality due to potential confounding, reverse causation, healthy user bias, and selection bias. Claiming direct causation overstates the evidence and violates standards for interpreting non-randomized data, potentially misleading clinicians into prioritizing exercise over other established interventions without acknowledging limitations.\n\n**Suggested Action:** Reword causal language to reflect association (e.g., \"associated with lower risk\"). Temper clinical recommendations by stating that while findings support activity promotion, randomized controlled trials are needed to confirm efficacy as a preventive intervention. Explicitly state that the observational design precludes causal inference and acknowledge residual confounding."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The manuscript fails to report adjustment for key confounders in the Cox proportional-hazards models. The text states that models were fit with activity tertile as the exposure but does not list covariates such as age, sex, baseline functional status, comorbidities (e.g., cardiovascular disease), socioeconomic status, social isolation, or cognitive function.\n\n**Why it matters:** Physical activity is strongly associated with health consciousness, socioeconomic status, and overall physical function. Without adjusting for these confounders, the observed association (HR 0.72) may reflect reverse causality, healthy user bias, or residual confounding rather than a causal effect of exercise on depression risk.\n\n**Suggested Action:** Explicitly list all covariates included in the multivariable models and justify their selection (e.g., via DAG). Provide a table comparing baseline characteristics across activity tertiles to demonstrate balance. If unadjusted, acknowledge this as a major limitation and present only crude estimates with appropriate caution."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The outcome definition relies on self-reported Geriatric Depression Scale (GDS) scores (≥ 5) and/or \"new clinical diagnosis\" without specifying how diagnoses were verified, adjudicated, or if medical records were reviewed. It is unclear how many cases were clinically verified versus identified solely via self-report.\n\n**Why it matters:** In older adults, somatic symptoms of depression overlap with chronic medical conditions, and self-reporting can be biased by recall or desire to please researchers. Combining screening scores (which may capture subclinical symptoms) with clinical diagnoses without clarification introduces misclassification bias. If \"clinical diagnosis\" was also self-reported, subjective bias is compounded.\n\n**Suggested Action:** Clarify the proportion of incident depression cases confirmed by a clinician/medical records versus those identified solely via self-report. Specify whether outcomes were treated equivalently in the model. Ideally, provide sensitivity analyses excluding non-verified cases or using stricter diagnostic criteria."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The results report a hazard ratio (0.72) with p < 0.05 but do not provide confidence intervals (CIs). Additionally, estimates for the middle tertile and p-values for trend are missing.\n\n**Why it matters:** Confidence intervals are essential for interpreting the precision of the estimate and clinical significance. A p-value alone does not convey the range of plausible effects. Without CIs, readers cannot assess whether the association is statistically robust or clinically meaningful. The absence of a dose-response analysis (trend test) weakens the argument for a causal relationship.\n\n**Suggested Action:** Report 95% confidence intervals for all hazard ratios in both the abstract and main text. Include estimates for all tertiles and a p-value for linear trend."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript does not address loss to follow-up, attrition, or censoring mechanisms. It states 512 were recruited but only 498 included in analysis, implying 14 exclusions post-baseline, without explaining why or whether those lost differed in depression risk or activity levels. Furthermore, there is no description of how missing covariate data were handled.\n\n**Why it matters:** Differential loss to follow-up (e.g., sicker individuals dropping out) can introduce attrition bias. Selective exclusion of participants with missing data can also introduce bias if the missingness is related to exposure or outcome. Transparency in data handling is essential for reproducibility and validity assessment.\n\n**Suggested Action:** Report the number and reasons for exclusions after baseline. Compare baseline characteristics of those included vs. excluded/lost to follow-up. Describe methods used to handle missing covariate data (e.g., complete-case analysis, multiple imputation) and discuss the potential impact of attrition bias."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Physical activity is categorized into tertiles based on self-report, with no description of the questionnaire’s content (e.g., intensity, duration, type) or validation details beyond \"validated.\" No continuous analysis or dose-response curve is presented. Additionally, exposure is measured only at baseline, ignoring potential changes in activity over the 4.2-year follow-up.\n\n**Why it matters:** Tertile categorization can obscure dose-response relationships and reduce statistical power. Self-reported activity is prone to recall bias. Using a single baseline measure may lead to exposure misclassification as activity levels change over time, potentially attenuating the true association.\n\n**Suggested Action:** Describe the specific items in the physical activity questionnaire (e.g., MET-hours/week). Present results using a continuous measure of activity and test for non-linearity. Acknowledge the limitation of using baseline-only exposure and discuss whether sensitivity analyses were conducted."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study does not address reverse causality. Although participants were \"free of depression at baseline,\" there is no lag period between exposure assessment and outcome onset to account for prodromal symptoms.\n\n**Why it matters:** Older adults with subclinical depressive symptoms may reduce their physical activity before formal diagnosis. Without a lag period, the association may reflect early disease manifestation (inactivity as a consequence of depression) rather than prevention (inactivity as a cause).\n\n**Suggested Action:** Implement a lag period (e.g., exclude depression cases occurring within the first 1–2 years of follow-up) to mitigate reverse causality. Report results with and without this lag to demonstrate robustness."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The manuscript lacks critical details required for reproducibility and validity assessment: (1) No evidence that the proportional hazards assumption was tested; (2) No table summarizing baseline characteristics by exposure group to assess comparability.\n\n**Why it matters:** Violation of the proportional hazards assumption invalidates the Cox model interpretation. Without baseline tables, readers cannot assess confounding balance or the comparability of groups across activity tertiles.\n\n**Suggested Action:** Report results of tests for the proportional hazards assumption or provide time-dependent effect estimates if assumptions were violated. Add a table summarizing baseline characteristics by activity tertile."
+    }
+  ]
+}

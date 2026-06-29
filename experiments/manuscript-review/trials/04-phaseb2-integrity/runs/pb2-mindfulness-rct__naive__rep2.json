@@ -1,0 +1,45 @@
+{
+  "mid": "pb2-mindfulness-rct",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The statistical test for stress reduction reports degrees of freedom `t(18)`, which corresponds to a sample size of approximately 20 participants, despite the Methods stating that 180 employees were randomized. This suggests the analysis was performed on a tiny, unexplained subset or contains a severe reporting error.\n\n**Why it matters**: Degrees of freedom determine the validity of the p-value and the generalizability of the result. If only ~20 participants were analyzed out of 180, the study is severely underpowered, and the results cannot support the claim that the program works for the broader population. If this is a typo, it indicates a lack of rigor in reporting.\n\n**Suggested Action**: Clarify exactly which subset of data was used for this t-test. If the analysis included all 180 participants, correct the degrees of freedom to `t(178)` (or appropriate value based on the specific test). If only a subsample was analyzed, justify why and report the results for the full sample as the primary outcome."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem**: The Methods mention a pre-specified intensive-monitoring subsample (n=8 per arm) with daily GAD-7 recordings, but the Results only report the *baseline* mean for this subsample. No longitudinal data or intervention effects are reported for this intensive subgroup, nor is it clear how this subsample relates to the main outcomes.\n\n**Why it matters**: Collecting intensive daily data requires significant resources and participant burden. Failing to analyze or report the trajectory of anxiety in this subsample wastes valuable data and leaves a key methodological feature unexplained. It also creates confusion about whether the primary findings come from the full sample or this subsample.\n\n**Suggested Action**: Report the longitudinal analysis (e.g., mixed-effects models) for the intensive subsample to show changes over time, or explicitly state why this data is not included in the main results. Ensure the distinction between the intensive subsample and the main randomized sample is clear."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The manuscript states that free-text reflections were categorized using a \"bolster vector machine.\" This term is non-standard and likely erroneous (possibly a confusion with 'support vector machine' or a specific proprietary tool not cited).\n\n**Why it matters**: Reproducibility requires precise description of analytical tools. An undefined or incorrect algorithm name prevents other researchers from replicating the qualitative analysis or assessing its validity.\n\n**Suggested Action**: Replace \"bolster vector machine\" with the correct, standard name of the algorithm used (e.g., Support Vector Machine, Random Forest) and provide citations for the specific implementation or library used. If a custom tool was developed, describe it in detail."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem**: The Results state \"Anxiety also improved\" but provide no statistical evidence (test statistic, p-value, or effect size) for this claim. Only the stress outcome has a reported t-test.\n\n**Why it matters**: Claims of improvement must be supported by data. Without statistics, readers cannot assess the magnitude or significance of the anxiety reduction, which is the primary outcome mentioned in the Title and Abstract.\n\n**Suggested Action**: Report the specific statistical test results (e.g., F-value for ANOVA or t-test) and effect sizes (e.g., Cohen’s d) for the anxiety outcome (GAD-7 scores) comparing the intervention and control groups."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The Methods section lacks critical details required for replication and assessment of bias, including: randomization method (e.g., computer-generated), allocation concealment, blinding procedures (if any), definition of the mindfulness program content, and how missing data were handled.\n\n**Why it matters**: Without these details, it is impossible to assess the risk of bias or reproduce the study. For example, knowing if participants or assessors were blinded is crucial for interpreting self-reported anxiety scores.\n\n**Suggested Action**: Add a detailed paragraph describing the randomization sequence generation and allocation concealment. Describe the mindfulness intervention in sufficient detail (duration, frequency, content) to allow replication. State whether blinding was used and how missing data were addressed."
+    },
+    {
+      "category": "evidence",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: Data availability is listed as \"on request,\" which is increasingly considered non-compliant with open science standards and hinders reproducibility.\n\n**Why it matters**: Readers cannot verify the findings or conduct secondary analyses without access to the raw data. Many journals now require deposition in a public repository.\n\n**Suggested Action**: Deposit the anonymized dataset in a recognized public repository (e.g., OSF, Zenodo) and provide the DOI in the manuscript. If this is not possible due to privacy concerns, explain the specific constraints and offer a way for qualified researchers to access de-identified data under strict protocols."
+    }
+  ]
+}

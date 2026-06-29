@@ -1,0 +1,39 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was not blinded to the index test results. The manuscript states: \"The reference standard was clinical adjudication of sepsis by the treating team, who were aware of the panel result.\"\n\n**Why it matters:** This introduces severe incorporation bias and verification bias. Because the clinicians defining the 'truth' knew the biomarker results, their diagnosis likely incorporated the test data rather than standing independently from it. This artificially inflates sensitivity and specificity, rendering the reported accuracy (0.92/0.88) unreliable and invalid for clinical decision-making.\n\n**Suggested Action:** The study design is fundamentally flawed for a diagnostic accuracy assessment. You must either: 1) Re-analyze data using a reference standard determined independently of the biomarker result (e.g., retrospective chart review by blinded adjudicators or adherence to strict Sepsis-3 definitions based on clinical criteria alone), or 2) Clearly state that this is not a diagnostic accuracy study but rather a pilot/feasibility study, and remove claims of validated accuracy."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy in the same sample used for evaluation. The manuscript states: \"The decision threshold was selected to maximize accuracy in this sample.\"\n\n**Why it matters:** This constitutes overfitting (optimism bias). Selecting a cut-off based on the test dataset guarantees inflated performance metrics that will not replicate in external validation cohorts. The reported sensitivity and specificity are overly optimistic and do not reflect true diagnostic performance.\n\n**Suggested Action:** Split the data into a derivation set (to select the threshold) and a validation set (to evaluate accuracy), or use internal validation methods such as bootstrapping or cross-validation to correct for overfitting. Report optimism-corrected estimates."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** Lack of essential reporting details required by STARD guidelines. The manuscript omits: patient flow diagram, inclusion/exclusion criteria, timing of sample collection relative to sepsis onset, and the definition of 'early sepsis'.\n\n**Why it matters:** Without knowing when samples were collected relative to clinical presentation, 'early' detection cannot be assessed. Missing inclusion/exclusion criteria prevents assessment of spectrum bias (e.g., if only severe cases were included, sensitivity may be artificially high). The lack of a flow diagram obscures attrition and missing data handling.\n\n**Suggested Action:** Provide a STARD-compliant flow diagram. Explicitly define 'early sepsis' (e.g., within X hours of onset). Detail inclusion/exclusion criteria and the specific timing of biomarker measurement relative to clinical suspicion or diagnosis."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** Results are reported only as point estimates (sensitivity 0.92, specificity 0.88) without confidence intervals or precision measures.\n\n**Why it matters:** Point estimates do not convey the uncertainty associated with the findings, especially given the sample size of 310. Readers cannot assess the statistical reliability of the accuracy claims.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity, specificity, and any other performance metrics (e.g., AUC if calculated)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Discussion",
+      "content_md": "**Problem:** Conclusions are overstated relative to the evidence. The abstract and discussion claim the panel is \"accurate and ready for bedside use\" despite critical methodological flaws (unblinded reference standard, overfitting).\n\n**Why it matters:** Making clinical deployment recommendations based on biased, non-validated data poses a risk to patient safety and undermines scientific integrity.\n\n**Suggested Action:** Remove claims of readiness for bedside use. Frame conclusions cautiously, highlighting the need for external validation with blinded adjudication and independent threshold validation."
+    }
+  ]
+}

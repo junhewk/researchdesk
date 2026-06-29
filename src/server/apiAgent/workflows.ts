@@ -30,7 +30,7 @@ import type { EvidenceItemKind, ReviewCategory, Severity } from "@/server/types"
 import { runStructured, truncateForPrompt } from "./structuredRunner";
 import type { ApiAgentConfig } from "./providers";
 
-const CORE_RULES = [
+export const CORE_RULES = [
   "Never generate novel research content or unsupported claims.",
   "Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.",
   "Prefer concrete, actionable findings over generic advice.",
@@ -74,7 +74,7 @@ const ReviewPlanSchema = z.object({
   article_search_queries: z.array(z.string().min(1)).max(3).default([]),
 });
 
-const ReviewResultSchema = z.object({
+export const ReviewResultSchema = z.object({
   items: z.array(z.object({
     category: z.enum(["mechanical", "rewrite", "structural", "evidence"]),
     severity: z.enum(["minor", "major", "critical"]).nullable().default(null),
@@ -83,6 +83,12 @@ const ReviewResultSchema = z.object({
   })).default([]),
   summary_md: z.string().min(1),
 });
+
+/** One structured review finding (item of {@link ReviewResultSchema}). Exported
+ * so the experiment harness (src/server/experiment/reviewArms.ts) can type the
+ * per-persona sub-reviews and the merged output it feeds back through this same
+ * schema. */
+export type ReviewItem = z.infer<typeof ReviewResultSchema>["items"][number];
 
 const ReviewerResponseDraftSchema = z.object({
   items: z.array(z.object({
@@ -98,7 +104,7 @@ function asJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-function manuscriptContext(manuscriptId: string): string {
+export function manuscriptContext(manuscriptId: string): string {
   const manuscript = getManuscript(manuscriptId);
   if (!manuscript) throw new Error("manuscript not found");
   return [
@@ -405,7 +411,7 @@ export async function runCardProposalAgent(opts: {
   return { created, summary_md: result.parsed.summary_md };
 }
 
-async function gatherReviewContext(
+export async function gatherReviewContext(
   config: ApiAgentConfig,
   manuscriptId: string,
 ): Promise<string> {
@@ -442,27 +448,111 @@ async function gatherReviewContext(
   ].join("\n");
 }
 
-export async function runReviewAgent(opts: {
+// Factor clauses for the review system prompt. The product (and the
+// context-only experiment arm) makes its anti-persona, grounded stance explicit
+// here so the persona/context factors can be toggled independently and audited.
+// These two lines are the one deliberate refinement vs. the older implicit
+// prompt: the product now *states* "ground, don't role-play" rather than only
+// implying it through CORE_RULES.
+export const ANTI_PERSONA_CLAUSE =
+  "Review as one integrated expert reviewer. Do not adopt a named reviewer persona.";
+const GROUND_CONTEXT_CLAUSE =
+  "Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.";
+const SOLO_GROUND_CLAUSE =
+  "Ground your review only in the manuscript text provided below.";
+
+/** Compose the review system prompt from the two factors. Pure (no I/O) so the
+ * experiment harness can hash it and a unit test can prove factor isolation
+ * without spending API tokens: toggling one factor changes exactly one line. */
+export function composeReviewSystemPrompt(opts: {
+  grounding: boolean;
+  personaClause?: string | null;
+}): string {
+  return [
+    "You are a journal-article review assistant.",
+    "",
+    `- ${opts.personaClause ?? ANTI_PERSONA_CLAUSE}`,
+    `- ${opts.grounding ? GROUND_CONTEXT_CLAUSE : SOLO_GROUND_CLAUSE}`,
+    `- ${CORE_RULES}`,
+  ].join("\n");
+}
+
+export interface ReviewRunResult {
+  items: ReviewItem[];
+  summary_md: string;
+  rawText: string;
+  attempts: number;
+  /** The fully composed system prompt actually sent. Returned so the experiment
+   * harness can hash it and prove factor isolation (e.g. naive vs context differ
+   * only by the grounding clause). Small; safe to persist. */
+  systemPrompt: string;
+}
+
+/**
+ * Core review pass shared by the product and by every experiment arm. Composes
+ * the system prompt from two independent factors and returns the parsed result
+ * WITHOUT persisting (no createReview) so callers decide what to do with it.
+ *
+ * - Factor A (persona): pass `personaClause` to review from a named disciplinary
+ *   lens; pass null/omit for the integrated, anti-persona reviewer.
+ * - Factor B (context): `grounding` toggles the prior-review/scholarly context.
+ *   Pass a precomputed `toolContext` to gather once and share across a persona
+ *   panel (fairness + cost); otherwise it is gathered here when grounding is on.
+ */
+export async function reviewManuscriptStructured(opts: {
   manuscriptId: string;
   config: ApiAgentConfig;
-}): Promise<{ created: number; summary_md: string }> {
-  const toolContext = await gatherReviewContext(opts.config, opts.manuscriptId);
+  grounding: boolean;
+  personaClause?: string | null;
+  toolContext?: string;
+  temperature?: number;
+}): Promise<ReviewRunResult> {
+  const toolContext = opts.grounding
+    ? opts.toolContext ?? (await gatherReviewContext(opts.config, opts.manuscriptId))
+    : "";
+  const systemPrompt = composeReviewSystemPrompt({
+    grounding: opts.grounding,
+    personaClause: opts.personaClause,
+  });
+  const userPrompt = [
+    manuscriptContext(opts.manuscriptId),
+    ...(opts.grounding ? ["", toolContext] : []),
+    "",
+    "Create review findings for substantive problems. Each finding must include the problem, why it matters, and a concrete suggested action.",
+  ].join("\n");
+
   const result = await runStructured({
     config: opts.config,
     schema: ReviewResultSchema,
     schemaName: "ReviewResult",
-    systemPrompt: `You are a journal-article review assistant.\n\n- ${CORE_RULES}`,
-    userPrompt: [
-      manuscriptContext(opts.manuscriptId),
-      "",
-      toolContext,
-      "",
-      "Create review findings for substantive problems. Each finding must include the problem, why it matters, and a concrete suggested action.",
-    ].join("\n"),
+    systemPrompt,
+    userPrompt,
+    temperature: opts.temperature,
+  });
+  return {
+    items: result.parsed.items,
+    summary_md: result.parsed.summary_md,
+    rawText: result.rawText,
+    attempts: result.attempts,
+    systemPrompt,
+  };
+}
+
+export async function runReviewAgent(opts: {
+  manuscriptId: string;
+  config: ApiAgentConfig;
+}): Promise<{ created: number; summary_md: string }> {
+  // The product review path == the context-only experiment arm: grounded,
+  // integrated (anti-persona) reviewer. Persistence stays here.
+  const result = await reviewManuscriptStructured({
+    manuscriptId: opts.manuscriptId,
+    config: opts.config,
+    grounding: true,
+    personaClause: null,
   });
 
   let created = 0;
-  for (const item of result.parsed.items) {
+  for (const item of result.items) {
     createReview({
       manuscript_id: opts.manuscriptId,
       category: item.category as ReviewCategory,
@@ -472,7 +562,7 @@ export async function runReviewAgent(opts: {
     });
     created += 1;
   }
-  return { created, summary_md: result.parsed.summary_md };
+  return { created, summary_md: result.summary_md };
 }
 
 export async function runReviewerResponseAgent(opts: {

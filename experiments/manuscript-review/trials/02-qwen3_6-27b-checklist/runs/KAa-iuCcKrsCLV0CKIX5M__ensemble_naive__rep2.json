@@ -1,0 +1,57 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "ensemble_naive",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is severely incomplete, lacking reproducibility and adherence to systematic review standards. Only PubMed was searched, with no mention of other major databases (Embase, Cochrane Central), grey literature, or trial registries. There is no pre-registered protocol (e.g., PROSPERO), no specific search terms/Boolean operators, and no date ranges provided. Additionally, adherence to PRISMA guidelines is not stated.\n\n**Why it matters:** Systematic reviews require comprehensive searching across multiple databases to minimize selection and publication bias. Relying solely on one database significantly increases the risk of missing relevant studies, undermining the validity of the 'systematic' claim. Lack of protocol registration raises concerns about selective reporting and post-hoc changes to eligibility criteria.\n\n**Suggested Action:** Conduct a comprehensive search across multiple major databases (PubMed, Embase, Cochrane Central, PsycINFO). Register the review protocol prior to completion (or cite existing registration) and explicitly state adherence to PRISMA 2020 guidelines. Report the full search strategy, including keywords, Boolean operators, and date ranges."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** There is no assessment of risk of bias or study quality for the included trials. The manuscript does not mention using any standardized tool (e.g., Cochrane RoB 2, ROBINS-I) to evaluate the internal validity of the 14 included studies.\n\n**Why it matters:** Without assessing risk of bias, it is impossible to determine if the reported effectiveness is due to the intervention or methodological flaws in the primary studies (e.g., lack of blinding, high attrition). This invalidates strong clinical recommendations and undermines the reliability of the review's findings.\n\n**Suggested Action:** Implement a standardized tool for risk of bias assessment (e.g., Cochrane Risk of Bias 2.0). Report the risk of bias for each included study and discuss how this impacts the certainty of the evidence."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The synthesis is purely narrative with insufficient quantitative detail. The manuscript states 'effect sizes varied' but provides no specific data, confidence intervals, heterogeneity statistics (I²), or forest plots. There is no table summarizing the characteristics of the included studies (sample size, intervention details, control type, outcome measures). If meta-analysis was not performed, there is no justification provided.\n\n**Why it matters:** Narrative summaries are subjective and prone to bias. For a systematic review claiming to inform clinical guidelines, quantitative synthesis (meta-analysis) where possible, or at least detailed tabular data extraction with effect sizes and confidence intervals, is required to support claims of effectiveness and allow for scientific scrutiny.\n\n**Suggested Action:** Perform a meta-analysis if study heterogeneity permits, reporting pooled effect sizes with 95% confidence intervals. If meta-analysis is not feasible, provide a detailed table of included studies and use GRADE to assess the certainty of evidence. Include specific outcome data (e.g., mean changes in insomnia severity scores) for each study."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion & Abstract",
+      "content_md": "**Problem:** The conclusion that dCBT-I 'should replace pharmacotherapy as first-line treatment' is an unsupported overreach. The review does not include head-to-head trials comparing dCBT-I directly against pharmacotherapy, nor does it assess safety profiles, cost-effectiveness, or patient preference data necessary for such a guideline-level recommendation. This unsupported claim appears in both the Discussion and the Abstract.\n\n**Why it matters:** Making definitive clinical practice recommendations based on a limited systematic review without direct comparative evidence is clinically dangerous and scientifically unjustified. It exceeds the scope of the evidence presented and may mislead clinicians and policymakers.\n\n**Suggested Action:** Tone down the conclusions to reflect the actual findings (e.g., 'dCBT-I shows promise as an effective intervention' or 'is effective compared to control conditions'). Explicitly state that more research, including direct comparisons with pharmacotherapy and long-term safety data, is needed before replacing current standard of care. Revise the Abstract to remove prescriptive recommendations not supported by the data."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The screening process is inadequately described. It mentions 'Two reviewers screened titles' but omits details on abstract and full-text screening, conflict resolution methods, and inter-rater reliability (e.g., Cohen’s kappa).\n\n**Why it matters:** Transparent reporting of the selection process is essential for reproducibility and assessing potential selection bias in the review.\n\n**Suggested Action:** Describe the full screening process (title/abstract and full-text). Report how disagreements were resolved and provide metrics on inter-rater agreement if available."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The definition of control conditions is vague. The manuscript does not specify whether controls were waitlist, active comparators (e.g., sleep hygiene education), or treatment-as-usual.\n\n**Why it matters:** The effectiveness of dCBT-I depends heavily on the control condition. Comparing against a waitlist yields larger effect sizes than comparing against active treatments. Without this detail, the magnitude of benefit cannot be accurately interpreted.\n\n**Suggested Action:** Clearly categorize and report the types of control conditions used in the included studies. Stratify results by control type if possible."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract lacks essential structural components and key details. It does not include structured headings (Background, Methods, Results, Conclusion) and omits critical information such as the date of the last search, the number of participants, and specific outcome metrics.\n\n**Why it matters:** Structured abstracts are required by most clinical journals to ensure clarity and completeness. Missing information prevents readers from quickly assessing the relevance and rigor of the study.\n\n**Suggested Action:** Rewrite the abstract using a structured format with explicit headings. Include the search date, number of participants across studies, primary outcome results with effect sizes, and a balanced conclusion."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** The manuscript lacks essential declarations such as funding sources, data availability statement, and ethical approval details (if applicable for secondary research).\n\n**Why it matters:** Transparency regarding funding and data access is crucial for assessing potential conflicts of interest and reproducibility.\n\n**Suggested Action:** Add sections for Funding, Data Availability, and Ethical Approval (or state if not applicable) in the Declarations section."
+    }
+  ]
+}

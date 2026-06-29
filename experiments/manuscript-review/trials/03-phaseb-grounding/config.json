@@ -1,0 +1,12 @@
+{
+  "trial": "03-phaseb-grounding",
+  "date": "2026-06-28",
+  "phase": "B — categorical gap",
+  "base_model": "qwen3.6-27b-mtp-q8 (local llama-server)",
+  "arms": ["naive", "persona (4-lens + merge)", "ensemble (4 identical + merge)", "grounded (1 reviewer + verified grounding pack)"],
+  "grounding_pack": "registered protocol + citation-validation (Crossref/OpenAlex/Retraction Watch) + independent statistical recomputation — handed only to the grounded arm",
+  "judge": "Claude (blinded, arm-stripped, hash-ordered)",
+  "manuscripts": 3, "reps": 2, "arm_runs": 24,
+  "gold": "8 external-only errors (protocol drift / outcome-switch / selective-model, fabricated + retracted citations, p-value mismatch)",
+  "purpose": "These errors are catchable ONLY with external grounding; persona/ensemble reviewers see only the manuscript, so they should miss them no matter how many reviewers. Demonstrates the categorical (not marginal) advantage of context-based review."
+}

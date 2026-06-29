@@ -1,0 +1,51 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was not blinded to the index test results. All reviewers note that the treating team, who determined sepsis status, was aware of the biomarker panel result.\n\n**Why it matters:** This introduces severe **incorporation bias** and **review knowledge bias**. Because clinicians knew the biomarker result when making the diagnosis, they likely incorporated that information into their clinical judgment. This creates a direct dependency between the index test and the reference standard, artificially inflating sensitivity and specificity because the test is essentially being compared to itself or a version of itself influenced by its own output. This violates the fundamental assumption of diagnostic accuracy studies that the reference standard must be independent of the index test (STARD 2015 Item 6c), rendering the reported accuracy metrics invalid.\n\n**Suggested Action:** The study design is fundamentally flawed for estimating diagnostic accuracy as currently presented. The authors must either: (1) Re-analyze data using a truly independent reference standard (e.g., retrospective chart review by blinded experts applying strict Sepsis-3 criteria or microbiological confirmation); or (2) Clearly reframe the study as a clinical decision analysis rather than a pure diagnostic accuracy study, acknowledging that the \"accuracy\" reported reflects clinical integration rather than biological detection capability. If re-analysis is impossible, claims of diagnostic accuracy must be removed entirely."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy within the same sample used to estimate performance.\n\n**Why it matters:** This leads to **overfitting** and **optimism bias** (also known as \"double-dipping\" or data dredging). By tuning the cutoff on the test data, the reported sensitivity (0.92) and specificity (0.88) are likely significantly overestimated compared to what would be observed in an independent validation cohort. In diagnostic studies, threshold selection must be performed on a training set, with performance estimated on a separate validation/test set, or via internal cross-validation/bootstrap methods.\n\n**Suggested Action:** The authors must validate the chosen threshold in an independent external cohort. If only one dataset exists, they should use internal cross-validation (e.g., bootstrapping) to estimate optimism-corrected performance metrics. The current point estimates should not be presented as definitive accuracy measures without correction for this bias."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** Point estimates for sensitivity and specificity are provided without measures of uncertainty (confidence intervals) or a 2x2 contingency table.\n\n**Why it matters:** With a sample size of 310, the precision of these estimates is crucial. Without 95% Confidence Intervals (CIs), readers cannot assess the reliability of the findings, and the wide potential ranges make clinical decision-making difficult. Additionally, the absence of a contingency table (True Positives, False Positives, etc.) prevents verification of calculations and assessment of dataset balance.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity, specificity, PPV, NPV, and AUC using exact binomial methods or bootstrap techniques. Include a 2x2 contingency table in the Results or Supplementary Materials."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of the target condition (\"early sepsis\") and the reference standard criteria are vague or subjective.\n\n**Why it matters:** \"Early sepsis\" is not a standardized diagnostic entity like Sepsis-3. Without a precise, pre-specified definition of what constitutes \"early\" (e.g., time window from onset) and how adjudication was performed (e.g., specific lab values, SOFA scores), the study lacks reproducibility. Furthermore, using subjective clinical judgment rather than objective gold standards introduces variability.\n\n**Suggested Action:** Clearly define the target condition in the Methods. Specify the Sepsis definition used (e.g., Sepsis-3 criteria) and the time window for \"early\" detection. Explicitly list the three biomarkers constituting the panel. If a custom definition was used, justify it clinically."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Abstract / Discussion",
+      "content_md": "**Problem:** The conclusions claim the panel is \"accurate and ready for bedside use.\"\n\n**Why it matters:** These claims are unsupported by the evidence given the critical methodological flaws (lack of blinding, overfitting threshold). No comparison to existing standard-of-care biomarkers (e.g., procalcitonin, lactate) or clinical prediction rules was provided to demonstrate incremental value. Furthermore, no data on feasibility, cost-effectiveness, or impact on patient outcomes are presented.\n\n**Suggested Action:** Reword the Abstract and Discussion to reflect the preliminary/exploratory nature of the findings. Replace \"ready for bedside use\" with language indicating that further validation in blinded, independent cohorts is required before clinical implementation can be considered."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The study lacks a sample size justification/power calculation and details on missing data handling.\n\n**Why it matters:** It is unclear if the study was adequately powered, particularly if sepsis prevalence is low (leading to few true positives and wide CIs). Additionally, in ICU settings, missing data are common; excluding patients with missing biomarker panels without justification could introduce selection bias (e.g., if sicker patients had more missing samples).\n\n**Suggested Action:** Provide a post-hoc power analysis or justify the sample size based on observed prevalence and desired precision. Report the number and percentage of patients excluded due to missing data, provide a STARD-compliant flow diagram, and discuss potential bias from missing data."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** The Declarations section is overly sparse, omitting standard ethical reporting.\n\n**Why it matters:** Diagnostic accuracy studies involving human subjects require explicit statement of ethical approval and informed consent procedures per STARD 2015 Item 7.\n\n**Suggested Action:** Add a sentence confirming that the study was approved by the relevant Institutional Review Board (IRB) or Ethics Committee and describe how informed consent was obtained or waived."
+    }
+  ]
+}

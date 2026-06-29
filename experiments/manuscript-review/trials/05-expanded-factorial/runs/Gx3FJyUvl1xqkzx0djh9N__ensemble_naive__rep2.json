@@ -1,0 +1,51 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "ensemble_naive",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was not blinded to the index test results. Multiple reviewers noted that the treating team, who performed the adjudication of sepsis status, were aware of the biomarker panel results.\n\n**Why it matters:** This introduces significant **incorporation bias** and **reviewer knowledge bias**. If clinicians use the biomarker result to determine the diagnosis, the test is effectively part of the reference standard. This artificially inflates sensitivity and specificity, rendering the reported diagnostic accuracy estimates invalid for clinical decision-making.\n\n**Suggested Action:** The study design must be re-evaluated. Ideally, the authors should re-analyze data using a reference standard determined independently of the biomarker results (e.g., retrospective adjudication by blinded experts using strict criteria like Sepsis-3). If re-analysis is impossible, this fatal flaw must be prominently disclosed as a major limitation, and the results cannot be presented as valid diagnostic accuracy estimates."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy within the same sample used for evaluation (single-sample design).\n\n**Why it matters:** This causes **overfitting** and **optimism bias**. Optimizing the cutoff on the test dataset inflates performance metrics. The reported sensitivity (0.92) and specificity (0.88) are likely overly optimistic and will not replicate in external or even internal validation sets.\n\n**Suggested Action:** Split the data into a training set (to derive the threshold) and a validation set (to evaluate accuracy), or use cross-validation/bootstrapping techniques to correct for overfitting. Alternatively, pre-specify a threshold based on prior literature rather than optimizing it post-hoc on this specific sample."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The manuscript reports only point estimates (sensitivity 0.92, specificity 0.88) without confidence intervals or a confusion matrix.\n\n**Why it matters:** Without 95% confidence intervals, the precision of the estimates is unknown. Given the sample size (N=310), the uncertainty around these metrics could be clinically significant. Furthermore, lacking a contingency table (True Positives, False Positives, True Negatives, False Negatives) prevents readers from verifying calculations, assessing the impact of prevalence on predictive values, or performing meta-analyses.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity and specificity. Provide a full confusion matrix in the results section or supplementary materials. Additionally, include positive and negative likelihood ratios."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The composition of the 'three-marker serum panel' is not described.\n\n**Why it matters:** Readers cannot assess the biological plausibility, novelty, or practical feasibility (cost, turnaround time) of the proposed test. A diagnostic study must clearly identify the index test components to allow for replication and clinical assessment.\n\n**Suggested Action:** List the three specific biomarkers included in the panel. Briefly describe their assay methods, availability, and how the panel score was calculated."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of 'early sepsis' and the timing of sample collection relative to symptom onset are not specified.\n\n**Why it matters:** Sepsis is a time-sensitive condition. 'Early' detection implies a specific window (e.g., within 3 hours of onset). Without defining this window, the clinical utility of the biomarker is ambiguous. It is unclear if the test detects sepsis before organ dysfunction occurs or merely confirms established sepsis.\n\n**Suggested Action:** Clearly define 'early sepsis' in terms of time from symptom onset or hemodynamic instability. Report the median and interquartile range of the time between sample collection and clinical diagnosis."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Incomplete reporting of study design, patient flow, and inclusion/exclusion criteria.\n\n**Why it matters:** Without clear definitions of the study population and exclusion criteria, the generalizability of results is limited. It is unclear if the 310 patients represent a true consecutive series or a selected subset. Verifying adherence to STARD guidelines requires a flow diagram showing how many patients were eligible, enrolled, excluded, and analyzed.\n\n**Suggested Action:** Provide detailed inclusion/exclusion criteria. Include a STARD-compliant flow diagram. Explicitly state the pre-test probability/prevalence of sepsis in the cohort."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The conclusion that the panel is 'ready for bedside use' is unsupported by the study design and evidence.\n\n**Why it matters:** Diagnostic accuracy studies, especially those with critical methodological flaws like lack of blinding and threshold overfitting, do not establish clinical utility or readiness for implementation. Claiming readiness without prospective validation, cost-effectiveness analysis, or assessment of clinical impact is misleading and potentially dangerous.\n\n**Suggested Action:** Tone down the conclusion to reflect that this is a preliminary diagnostic accuracy study with significant limitations. Remove claims of readiness for clinical deployment. State that further blinded, external validation is required before considering bedside implementation."
+    }
+  ]
+}

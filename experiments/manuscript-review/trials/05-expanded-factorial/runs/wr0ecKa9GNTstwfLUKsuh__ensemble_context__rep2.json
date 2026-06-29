@@ -1,0 +1,69 @@
+{
+  "mid": "wr0ecKa9GNTstwfLUKsuh",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 10,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem**: The manuscript claims causality (\"Screen time causes myopia\") based on a cross-sectional study design.\n**Why it matters**: Cross-sectional studies measure exposure and outcome simultaneously, making it impossible to establish temporal precedence or rule out reverse causation (e.g., myopic children may spend more time indoors/on screens due to poor distance vision). This is a fundamental violation of causal inference principles that invalidates the main conclusion.\n**Suggested Action**: Revise all language in the Abstract and Discussion to reflect association only (e.g., \"associated with,\" \"linked to\"). Remove claims of causality and prescriptive policy recommendations based on causal assumptions. Explicitly state that the cross-sectional design precludes causal conclusions."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: No statistical adjustment for key confounding variables is reported. The Methods section mentions logistic regression but does not list covariates. Key confounders in myopia research include age, genetic predisposition (parental myopia), outdoor time, and socioeconomic status.\n**Why it matters**: Without adjusting for these known strong predictors of myopia, the observed association between screen time and myopia is likely biased and potentially spurious. The reported odds ratio (2.1) may largely reflect these unmeasured confounders or be significantly attenuated after adjustment.\n**Suggested Action**: Collect data on key confounders if not already done, or acknowledge this as a major limitation. If data exists, perform multivariable logistic regression adjusting for age, sex, parental myopia, and outdoor time. Report both unadjusted and adjusted estimates with 95% confidence intervals."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: Exposure assessment relies on a single-day self-reported questionnaire, which is prone to recall bias and does not capture habitual behavior. Additionally, it is unclear if the questionnaire was validated or if objective measures were used.\n**Why it matters**: Myopia development is related to long-term cumulative exposure. A single day's screen time is a poor proxy for habitual use, leading to significant misclassification of the exposure variable and weakening the validity of the findings. Self-report is also subject to social desirability bias.\n**Suggested Action**: Use validated instruments that assess typical weekly or daily habits over a longer period (e.g., past week/month). Consider objective measures if feasible. In the Discussion, acknowledge this limitation and discuss how measurement error might affect the observed association."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: Missing reporting of eligibility criteria, sampling method, recruitment strategy, and response rate (STROBE-6). The manuscript mentions \"three schools\" but provides no details on how they were selected or how children were recruited.\n**Why it matters**: Readers cannot assess the generalizability or potential selection bias without knowing how participants were selected from the three schools and whether there was differential participation. If participation was voluntary, non-response bias may skew results.\n**Suggested Action**: Describe the inclusion/exclusion criteria, the sampling frame, the recruitment process (e.g., random sampling vs. volunteer), and the number of eligible vs. participating children."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: Missing sample size justification (STROBE-10). There is no power calculation or explanation for the chosen sample size.\n**Why it matters**: Without a power calculation, the study's ability to detect meaningful effects is unknown. This raises concerns about whether the study was adequately powered or overpowered.\n**Suggested Action**: Add a subsection in Methods describing the sample size calculation, including assumed prevalence, expected effect size, alpha, and power levels. If no calculation was performed, state this as a limitation."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: Missing detailed statistical methods and precision measures (STROBE-12, STROBE-16). The Results section reports only the Odds Ratio (2.1) without confidence intervals, p-values, or specification of which variables were included in the model.\n**Why it matters**: Reporting only an odds ratio without confidence intervals or p-values prevents assessment of statistical significance and precision. Without knowing if the model adjusted for confounders, the OR is likely biased and misleading.\n**Suggested Action**: Report all estimates with 95% CIs and p-values. Clearly state which variables were included in the multivariable logistic regression model. Include a table showing the distribution of myopia by screen time tertiles, including counts and percentages."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: Missing operational definitions for key variables (STROBE-7). Specifically, it is unclear how refraction was performed (cycloplegic vs. non-cycloplegic) and exactly how screen time was defined (e.g., specific types of screens, hours/day).\n**Why it matters**: Non-cycloplegic refraction in children often overestimates myopia due to accommodation. Ambiguous definitions of exposure prevent reproducibility and accurate interpretation of the effect size.\n**Suggested Action**: Add a detailed Methods subsection describing the refraction protocol (specify if cycloplegic drops were used; if not, acknowledge this limitation) and operational definitions for screen time (e.g., validated questionnaire, specific questions asked, device types included)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The Discussion lacks a critical appraisal of limitations (STROBE-19). It does not address potential biases such as selection bias, information bias (self-reported screen time), reverse causation, or confounding by outdoor time/genetics.\n**Why it matters**: STROBE-19 requires discussing limitations. Omitting this suggests the authors are unaware of the study's weaknesses or are attempting to overstate the findings. A rigorous discussion must contextualize findings by acknowledging these weaknesses.\n**Suggested Action**: Add a dedicated paragraph on limitations. Specifically discuss: 1) The cross-sectional nature preventing causal inference; 2) Potential misclassification of screen time (recall bias); 3) Lack of control for key confounders (if not adjusted in analysis); 4) Generalizability issues (only three schools)."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract / Title",
+      "content_md": "**Problem**: The title and abstract do not clearly indicate the study design in a balanced manner (STROBE-1a, 1b). The abstract is overly brief, lacks key numerical results (e.g., sample size details, confidence intervals), and fails to summarize methods or limitations.\n**Why it matters**: STROBE guidelines require the study design to be indicated in the title or abstract to help readers quickly assess the evidence level. An abstract that omits precision measures and overstates conclusions is misleading.\n**Suggested Action**: \n- Add \"(Cross-sectional study)\" to the title if not already implied clearly.\n- Expand the Abstract to include structured sections: Background, Methods (design, setting, participants), Results (prevalence, OR with 95% CI), and Conclusion (balanced statement). Ensure the abstract includes a brief description of the exposure measurement method and acknowledges the cross-sectional nature."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Other",
+      "content_md": "**Problem**: Missing funding source disclosure and conflict of interest statement (STROBE-22).\n**Why it matters**: Transparency regarding funding is required to assess potential conflicts of interest and biases.\n**Suggested Action**: Add a \"Funding\" section stating the source of financial support (or \"None\") and a \"Conflicts of Interest\" statement disclosing the role of funders in study design, analysis, or reporting."
+    }
+  ]
+}

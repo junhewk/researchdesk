@@ -1,0 +1,45 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is unstructured and lacks the required components of a scoping review summary (background, objectives, eligibility, sources, charting, results, conclusions) as per PRISMA-ScR Item 2. It omits key methodological details and specific result metrics.\n\n**Why it matters:** A structured abstract allows readers to quickly assess the scope, methodology, rigor, and relevance of the review. Without explicit headings, the review's boundaries and findings are opaque.\n\n**Suggested Action:** Rewrite the abstract into a structured format with explicit headings: Background, Objectives, Eligibility Criteria, Information Sources, Data Charting Process, Results (including specific counts or themes), and Conclusions."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction fails to state the rationale for the review in the context of existing knowledge (PRISMA-ScR Item 3) and does not define objectives using the PCC (Population, Concept, Context) framework (PRISMA-ScR Item 4). The scope is undefined, making it unclear why this review is needed or what specific questions it aims to answer.\n\n**Why it matters:** Scoping reviews must clearly delineate their scope to avoid ambiguity and bias. Without a PCC framework, the inclusion criteria lack a theoretical basis, and the review's boundaries are unclear.\n\n**Suggested Action:** Add a paragraph explaining why this review is needed now (e.g., rapid growth of AI tools). Explicitly define the Population (undergraduate medical students), Concept (AI applications), and Context (medical education curricula) to guide the search strategy and objectives."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The methods section is severely deficient, omitting protocol registration status (PRISMA-ScR Item 5), detailed eligibility criteria and rationale (Item 6), full search strategies with dates and limits (Items 7 & 8), the screening process including conflict resolution (Item 9), data charting procedures (Items 10 & 11), and synthesis methods (Item 13). The manuscript mentions searching 'PubMed' but provides no date, search strings, or details on reviewer independence.\n\n**Why it matters:** Reproducibility is a cornerstone of scoping reviews. Without detailed search strings, dates, selection processes, and extraction fields, the review cannot be verified or replicated, raising concerns about selection bias, completeness, and the reliability of the data charting.\n\n**Suggested Action:** Expand the Methods section to include: 1) Protocol registration details (or a statement if not registered); 2) Detailed PCC-based eligibility criteria; 3) Full search strings for all databases used with the date of the last search; 4) Description of the screening process (e.g., two independent reviewers, software used, conflict resolution); 5) Details on data extraction fields and synthesis approach (e.g., thematic analysis)."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section lacks a PRISMA flow diagram showing the number of sources screened, excluded, and included (PRISMA-ScR Item 14). It also fails to provide a charting table summarizing the characteristics of the included studies (Item 15) or synthesize results in relation to objectives (Item 18). The claim of '38 papers' is unsupported by visible evidence of selection or heterogeneity.\n\n**Why it matters:** The flow diagram is essential for transparency regarding study selection and assessing potential bias. A charting table allows readers to assess the heterogeneity, quality, and scope of the evidence base. Without these, the review provides no insight into the landscape of the literature.\n\n**Suggested Action:** Include a PRISMA-ScR flow diagram. Create a comprehensive charting table listing key characteristics of each included study (e.g., author, year, country, AI type, educational context, outcomes). Summarize findings thematically rather than just listing categories."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion makes strong prescriptive claims ('AI is broadly beneficial' and 'should be integrated... immediately') without acknowledging limitations of the scoping process (PRISMA-ScR Item 21) or critically appraising evidence quality. Scoping reviews map literature; they do not typically provide definitive recommendations for practice changes due to variable study quality and lack of efficacy synthesis.\n\n**Why it matters:** Overstating the implications of a scoping review can mislead policymakers and educators. The heterogeneity of included studies likely varies in methodological rigor, and ignoring potential harms, ethical concerns, or implementation barriers undermines scientific integrity.\n\n**Suggested Action:** Tone down recommendations to reflect the exploratory nature of the review. Explicitly discuss limitations such as potential publication bias, heterogeneity of AI definitions, and lack of critical appraisal. Frame conclusions as identifying gaps and future research directions (e.g., need for systematic reviews/meta-analyses) rather than immediate implementation mandates."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Funding",
+      "content_md": "**Problem:** The manuscript does not report on funding sources or the role of funders (PRISMA-ScR Item 22).\n\n**Why it matters:** Transparency regarding funding is essential to identify potential conflicts of interest, especially in a field like AI where commercial interests may influence educational research.\n\n**Suggested Action:** Add a 'Funding' section stating whether the review received any financial support and the role of the funders in study design, data collection, analysis, interpretation, or writing."
+    }
+  ]
+}

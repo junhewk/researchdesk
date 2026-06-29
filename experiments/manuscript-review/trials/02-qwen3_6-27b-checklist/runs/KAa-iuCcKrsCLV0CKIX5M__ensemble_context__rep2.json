@@ -1,0 +1,63 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 9,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract & PRISMA-2",
+      "content_md": "**Problem:** The abstract is unstructured and omits critical elements required by PRISMA 2020 Item 2. It lacks specific data sources (beyond a vague mention of PubMed), detailed eligibility criteria, synthesis methods, limitations, and registration details.\n\n**Why it matters:** A structured abstract allows readers to quickly assess the review's validity, scope, and transparency. Missing registration information raises concerns about selective reporting, while the absence of methodology details hinders reproducibility.\n\n**Suggested Action:** Rewrite the abstract into a structured format with headings: Background, Objective, Data Sources, Eligibility Criteria, Study Selection, Data Extraction/Synthesis, Results, Limitations, Conclusion, and Registration. Explicitly state the registry name/number (or declare if not registered), specific search dates, databases used, and primary outcome measures."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods & PRISMA-7",
+      "content_md": "**Problem:** The search strategy is severely under-reported. Only PubMed is mentioned, with no full electronic search string (keywords/MeSH terms), dates of coverage, or limits provided. Furthermore, the review relies on a single database, failing to include other major sources like Embase or Cochrane Central.\n\n**Why it matters:** Relying on a single database increases the risk of publication bias and missing relevant trials, particularly those in non-English journals or not indexed in PubMed. The lack of a reproducible search string prevents verification of the review's comprehensiveness.\n\n**Suggested Action:** Expand the search to include at least one additional major database (e.g., Embase or Cochrane Library). Report the full search strategy for all databases used, including specific terms, MeSH headings, date ranges, and any limits applied."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods & PRISMA-12 / Results & PRISMA-24",
+      "content_md": "**Problem:** The manuscript lacks a description of the risk-of-bias (RoB) assessment method for individual studies (PRISMA Item 12) and does not report RoB results (PRISMA Item 24).\n\n**Why it matters:** Without assessing the methodological quality of included trials, the validity of the pooled conclusions is unknown. High-risk studies could skew results toward false positives, undermining the credibility of the review's findings.\n\n**Suggested Action:** Implement a standardized RoB tool (e.g., Cochrane Risk of Bias 2.0) to assess included trials. Describe the tool in the Methods section and present the assessment results for all included studies in the Results section, ideally using a table or graph."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods & PRISMA-14 / Results",
+      "content_md": "**Problem:** The synthesis method is described only as 'narrative,' with no mention of quantitative synthesis (meta-analysis) or statistical measures of consistency/heterogeneity (e.g., I²). The results state that 'effect sizes varied' but provide no quantitative summary.\n\n**Why it matters:** Narrative summary alone is often insufficient for determining effectiveness across 14 trials. Without statistical pooling or formal heterogeneity assessment, the claim of general effectiveness is weak, and readers cannot gauge the magnitude or consistency of the effect.\n\n**Suggested Action:** If data permit, conduct a meta-analysis to calculate pooled effect sizes and heterogeneity statistics (I²). If meta-analysis is not possible, explicitly justify the narrative approach and provide robust narrative synthesis techniques, including descriptions of heterogeneity sources."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results & PRISMA-17",
+      "content_md": "**Problem:** The manuscript is missing the PRISMA flow diagram, which details the number of records identified, screened, assessed for eligibility, and included. Consequently, the study selection process is not transparent.\n\n**Why it matters:** The flow diagram is essential for transparency in study selection. Without it, readers cannot assess how many studies were excluded and why, making it impossible to verify if relevant trials were missed or if exclusion was biased.\n\n**Suggested Action:** Include a standard PRISMA 2020 flow diagram in the Results section detailing the exact numbers at each stage of the review process (identification, screening, eligibility, inclusion)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion & PRISMA-24",
+      "content_md": "**Problem:** The discussion makes a strong clinical recommendation that dCBT-I should 'replace pharmacotherapy as first-line treatment.' This conclusion is unsupported because the review primarily compares dCBT-I to control groups (e.g., waitlist, placebo) rather than head-to-head against pharmacotherapy. It also fails to address risk of bias or limitations in this context.\n\n**Why it matters:** Claiming superiority over pharmacotherapy requires direct comparative evidence or high-quality indirect evidence. Making definitive clinical practice recommendations based on indirect comparisons is misleading and potentially harmful, violating principles of evidence-based medicine.\n\n**Suggested Action:** Remove the claim that dCBT-I should replace pharmacotherapy. Temper conclusions to reflect the actual evidence (effectiveness vs. control). Discuss limitations such as potential publication bias, heterogeneity in formats, and lack of long-term follow-up. Suggest future research comparing dCBT-I directly with pharmacotherapy."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods & PRISMA-4 / PRISMA-5",
+      "content_md": "**Problem:** Eligibility criteria are vaguely described ('adult population', 'insomnia severity outcomes') without specifying age ranges, diagnostic criteria for insomnia (e.g., DSM-5/ICSD-3), specific dCBT-I components, or comparator groups. The PICO framework is not explicitly defined.\n\n**Why it matters:** Vague eligibility criteria hinder reproducibility and may lead to the inclusion of heterogeneous studies, reducing the precision and applicability of the review's findings.\n\n**Suggested Action:** Define precise eligibility criteria using the PICO framework: Population (age range, specific diagnosis), Intervention (specific digital CBT-I features/format), Comparator (type of control group), and Outcomes (primary/secondary measures). Include details on study design specifics and any exclusions based on language or publication status."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results & PRISMA-17",
+      "content_md": "**Problem:** The results section lacks a detailed table summarizing the characteristics of included studies (author, year, sample size, intervention details, control group, follow-up duration, primary outcome results). It also fails to present effect sizes with confidence intervals for individual studies.\n\n**Why it matters:** Readers cannot assess the diversity of interventions, populations, or outcomes without a summary table. Quantifying effect sizes is necessary to understand the magnitude of benefit and variability across trials.\n\n**Suggested Action:** Add a table summarizing key characteristics of all included trials. Present effect sizes with confidence intervals for each study to allow for a better understanding of the results."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations & PRISMA-27",
+      "content_md": "**Problem:** Funding sources are not explicitly declared in the Declarations section. The manuscript only states there are 'no competing interests' but does not address funding.\n\n**Why it matters:** PRISMA 2020 Item 27 requires an explicit statement of funding sources and their role to assess potential influence on the study design or interpretation.\n\n**Suggested Action:** Add a specific sentence stating: 'This study received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors,' or list the funding source if applicable."
+    }
+  ]
+}

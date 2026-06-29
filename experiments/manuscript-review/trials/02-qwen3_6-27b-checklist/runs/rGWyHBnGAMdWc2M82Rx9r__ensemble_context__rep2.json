@@ -1,0 +1,69 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 10,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The manuscript fails to report adjustment for potential confounders in the Cox proportional-hazards models (STROBE-12). Reviewers note that while activity tertiles were used as exposure, no covariates (e.g., age, sex, comorbidities, socioeconomic status, social isolation, baseline functional/cognitive status) are listed. Consequently, the reported Hazard Ratio (HR 0.72) is likely biased by residual confounding.\n\n**Why it matters:** In observational studies of physical activity and mental health, failure to adjust for key confounders renders causal inference invalid. The observed association may be driven by underlying health advantages or socioeconomic factors rather than physical activity itself.\n\n**Suggested Action:** Re-run analyses using multivariable Cox models adjusting for relevant confounders. Explicitly list all covariates included in the final model and justify their inclusion (e.g., via DAG or prior literature). Report both unadjusted and fully adjusted hazard ratios."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion & Abstract",
+      "content_md": "**Problem:** The authors make strong causal claims ('physical activity directly lowers depression risk', 'should be prescribed as first-line prevention') based on an observational cohort study with inadequate confounder adjustment (STROBE-19). This violates the principle that association does not imply causation.\n\n**Why it matters:** Overstating causal inference can lead to inappropriate clinical guidelines. The term 'first-line prevention' implies a level of evidence typically reserved for RCTs or meta-analyses, which is not supported by this single observational study.\n\n**Suggested Action:** Tone down language throughout the Abstract and Discussion. Replace causal verbs ('lowers', 'prevents') with associative terms ('is associated with', 'linked to'). Remove or temper clinical recommendations regarding 'first-line prevention' until RCT evidence is available."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results report a Hazard Ratio (HR 0.72) with only a p-value (< 0.05), failing to provide 95% Confidence Intervals (CIs) for this estimate (STROBE-16).\n\n**Why it matters:** CIs are essential for interpreting the precision of the effect estimate and its clinical significance. A p-value alone does not convey the range of plausible effects.\n\n**Suggested Action:** Report the 95% CI for all hazard ratios presented in the results."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of 'incident depression' is unclear. It relies on a Geriatric Depression Scale (GDS) score ≥ 5 or a 'new clinical diagnosis,' but the manuscript does not specify: (1) the version of the GDS used (e.g., GDS-15 vs. GDS-30), (2) how 'clinical diagnosis' was ascertained (e.g., medical records, physician interview, self-report), or (3) whether outcome assessors were blinded to exposure status (STROBE-7).\n\n**Why it matters:** Mixing screening tools with clinical diagnoses without clear operationalization introduces misclassification and information bias. Unclear ascertainment methods hinder replication and validity assessment.\n\n**Suggested Action:** Specify the GDS version and cite its validation in this population. Clarify the data source for 'clinical diagnosis' (e.g., ICD-10 codes). Consider sensitivity analyses using stricter criteria (e.g., clinical diagnosis only) to assess robustness."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The manuscript lacks transparency regarding participant selection and attrition. It states 512 were recruited but only 498 included, without explaining the exclusion of 14 participants. Additionally, there is no flow diagram or detailed reporting on loss to follow-up during the 4.2-year mean follow-up period (STROBE-13).\n\n**Why it matters:** Missing attrition data prevents assessment of selection bias. If those lost to follow-up or excluded differed systematically from those retained (e.g., were frailer), results may be biased.\n\n**Suggested Action:** Include a CONSORT-style flow diagram detailing recruitment, eligibility, exclusions, and follow-up. Report reasons for exclusion and loss to follow-up, and compare baseline characteristics of included vs. excluded/lost participants."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods & Discussion",
+      "content_md": "**Problem:** The study does not adequately address reverse causality or subclinical depression at baseline. Although participants had GDS < 5, mild depressive symptoms can precede overt depression and influence physical activity levels (i.e., those with early symptoms may be less active). Furthermore, the exposure (physical activity) was self-reported via a single baseline questionnaire without specifying the instrument or its validation in this population (STROBE-7).\n\n**Why it matters:** Undetected subclinical depression leading to lower activity could drive the observed association (reverse causation). Self-reported activity is prone to recall and social desirability bias, potentially over- or underestimating the effect.\n\n**Suggested Action:** Discuss reverse causality as a key limitation. Consider performing sensitivity analyses excluding participants who developed depression within the first 6–12 months of follow-up. Identify the specific physical activity questionnaire used and cite its validation. Discuss potential measurement error in the limitations."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript fails to report a sample size calculation or power analysis (STROBE-10).\n\n**Why it matters:** Without a priori power calculations, it is impossible to assess whether the study was adequately powered to detect the observed effect (HR 0.72) or if the results are underpowered, raising concerns about Type II error.\n\n**Suggested Action:** Include a sample size calculation in the Methods section, stating the assumed effect size, alpha level, and power. If no formal calculation was performed, justify the sample size based on available resources or prior studies."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** The manuscript states 'The authors report no competing interests' but does not disclose the funding source (STROBE-22).\n\n**Why it matters:** Transparency regarding funding is required by STROBE and most clinical journals to assess potential bias.\n\n**Suggested Action:** Add a specific Funding statement. If no external funding was received, explicitly state 'This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.'"
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction states 'prospective evidence in the oldest old is limited' but does not define 'oldest old' (typically 80+). The study includes adults aged 65+, which is a broader geriatric range.\n\n**Why it matters:** Imprecise terminology can mislead readers about the target population. If the study aims to address the 'oldest old,' the inclusion criteria should reflect that, or the text should be corrected.\n\n**Suggested Action:** Align the introduction's gap statement with the actual study population. Change 'oldest old' to 'older adults' or specify if a subgroup analysis for those >80 was performed."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction states the objective is to 'examine the association' but does not specify pre-specified hypotheses (e.g., dose-response relationship, specific subgroups) (STROBE-3).\n\n**Why it matters:** Clear hypotheses guide interpretation and reduce data dredging. Without them, it is unclear if subgroup analyses were planned post-hoc.\n\n**Suggested Action:** Explicitly state the primary hypothesis and any secondary hypotheses or pre-specified subgroup analyses in the Introduction."
+    }
+  ]
+}

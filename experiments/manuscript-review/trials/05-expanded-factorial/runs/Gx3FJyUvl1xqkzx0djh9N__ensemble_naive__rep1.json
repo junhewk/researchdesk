@@ -1,0 +1,39 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "ensemble_naive",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was not blinded to the index test results. Multiple reviewers note that the treating team, who performed the adjudication, \"were aware of the panel result.\" \n\n**Why it matters:** This introduces significant **incorporation bias**, **reviewer knowledge bias**, and **verification bias**. If clinicians used the biomarker result to confirm or deny sepsis, the sensitivity (0.92) and specificity (0.88) are artificially inflated because the index test is effectively part of the reference standard. This fundamental flaw invalidates the reported diagnostic accuracy metrics.\n\n**Suggested Action:** The study design is fundamentally flawed for a diagnostic accuracy assessment. Authors must either: 1) Re-analyze data using a blinded reference standard (e.g., retrospective chart review by adjudicators unaware of biomarker results); or 2) Acknowledge this as a major limitation, explicitly state that performance metrics are likely overestimated, and remove claims of clinical utility until validated in a blinded study."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy within the same sample used for evaluation (data-driven threshold selection). \n\n**Why it matters:** This constitutes **overfitting** and **optimism bias**. Selecting a cut-off based on the development dataset leads to inflated performance estimates that will not replicate in independent validation cohorts or clinical practice. The reported sensitivity and specificity are unreliable without correction for this optimism.\n\n**Suggested Action:** Authors must validate the threshold in a separate, independent derivation/validation split or use internal cross-validation/bootstrap techniques to report optimism-corrected performance estimates. If no validation data exists, the results should be framed as preliminary findings requiring external validation."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Critical methodological details required by STARD guidelines are missing. Specifically: inclusion/exclusion criteria, the operational definition of \"early sepsis\" (e.g., Sepsis-3 criteria), the timing of biomarker measurement relative to symptom onset, the specific biomarkers in the panel, and how the panel score was calculated/combined.\n\n**Why it matters:** Without these details, the study is not reproducible, and the clinical applicability is unclear. Readers cannot assess if the population matches their own or understand what \"the panel\" actually measures. A STARD-compliant flow diagram showing participant recruitment and exclusion is also absent.\n\n**Suggested Action:** Add a detailed Methods section including: 1) Specific biomarkers and assay methods; 2) Clear inclusion/exclusion criteria and a patient flow diagram; 3) Operational definition of sepsis and the time window for \"early\" detection; 4) The algorithm or weighting used to combine markers into a single test result."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results report only point estimates (sensitivity 0.92, specificity 0.88) without confidence intervals or a 2x2 contingency table.\n\n**Why it matters:** Point estimates alone do not convey the precision of the estimates. Given the sample size (N=310), 95% confidence intervals are essential to determine if the performance is statistically robust. Additionally, the absence of a 2x2 table (True Positives, False Positives, etc.) prevents readers from verifying calculations or assessing the clinical impact of errors.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity, specificity, and other metrics (e.g., likelihood ratios, AUC). Include a 2x2 contingency table cross-tabulating the index test results against the reference standard diagnosis."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Abstract/Discussion",
+      "content_md": "**Problem:** The conclusion states the panel is \"ready for bedside use.\" \n\n**Why it matters:** This claim is unsupported and potentially dangerous. Due to critical biases (unblinded reference standard, overfitted threshold) and lack of external validation or clinical utility analysis, the reported accuracy is likely inflated. Deploying an unvalidated tool based on these flawed metrics poses a risk to patient safety.\n\n**Suggested Action:** Remove the claim of readiness for bedside use. Reframe the conclusion to highlight that this is a preliminary feasibility study with significant methodological limitations requiring external validation before clinical implementation."
+    }
+  ]
+}

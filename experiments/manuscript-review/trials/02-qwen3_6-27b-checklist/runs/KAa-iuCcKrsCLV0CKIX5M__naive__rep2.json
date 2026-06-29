@@ -1,0 +1,45 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is severely limited and non-reproducible. Only PubMed was searched, with no mention of other major databases (e.g., Embase, Cochrane Central), grey literature, or clinical trial registries. There is no mention of a pre-registered protocol, search dates, or specific search terms/strings used.\n\n**Why it matters:** Systematic reviews require comprehensive search strategies to minimize publication bias and ensure all relevant evidence is captured. Relying solely on PubMed risks missing significant studies, particularly those in non-English journals or ongoing trials, compromising the validity of the review's conclusions.\n\n**Suggested Action:** Expand the search to include at least two additional major bibliographic databases (e.g., Embase, PsycINFO) and grey literature sources. Report the full search strategy for all databases, including dates, filters, and specific terms. If a protocol was registered (e.g., PROSPERO), provide the registration number."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** There is no assessment of risk of bias or study quality. The methods state that outcomes were 'summarised narratively' but provide no details on how the included trials were evaluated for methodological rigor (e.g., using Cochrane RoB 2 or similar tools).\n\n**Why it matters:** Without assessing the risk of bias, the review cannot determine if the reported effectiveness is reliable. Including high-risk studies without weighting or sensitivity analysis may lead to overestimation of treatment effects.\n\n**Suggested Action:** Implement a standardized tool for assessing the risk of bias in included randomized trials (e.g., Cochrane Risk of Bias tool 2.0). Present the results of this assessment and discuss how study quality impacts the interpretation of the findings."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The review lacks quantitative synthesis (meta-analysis) or a structured framework for narrative synthesis. The results state 'effect sizes varied' but do not report specific effect sizes, confidence intervals, or heterogeneity statistics. The methods mention 'narrative summary' but do not describe the framework used (e.g., SWiM guidelines).\n\n**Why it matters:** For a systematic review of RCTs, quantitative data synthesis is preferred to provide precise estimates of effect. If meta-analysis is not possible, a structured narrative synthesis must be transparent about how studies are grouped and compared. Vague statements like 'effect sizes varied' do not allow readers to gauge the magnitude or consistency of the treatment effect.\n\n**Suggested Action:** Conduct a meta-analysis if data permit, reporting pooled effect sizes with 95% confidence intervals and heterogeneity metrics (I²). If not feasible, follow the SWiM (Synthesis Without Meta-analysis) guidelines to structure the narrative synthesis, explicitly detailing how studies were compared and synthesized."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results are insufficiently detailed. There is no description of the included studies (e.g., participant characteristics, dCBT-I components, control conditions, follow-up duration). No specific outcome data (means, standard deviations, p-values) are provided for any of the 14 trials.\n\n**Why it matters:** Readers cannot assess the applicability or generalizability of the findings without knowing who was treated, how they were treated, and what the controls received. Lack of specific data prevents independent verification of the conclusions.\n\n**Suggested Action:** Provide a detailed table of study characteristics (PRISMA item 5). In the text or tables, report key outcome data for each included study, including pre/post-intervention scores or between-group differences with measures of uncertainty."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The conclusion that dCBT-I 'should replace pharmacotherapy as first-line treatment' is an overstatement not supported by the evidence presented. The review did not include head-to-head trials comparing dCBT-I directly to pharmacotherapy, nor did it assess safety/adverse events of either modality.\n\n**Why it matters:** Making strong clinical policy recommendations requires direct comparative evidence and a comprehensive assessment of benefits vs. harms. Inferring superiority over an untested comparator (pharmacotherapy) from indirect comparisons or general effectiveness is logically flawed and potentially misleading for clinical guidelines.\n\n**Suggested Action:** Tone down the conclusion to reflect the actual evidence: dCBT-I is effective compared to control conditions. Explicitly state that direct comparisons with pharmacotherapy were not included/analyzed in this review, and caution against broad policy changes without further head-to-head evidence."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Problem:** The study selection process is not transparently reported. There is no PRISMA flow diagram or text description of the number of records identified, screened, assessed for eligibility, and included. It is unclear how many titles/abstracts were screened by each reviewer and how disagreements were resolved.\n\n**Why it matters:** Transparency in the selection process is essential for reproducibility and assessing potential selection bias. Without knowing the screening volume and agreement rates, the rigor of the review is questionable.\n\n**Suggested Action:** Include a PRISMA flow diagram detailing the study selection process. Describe the screening procedure, including how many records were screened at each stage and how disagreements between reviewers were resolved (e.g., by consensus or third reviewer)."
+    }
+  ]
+}

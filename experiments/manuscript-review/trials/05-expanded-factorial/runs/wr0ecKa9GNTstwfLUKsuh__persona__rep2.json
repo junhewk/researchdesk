@@ -1,0 +1,69 @@
+{
+  "mid": "wr0ecKa9GNTstwfLUKsuh",
+  "arm": "persona",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 10,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem:** The authors assert that screen time *causes* myopia and recommend restrictions based on a cross-sectional study design.\n\n**Why it matters:** Cross-sectional designs measure exposure and outcome simultaneously, making it impossible to establish temporal precedence or causality. Reverse causation (e.g., children with early myopia may spend more time on screens due to visual preferences) and confounding (e.g., lack of outdoor time, socioeconomic status, parental myopia) cannot be ruled out. Asserting causality from this design is statistically invalid, misleading for clinical practice/public health policy, and a fundamental methodological error.\n\n**Suggested Action:** Rewrite the Discussion and Abstract to reflect the observational nature of the study. Use language such as \"associated with\" or \"linked to\" rather than \"causes.\" Explicitly acknowledge that causal inference requires longitudinal or experimental data. Remove prescriptive statements about limiting screen time as a direct prevention strategy, or frame them cautiously as hypotheses requiring longitudinal confirmation."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The manuscript fails to report confidence intervals (CIs) for the odds ratio or any other effect estimate, nor does it provide p-values. It also lacks a description of the multivariable model used (i.e., which covariates were adjusted for).\n\n**Why it matters:** An odds ratio of 2.1 without a CI provides no information about the precision of the estimate or statistical significance. Furthermore, in observational studies, unadjusted associations are often biased. Without knowing which confounders (e.g., age, sex, parental myopia, outdoor time) were included in the logistic regression, the validity of the association cannot be assessed. A wide CI might include 1.0, rendering the finding non-significant.\n\n**Suggested Action:** Report the 95% confidence interval for the odds ratio and p-values. Provide a table detailing the covariates included in the adjusted model and their corresponding effect estimates. If no adjustment was made, clearly state this and discuss its limitation as a major threat to validity."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study uses a single-day screen-time questionnaire to estimate \"daily\" screen time. There is no mention of validation, reliability, or how day-to-day variability was handled. Furthermore, \"screen time\" is not clearly defined (e.g., does it include educational vs. recreational use? Mobile devices vs. desktops?).\n\n**Why it matters:** Self-reported screen time from a single day is subject to significant measurement error and recall bias. This non-differential misclassification typically biases effect estimates toward the null, but differential misclassification can distort results. The lack of definition prevents replication and comparability with other studies.\n\n**Suggested Action:** Define \"screen time\" explicitly in the Methods (e.g., total hours/day including all devices). Acknowledge the limitation of using a single-day self-report measure and discuss how measurement error might affect the results. If possible, compare with objective measures or previous validation studies in similar populations."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The method of refraction measurement is not specified (e.g., cycloplegic vs. non-cycloplegic autorefraction). Myopia definition (-0.5 D) is stated, but the reliability and validity of the measurement tool are not discussed.\n\n**Why it matters:** Non-cycloplegic refraction can overestimate myopia in children due to accommodation (pseudomyopia), particularly in younger children. This measurement bias could lead to misclassification of the outcome, affecting prevalence estimates and association strength.\n\n**Suggested Action:** Specify whether cycloplegia was used. If not, acknowledge this as a limitation that may lead to overestimation of myopia prevalence. Describe the equipment used for refraction."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The study does not describe how potential confounders were identified and adjusted for. Key confounders in myopia research include time spent outdoors, parental history of myopia, age, socioeconomic status, and near-work activities unrelated to screens.\n\n**Why it matters:** Without adjusting for these variables, the observed association between screen time and myopia may be spurious or exaggerated due to confounding. For instance, screen time is often correlated with reduced outdoor time, which is a stronger protective factor against myopia. Failing to adjust for age is also problematic as myopia prevalence increases sharply with age.\n\n**Suggested Action:** Explicitly list all covariates included in the multivariable logistic regression model and justify their inclusion based on prior literature or directed acyclic graphs (DAGs). Report adjusted odds ratios with confidence intervals. If these variables were not collected, acknowledge this as a severe limitation that prevents definitive conclusions about the independent effect of screen time."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript does not describe how missing data were handled (e.g., for refraction or questionnaire items) or report the response rate/attrition. It is also unclear if the 600 children are a random sample of the schools or a convenience sample.\n\n**Why it matters:** Missing data can introduce bias if not missing completely at random (MCAR). Lack of transparency regarding participant selection threatens external validity (generalizability) and introduces potential selection bias. If participation was related to screen time habits, results are biased.\n\n**Suggested Action:** Report the number and percentage of participants with missing data for key variables. Describe the method used to handle missing data and justify its appropriateness. Detail the recruitment strategy, inclusion/exclusion criteria, and calculate/report the response rate."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The study does not provide a sample size calculation or power analysis.\n\n**Why it matters:** Without a priori power calculation, it is unclear if the study was adequately powered to detect a clinically meaningful association. The absence of this information limits the ability to interpret null findings or the stability of the reported effect.\n\n**Suggested Action:** Include a sample size justification based on expected prevalence and effect size from prior literature. If not done a priori, discuss the study's power to detect effects of interest in the limitations section."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section lacks essential statistical details, including confidence intervals (CI) for the odds ratio, p-values, and the distribution of covariates between groups.\n\n**Why it matters:** An odds ratio of 2.1 without a confidence interval provides no information about the precision of the estimate or its statistical significance. A wide CI might include 1.0, rendering the finding non-significant.\n\n**Suggested Action:** Report the 95% confidence intervals and p-values for all regression models. Include a table describing baseline characteristics (age, sex, etc.) stratified by screen time tertiles to demonstrate comparability or identify imbalances."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is excessively brief and omits standard components such as background context, specific sample demographics (age range), and key statistical metrics.\n\n**Why it matters:** A clinical journal requires a structured abstract that allows readers to quickly assess the study's relevance and rigor. The current abstract lacks sufficient detail to evaluate the population or the strength of evidence.\n\n**Suggested Action:** Expand the abstract to include: (1) Background sentence; (2) Specific age range of children; (3) Number of participants analyzed vs. surveyed; (4) Adjusted OR with 95% CI; (5) Key limitations."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The definition of myopia is given as \"spherical equivalent <= -0.5 D\" but does not specify if this is based on right eye, left eye, or the more myopic eye.\n\n**Why it matters:** Inconsistent definitions across studies hinder comparability. Standard practice usually defines myopia based on the worse-seeing eye or averages both eyes.\n\n**Suggested Action:** Clarify whether myopia status was determined by the right eye, left eye, or the eye with the more negative spherical equivalent."
+    }
+  ]
+}

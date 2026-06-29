@@ -1,0 +1,45 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "ensemble_naive",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section is insufficient for a scoping review, lacking essential details required for reproducibility and adherence to reporting guidelines (e.g., PRISMA-ScR). Specifically, it fails to provide the full search strategy (keywords/Boolean strings), date range of the search, explicit inclusion/exclusion criteria, the study selection process (screening stages, number of reviewers, conflict resolution), and data extraction methodology.\n\n**Why it matters:** Without these details, the review cannot be replicated or validated. Readers cannot assess potential selection bias or determine if the included studies truly represent the body of literature on AI in undergraduate medical education.\n\n**Suggested Action:** Expand the Methods section to include: (1) The full search string used; (2) The date the search was conducted and any date limits applied; (3) Explicit inclusion and exclusion criteria (e.g., language, study design, specific definition of 'undergraduate'); (4) A description of the screening process (e.g., number of reviewers, handling of disagreements); and (5) The data extraction framework used."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Only one database (PubMed) was searched. \n\n**Why it matters:** Relying on a single biomedical database introduces significant publication and source bias, likely missing relevant studies indexed in other databases (e.g., Embase, ERIC, Scopus, Web of Science). This compromises the comprehensiveness of the scoping review, particularly for medical education topics that may be published in education-focused journals.\n\n**Suggested Action:** Search additional relevant databases (e.g., Embase, Cochrane Library, ERIC, Scopus) and report the total number of records identified across all sources. If limited to PubMed, this limitation must be explicitly justified."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section provides only a high-level count (38 papers) and broad categories (tutoring, assessment, chatbots) without synthesizing the actual findings. It lacks specific data on study designs, sample sizes, educational levels, AI technologies used, outcomes, or the quality of evidence.\n\n**Why it matters:** A scoping review aims to map the available literature. Without detailing *what* the studies found (e.g., effectiveness, feasibility, student satisfaction) and their characteristics, the review fails to provide useful insights for readers. The claim that AI is 'widely beneficial' cannot be substantiated without presenting the actual results from the included papers.\n\n**Suggested Action:** Provide a structured summary of the findings, including thematic analysis, study designs, sample sizes, and key outcomes. Include a PRISMA flow diagram detailing the search and selection process, and present a detailed summary table of the included studies (author, year, country, AI type, educational context, outcomes)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion makes a definitive, normative claim that AI 'should be integrated into all undergraduate curricula immediately' which is not supported by the evidence presented. There is no critical appraisal of the quality of included studies, no discussion of limitations (e.g., potential bias, equity issues, lack of long-term efficacy data), and no nuance regarding institutional readiness or risks.\n\n**Why it matters:** Scoping reviews typically do not assess study quality, so making definitive prescriptive claims about efficacy is methodologically unsound. Ignoring potential harms, ethical concerns, or implementation challenges misleads readers and policymakers. Strong recommendations require rigorous systematic reviews or meta-analyses.\n\n**Suggested Action:** Tone down the recommendations to reflect the exploratory scope of a scoping review. Discuss implications for curriculum development cautiously, highlighting areas where evidence is strong versus where gaps exist. Avoid prescriptive language like 'immediately' unless supported by higher-level evidence. Address potential challenges (e.g., equity, validation) and suggest areas for future research."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The Abstract is incomplete, unstructured, and misleading. It lacks standard sections (Background, Methods, Results, Conclusion), omits key methodological details (search strategy, selection criteria), and fails to summarize specific findings or limitations. It also includes a strong recommendation ('should be integrated... immediately') that may not be justified by the full text.\n\n**Why it matters:** The abstract is often the only part of the paper read by researchers. A poorly structured or overstated abstract fails to convey the scope and rigor of the review, potentially misleading readers about the study's conclusions and utility.\n\n**Suggested Action:** Rewrite the Abstract to follow a standard structured format (Background, Methods, Results, Conclusion). Include specific details about the search strategy, number of included studies, key themes identified, and a nuanced conclusion that reflects the evidence and limitations."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** There is no mention of quality appraisal or risk of bias assessment for the included studies.\n\n**Why it matters:** While scoping reviews do not always require critical appraisal, discussing the methodological limitations of the included literature is essential for interpreting the findings. Ignoring this limits the credibility of any conclusions drawn about the 'benefits' of AI and prevents readers from understanding the strength of the evidence base.\n\n**Suggested Action:** Either include a brief quality assessment of the included studies or explicitly state in the discussion that the review does not appraise study quality and that findings should be interpreted with caution due to potential biases in the primary literature."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "mid": "HeabcaqsNJagBNtgXG9kK",
+  "arm": "naive",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The study suffers from severe overfitting due to an extremely low Events Per Variable (EPV) ratio. With only 60 readmission events and a final model containing 12 predictors, the EPV is approximately 5 (60/12). Standard guidelines for logistic regression suggest a minimum of 10 events per predictor variable to ensure stable coefficient estimates, and often more for robust prediction.\n\n**Why it matters:** At an EPV of 5, the model coefficients are likely biased, standard errors are underestimated, and the reported performance (AUC 0.78) is almost certainly overly optimistic. The model is not reliable for generalization to new patients or settings.\n\n**Suggested Action:** The authors must acknowledge this limitation explicitly. Ideally, they should reduce the number of predictors significantly (e.g., to ≤5-6 variables based on strong clinical rationale) or use penalized regression techniques (like LASSO) designed for high-dimensional/low-event scenarios. They must also perform rigorous internal validation (e.g., bootstrap or cross-validation) to estimate and report optimism-corrected performance metrics."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion claims the score is \"validated\" and \"ready for clinical use,\" yet the Methods describe development on a single dataset from one hospital with no mention of internal or external validation.\n\n**Why it matters:** A model developed without validation (split-sample, cross-validation, or bootstrap) cannot be considered validated. Claiming readiness for clinical use based solely on apparent performance in the development sample is dangerous and misleading, as it ignores overfitting bias.\n\n**Suggested Action:** Remove claims of validation and clinical readiness. The manuscript should be reframed as a *development* study only. If validation was performed but omitted from the text, these details must be added immediately. If not performed, the authors must state that the model requires further external validation before clinical implementation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The use of stepwise selection for predictor inclusion is described without justification or consideration of its known drawbacks in prediction modeling (e.g., ignoring uncertainty, poor reproducibility).\n\n**Why it matters:** Stepwise selection often leads to unstable models and overfitted results, particularly in small samples. It does not account for the uncertainty introduced by the variable selection process itself.\n\n**Suggested Action:** Justify the use of stepwise selection or consider alternative methods such as clinical knowledge-driven inclusion or penalized regression. If stepwise is retained, acknowledge its limitations and ensure that internal validation accounts for the selection process."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The manuscript lacks reporting of calibration metrics (e.g., Hosmer-Lemeshow test, calibration plot) and only reports discrimination (AUC).\n\n**Why it matters:** Discrimination (AUC) alone is insufficient for clinical risk scores. Calibration—the agreement between predicted probabilities and observed outcomes—is critical for determining if the score accurately estimates absolute risk for individual patients.\n\n**Suggested Action:** Report calibration metrics, including a calibration plot or table showing observed vs. predicted readmission rates across risk deciles."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The sample size and event count are not explicitly stated in the context of power or precision. With only 60 events, the confidence intervals for the AUC and other metrics will be very wide.\n\n**Why it matters:** Readers cannot assess the precision of the estimates without knowing the total N and the width of confidence intervals.\n\n**Suggested Action:** Report the total sample size (N) and provide 95% confidence intervals for the AUC and all model coefficients."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Methods",
+      "content_md": "**Problem:** The manuscript does not adhere to TRIPOD (Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis) guidelines.\n\n**Why it matters:** TRIPOD is the standard reporting guideline for prediction model studies. Failure to follow it results in incomplete reporting of critical methodological details, making the study irreproducible and difficult to appraise.\n\n**Suggested Action:** Restructure the manuscript to align with the TRIPOD checklist. Specifically, include details on handling missing data, definition of predictors, derivation of the risk score (coefficients/weights), and validation methods."
+    }
+  ]
+}

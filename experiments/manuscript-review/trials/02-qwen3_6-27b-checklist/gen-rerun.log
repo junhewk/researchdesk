@@ -1,0 +1,18 @@
+qwen run: 12 arm-runs (4 manuscripts x 6 arms x 2 reps) @ http://100.122.169.13:8091/v1 model=qwen3.6-27b-mtp-q8 temp=0.7 conc=1
+    call failed (ReviewResult): HTTP 502
+    call failed (ReviewResult): HTTP 502
+    call failed (ReviewResult): HTTP 502
+  [1/12] persona_context rep1 KAa-i → 6 items (4 sub, 65.2s)
+  [2/12] persona rep2 7xVaa → 9 items (4 sub, 148.0s)
+  [3/12] persona_context rep1 7xVaa → 7 items (4 sub, 159.6s)
+  [4/12] persona rep1 rGWyH → 10 items (4 sub, 147.3s)
+  [5/12] persona rep2 rGWyH → 9 items (4 sub, 128.1s)
+  [6/12] persona_context rep1 rGWyH → 8 items (4 sub, 148.8s)
+  [7/12] ensemble_naive rep2 rGWyH → 8 items (4 sub, 140.8s)
+  [8/12] persona rep1 LrOfx → 12 items (4 sub, 162.5s)
+  [9/12] persona_context rep1 LrOfx → 12 items (4 sub, 159.0s)
+  [10/12] persona_context rep2 LrOfx → 10 items (4 sub, 160.8s)
+  [11/12] ensemble_naive rep1 LrOfx → 9 items (4 sub, 140.4s)
+  [12/12] ensemble_context rep1 LrOfx → 10 items (4 sub, 179.1s)
+
+Done. 12/12 arm-runs → experiments/manuscript-review/trials/02-qwen3_6-27b-checklist/runs

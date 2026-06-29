@@ -1,0 +1,33 @@
+{
+  "mid": "pb2-diabetes-diet",
+  "arm": "grounded",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 4,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract/Methods/Results",
+      "content_md": "**Outcome Switching (Primary vs. Secondary Outcome):** The manuscript identifies the proportion achieving HbA1c < 7.0% as the primary outcome. However, the registered protocol explicitly defines **mean change in HbA1c (%)** as the primary outcome, with the proportion reaching target as a pre-specified secondary outcome. Reporting a secondary outcome as primary without justification constitutes outcome switching, which introduces selection bias and inflates the risk of Type I error.\n\n*Why it matters:* This undermines the validity of the main conclusion and the statistical power calculations likely performed for the original primary outcome.\n\n*Suggested Action:* Re-analyze the data using the registered primary outcome (mean change in HbA1c). If the authors insist on highlighting the proportion, they must clearly label it as a secondary or exploratory finding and adjust for multiple comparisons if not pre-specified as such."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "References",
+      "content_md": "**Retraction of Key Reference:** Reference [2] (Hallberg SJ, et al., Diabetes Ther. 2018) is cited to support the extension of prior dietary trials. Grounding verification confirms this article was **retracted in 2022** due to data concerns.\n\n*Why it matters:* Citing retracted literature compromises the integrity of the evidence base and suggests a lack of rigorous reference validation.\n\n*Suggested Action:* Remove Reference [2] immediately. Replace with valid, non-retracted studies that support the discussion claims, or remove the claim if no other valid evidence exists."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Statistical Error in P-value:** The manuscript reports a p-value of 0.004 for the comparison of proportions (52% vs 38%, n=120/arm). Independent recomputation confirms the Risk Ratio (1.37) is correct, but the two-proportion z-test yields **p ≈ 0.03**, not 0.004.\n\n*Why it matters:* The reported p-value significantly overstates the statistical significance of the result. While still statistically significant at α=0.05, the exaggeration misleads readers regarding the strength of the evidence.\n\n*Suggested Action:* Correct the p-value to approximately 0.03 in the Abstract and Results sections. Ensure all other statistical tests in the manuscript are re-verified for accuracy."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Missing Analysis Methodology:** The registered protocol mandates **intention-to-treat (ITT) analysis with multiple imputation** for missing HbA1c data. The manuscript Methods section states 'Outcomes assessed at 6 months' but fails to specify the handling of missing data or confirm adherence to the ITT plan.\n\n*Why it matters:* Without specifying how missing data were handled, it is impossible to verify if the analysis adhered to the pre-specified protocol. Deviations from multiple imputation (e.g., complete-case analysis) can introduce bias and reduce power.\n\n*Suggested Action:* Explicitly state in the Methods section whether ITT analysis with multiple imputation was performed as registered. If a different method was used, provide a justification and discuss potential bias."
+    }
+  ]
+}

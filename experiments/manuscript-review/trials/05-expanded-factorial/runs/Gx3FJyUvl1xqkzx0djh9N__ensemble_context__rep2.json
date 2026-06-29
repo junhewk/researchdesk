@@ -1,0 +1,51 @@
+{
+  "mid": "Gx3FJyUvl1xqkzx0djh9N",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The reference standard (clinical adjudication) was applied by the treating team who were aware of the index test results.\n**Why it matters:** This introduces significant review bias (incorporation/expectation bias). Knowledge of the biomarker result likely influenced the clinical decision to label a patient as septic, artificially inflating sensitivity and specificity. This violates core principles of diagnostic accuracy studies (STARD Item 12/13) and renders the reported accuracy estimates invalid for generalizability.\n**Suggested Action:** The study must be re-analyzed using a reference standard applied independently of the index test result (e.g., blinded adjudication by experts unaware of biomarker levels, or application of strict Sepsis-3 definitions based on clinical criteria alone). If re-analysis is impossible, this fatal flaw must be acknowledged, and the study should not claim diagnostic validity. Claims of \"bedside readiness\" must be removed."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The decision threshold was selected to maximize accuracy in the same sample used to estimate sensitivity and specificity.\n**Why it matters:** This leads to overfitting and optimistic bias. The reported performance (0.92/0.88) is likely much higher than what would be observed in an independent validation cohort. STARD requires clear distinction between derivation and validation; here, no external or internal validation with a pre-specified threshold is described.\n**Suggested Action:** Perform cross-validation, bootstrap resampling, or split-sample validation to estimate the performance of a pre-specified threshold and correct for optimism bias. Alternatively, report that this is a purely exploratory derivation study and do not claim 'ready for bedside use' without an independent validation step."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** Missing cross-tabulation of index test results by reference standard (STARD Item 17).\n**Why it matters:** Reporting only sensitivity and specificity prevents readers from assessing the absolute numbers of true/false positives/negatives, calculating predictive values, or verifying the consistency of the reported metrics. It also hides how indeterminate results were handled and prevents meta-analysis.\n**Suggested Action:** Provide a 2x2 table (or equivalent) showing the counts of True Positives, False Positives, True Negatives, and False Negatives. Include confidence intervals for all accuracy measures and explain any exclusions due to indeterminate or missing results."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Insufficient detail on the index test (STARD Item 10a).\n**Why it matters:** The manuscript does not specify which three markers constitute the panel, how they were measured (assay platform, units), or the algorithm used to combine them. Without this, the study cannot be replicated, and clinical implementation is impossible.\n**Suggested Action:** Explicitly list the three biomarkers, describe the analytical method (e.g., ELISA, mass spectrometry) including manufacturer details, and specify the statistical model or algorithm used to combine individual marker levels into a single score."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Missing eligibility criteria and participant identification basis (STARD Items 6 and 7).\n**Why it matters:** It is unclear who was included or excluded from the study. 'Consecutive ICU patients' is too vague; were patients with known sepsis at admission included? Were those too unstable for blood draw excluded? This affects the applicability of the findings and may introduce spectrum bias.\n**Suggested Action:** Provide a flow diagram (STARD Item 15) and text describing specific inclusion/exclusion criteria (e.g., age, duration of ICU stay), the method of patient recruitment, and the setting of the study."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Unclear study design regarding timing and verification (STARD Item 5) and handling of indeterminate results (STARD Item 14).\n**Why it matters:** It is unclear whether data collection was prospective or retrospective, and whether the index test and reference standard were applied simultaneously. For \"early\" sepsis detection, the timing is critical to avoid verification bias. Additionally, it is unclear how indeterminate biomarker results were handled, which can bias accuracy estimates if excluded arbitrarily.\n**Suggested Action:** Clearly state whether the study was prospective or retrospective. Specify the time window between sample collection and clinical adjudication. Describe the protocol for handling any indeterminate or missing index test/reference standard results."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** Overstated conclusions claiming readiness for bedside deployment.\n**Why it matters:** Given the critical biases (non-blinded reference standard, threshold overfitting) and lack of validation, the claim that the panel is 'ready for bedside use' is unsupported and potentially dangerous clinical advice.\n**Suggested Action:** Remove claims of clinical readiness. Reframe the discussion to highlight the exploratory nature of the findings and the urgent need for prospective, blinded, external validation studies."
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "mid": "pb2-pollution-cohort",
+  "arm": "grounded",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 4,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Impossible Statistical Value (GRIM Check Failure):** The reported mean data-quality score of 2.83 for a sample size of n=8 on an integer scale (1–5) is mathematically impossible. For the mean to be 2.83, the sum of scores would need to be 22.64, which cannot be achieved with integer inputs. The nearest achievable means are 2.75 (sum=22) or 2.88 (sum=23). This indicates either a fabrication of data or a severe transcription error that undermines the credibility of all reported descriptive statistics."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Inconsistent P-value (Statcheck Failure):** The reported t-statistic t(40) = 1.5 is inconsistent with the claimed p < 0.001. A t-value of 1.5 with 40 degrees of freedom yields a two-tailed p-value of approximately 0.141, which is not statistically significant. The manuscript claims strong significance (p < 0.001) for a non-significant result. This misrepresentation fundamentally invalidates the study's primary conclusion regarding the association between pollution and FEV1 decline."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Tortured Phrase / Paraphraser Fingerprint:** The phrase 'arbitrary woodland regression models' is identified as a known paraphraser fingerprint for the standard term 'random forest'. This substitution suggests the use of automated text-spinning tools, often associated with paper-mill operations or plagiarism. The manuscript must be rewritten to use correct technical terminology and verified for original composition."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Unsubstantiated Causal Claim:** The Discussion states that traffic-related air pollution 'directly impairs' lung function and warrants 'immediate regulation.' Given the observational nature of the study (acknowledged in Limitations) and the fact that the primary statistical finding is non-significant (p ≈ 0.14), this causal language is unsupported by the provided evidence. The conclusions must be toned down to reflect the exploratory, non-significant nature of the results."
+    }
+  ]
+}

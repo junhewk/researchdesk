@@ -1,0 +1,39 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Verification Bias (Workup Bias).** The manuscript states that the reference standard (ophthalmologist examination) was performed \"only on participants the classifier flagged as referable, and a sample of those it cleared.\" \n\n**Why it matters:** This design creates severe verification bias. By not verifying all negative cases (or a random sample of them), the study artificially inflates specificity and potentially sensitivity. You cannot calculate true diagnostic accuracy if you do not know the disease status of the participants who were not verified against the gold standard. The reported sensitivity of 0.89 and specificity of 0.91 are likely overestimates and invalid without adjustment or full verification.\n\n**Suggested Action:** The authors must either: (1) Perform the reference standard examination on all participants (or a random, representative sample of all participants regardless of AI result) to allow for unbiased calculation of sensitivity and specificity; or (2) Use statistical methods to adjust for partial verification bias if full verification is impossible, clearly stating the assumptions made. The current results cannot be interpreted as valid diagnostic accuracy metrics."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem: Overstated Clinical Recommendations.** The discussion claims \"smartphone AI can replace specialist screening in primary care\" and that \"wider rollout should proceed.\"\n\n**Why it matters:** This conclusion is unsupported by the data provided. Even if the accuracy metrics were valid (which they are not, due to the bias noted above), a single-center study with verification bias does not provide sufficient evidence for replacing specialist screening or recommending wide-scale deployment. Such claims require rigorous validation in diverse populations, assessment of false-positive/negative clinical consequences, and cost-effectiveness analysis.\n\n**Suggested Action:** Tone down the conclusions significantly. State that the system shows *potential* utility but requires further validation with unbiased study designs before clinical implementation can be considered. Remove the call for immediate wider rollout."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Lack of Reference Standard Rigor.** The reference standard is described as \"dilated fundus examination by an ophthalmologist.\"\n\n**Why it matters:** It is unclear if this was a single reader or multiple readers, whether they were masked to the AI results, and what criteria defined 'referable' DR (e.g., ETDRS levels). Lack of masking introduces review bias (the ophthalmologist may be influenced by knowing the AI's result). Lack of inter-rater reliability assessment weakens the validity of the reference standard itself.\n\n**Suggested Action:** Specify if the ophthalmologist was masked to the AI results. If not, acknowledge this as a limitation. Provide details on how 'referable' DR was defined and whether multiple graders were used to establish the ground truth."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing Diagnostic Performance Metrics.** The results only report sensitivity and specificity. \n\n**Why it matters:** For clinical screening tools, Positive Predictive Value (PPV), Negative Predictive Value (NPV), and likelihood ratios are crucial for understanding real-world utility. Additionally, no confidence intervals are provided for the reported metrics, making it impossible to assess the precision of the estimates.\n\n**Suggested Action:** Report 95% confidence intervals for sensitivity and specificity. Calculate and report PPV, NPV, and likelihood ratios based on the prevalence in this cohort. If the verification bias prevents accurate calculation of these, explicitly state that these metrics cannot be reliably determined."
+    },
+    {
+      "category": "evidence",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Insufficient Description of AI System.** The manuscript refers to \"a smartphone camera with an embedded deep-learning classifier\" but provides no details on the model architecture, training data, or version.\n\n**Why it matters:** Reproducibility and assessment of potential biases in the AI (e.g., training data demographics) are impossible without this information. Clinical journals require transparency about the tool being evaluated.\n\n**Suggested Action:** Provide a reference to the published validation of the AI algorithm or include an appendix describing the model's architecture, training dataset characteristics, and version number used in this study."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "mid": "LkcAkZEGLVafBHw-4Jwe1",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results/STROBE-16",
+      "content_md": "**Missing Precision Estimates (Confidence Intervals) and Unadjusted/Adjusted Distinction**: The manuscript reports an odds ratio (OR) of 1.8 but fails to provide the 95% confidence interval (CI), p-value, or clarity on whether the estimate is adjusted for confounders.\n\n**Why it matters**: Without CIs, readers cannot assess statistical significance or precision; an OR of 1.8 may be non-significant if the CI includes 1.0. Furthermore, failing to distinguish between crude and adjusted estimates prevents assessment of residual confounding, particularly given strong associations between pancreatic cancer and factors like smoking.\n\n**Suggested Action**: Report both unadjusted and multivariable-adjusted odds ratios with corresponding 95% CIs and p-values. Clearly label which estimate is being discussed."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods/STROBE-12",
+      "content_md": "**Inadequate Description of Confounding Control**: The Methods state that logistic regression was used but do not specify which confounders (e.g., age, sex, smoking status, diabetes, family history, BMI) were included in the model or how they were selected.\n\n**Why it matters**: Pancreatic cancer risk is strongly associated with smoking and other lifestyle factors. Failure to identify and adjust for key confounders threatens internal validity. Smoking, in particular, is correlated with coffee consumption; omitting it could lead to significant residual confounding and spurious associations.\n\n**Suggested Action**: List all variables included in the multivariable model. Justify their inclusion based on prior literature or directed acyclic graphs (DAGs). Present both unadjusted and adjusted estimates."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods/STROBE-6",
+      "content_md": "**Unclear Control Selection and Representativeness**: Controls are described vaguely as 'other patients admitted to the same hospital' without specifying diagnoses, inclusion/exclusion criteria, or whether conditions related to coffee consumption (e.g., gastrointestinal disorders) were excluded.\n\n**Why it matters**: Hospital-based controls must be representative of the source population that produced the cases. If controls have diseases associated with coffee consumption, selection bias (Berkson’s bias) may distort the odds ratio. The lack of detail prevents assessment of this risk.\n\n**Suggested Action**: Specify the diagnoses of control patients and explicitly state exclusions for conditions related to coffee intake or pancreatic cancer. Justify the choice of hospital controls and describe how potential confounding by indication was addressed."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods/STROBE-10",
+      "content_md": "**Missing Sample Size Justification**: The manuscript fails to report how the sample size (240 cases, 240 controls) was determined. There is no mention of a power calculation or effect size estimation.\n\n**Why it matters**: Without a justification, readers cannot assess whether the study was adequately powered to detect clinically meaningful associations or if it suffered from low statistical power, leading to potential false negatives or unstable estimates.\n\n**Suggested Action**: Add a statement in the Methods section describing the sample size calculation, including the assumed prevalence of exposure among controls, expected odds ratio, significance level (alpha), and statistical power (1-beta). If no formal calculation was performed, acknowledge this as a limitation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods/STROBE-7",
+      "content_md": "**Vague Exposure Definition and Measurement**: 'Heavy coffee drinkers (>3 cups/day)' is defined, but the method of ascertaining consumption lacks detail. It is unclear what constitutes a 'cup' (volume/type), whether validated instruments (e.g., FFQ) were used, or if blinding was employed during interviews.\n\n**Why it matters**: Recall bias is a significant concern in case-control studies, especially when exposure assessment occurs after diagnosis. Cases may recall past habits differently than controls. Lack of standardization and clear operational definitions introduces measurement error and misclassification.\n\n**Suggested Action**: Describe the instrument used to assess coffee intake (e.g., name of questionnaire, validation status). Define 'cup' size and coffee type. Clarify whether blinding was used during interviews to minimize interviewer bias."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion/STROBE-19",
+      "content_md": "**Absence of Limitations Discussion and Overstated Causal Claims**: The Discussion makes definitive public health recommendations and causal claims ('Coffee increases/raises risk') without acknowledging study limitations such as recall bias, selection bias, or residual confounding.\n\n**Why it matters**: Overstating conclusions from a single hospital-based case-control study with methodological gaps is misleading. Readers need to understand the strength of evidence before accepting policy implications. Case-control studies establish association, not causation.\n\n**Suggested Action**: Add a paragraph discussing specific limitations (recall bias, potential confounding by smoking, generalizability). Temper conclusions to reflect observational nature (e.g., 'associated with' rather than 'raises risk'). Remove calls for public-health messaging until robust evidence supports it."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations/STROBE-22",
+      "content_md": "**Missing Funding and Ethical Statements**: The Declarations section states 'Competing interests: none' but does not disclose the source of funding or detail ethical approval/informed consent procedures.\n\n**Why it matters**: Transparency regarding funding is required by STROBE and ethical standards to assess potential conflicts of interest. Ethical approval is mandatory for human subjects research.\n\n**Suggested Action**: Include a statement identifying the funding source(s) and their role in the study. Add statements on ethical committee approval and informed consent."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Abstract/STROBE-1b",
+      "content_md": "**Unbalanced Abstract**: The abstract concludes 'Coffee increases pancreatic cancer risk' based on a single unadjusted OR without CI or context of limitations. It lacks key numerical details (CI, p-value) and sample size context.\n\n**Why it matters**: Abstracts should provide a balanced summary. Presenting causal language from observational data with incomplete statistical reporting misrepresents the findings and may mislead readers about the certainty of the evidence.\n\n**Suggested Action**: Rewrite the conclusion to reflect association rather than causation. Include key statistical details (adjusted OR, 95% CI) if available, and briefly mention limitations or the need for replication."
+    }
+  ]
+}

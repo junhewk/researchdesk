@@ -1,0 +1,39 @@
+{
+  "mid": "rVaGFWm6dYLlb-juTfVW2",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript completely lacks essential methodological details required to assess the validity and replicability of the RCT. Specifically, CONSORT items 3a (trial design), 4a (eligibility criteria), 5 (intervention details), 7a (sample size calculation), 8a (randomization sequence generation), 9 (allocation concealment), and 11a (blinding) are entirely missing.\n\n**Why it matters:** Without these details, readers cannot determine if the trial was properly conducted, whether selection bias or performance bias may have influenced results, or if the study had adequate power. The claim that telehealth is 'effective' cannot be trusted without knowing how participants were selected, how the intervention was delivered (e.g., video vs. phone, synchronous vs. asynchronous), and how randomization was protected.\n\n**Suggested Action:** Rewrite the Methods section to fully comply with CONSORT 2010 standards. Include a flow diagram (CONSORT-13a). Specify eligibility criteria, describe the telehealth intervention in sufficient detail for replication (including frequency, duration, and modality), report the sample size calculation with assumptions, and detail the randomization and allocation concealment procedures."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section fails to report essential statistical data. CONSORT-17a requires results for each group with estimated effect sizes and 95% confidence intervals (CI). Currently, only a mean difference direction and p-value are provided. Additionally, no baseline characteristics or participant flow numbers are reported.\n\n**Why it matters:** A p-value alone does not convey the magnitude of the effect or its precision. Without 95% CIs, clinical significance cannot be assessed. Without baseline data, group comparability is unknown. Without flow numbers (CONSORT-13a), attrition bias cannot be evaluated.\n\n**Suggested Action:** Provide a table of baseline characteristics for both groups. Report the primary outcome results including mean (SD) or median (IQR) for each group at baseline and post-intervention, along with the between-group difference and its 95% CI. Include a CONSORT flow diagram detailing numbers randomized, allocated, followed up, and analyzed."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Declarations",
+      "content_md": "**Problem:** The manuscript lacks trial registration information (CONSORT-23) and protocol availability (CONSORT-24). The abstract is also insufficiently detailed, lacking background, methods specifics, and numerical results.\n\n**Why it matters:** Trial registration is a standard requirement for ethical reporting and prevents selective outcome reporting. Without it, the study's credibility is compromised. An inadequate abstract fails to inform readers quickly about the study's scope and findings.\n\n**Suggested Action:** Add the trial registry name and registration number (e.g., ClinicalTrials.gov ID) to the Declarations or Methods section. State where the full protocol can be accessed. Rewrite the Abstract to include structured sections: Background, Methods (including design, setting, participants, interventions), Results (with numerical data and CIs), and Conclusion."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion makes an overly strong recommendation ('should become standard care') without addressing limitations, potential harms, or the strength of evidence. It fails to contextualize the findings within existing literature.\n\n**Why it matters:** A single RCT with unreported methodological rigor and limited statistical reporting is insufficient to change clinical standards. Overstating conclusions can lead to premature adoption of interventions. The discussion must acknowledge limitations (e.g., lack of blinding, potential bias) and compare results with prior evidence.\n\n**Suggested Action:** Revise the Discussion to include a balanced interpretation of findings. Explicitly state study limitations (e.g., small sample size if applicable, lack of long-term follow-up, methodological gaps). Compare results with previous telehealth physiotherapy trials. Avoid definitive policy recommendations until further robust evidence is available."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "CONSORT-AI Items",
+      "content_md": "**Problem:** The manuscript does not explicitly state whether the telehealth intervention involves AI/ML. If it does not, CONSORT-AI items are not applicable but should be declared as such to avoid confusion.\n\n**Why it matters:** Reviewers and readers need clarity on whether AI was part of the intervention. If AI was used, its omission is a critical flaw (see below). If not, explicit clarification prevents misclassification.\n\n**Suggested Action:** If no AI/ML was used, add a statement in the Methods: 'This trial did not involve artificial intelligence or machine learning interventions; therefore, CONSORT-AI extensions are not applicable.' If AI *was* used (e.g., automated pain assessment algorithms), this manuscript is critically deficient and must be rewritten to include all CONSORT-AI items (4a, 4b, 5i-5vi, 19, 25)."
+    }
+  ]
+}

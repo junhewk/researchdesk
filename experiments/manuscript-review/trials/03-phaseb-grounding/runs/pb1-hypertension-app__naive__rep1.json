@@ -1,0 +1,45 @@
+{
+  "mid": "pb1-hypertension-app",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section lacks essential details required for replication and validity assessment, including randomization method (e.g., computer-generated sequence), allocation concealment, blinding procedures, and statistical analysis plan. It also fails to define the specific app intervention content or duration of daily use.\n\n**Why it matters:** Without these details, it is impossible to assess selection bias, performance bias, or detection bias. The lack of intervention specificity prevents readers from understanding what constitutes the \"mindfulness\" exposure.\n\n**Suggested Action:** Expand the Methods section to include: 1) Randomization procedure (sequence generation and allocation concealment); 2) Blinding status of participants, providers, and outcome assessors; 3) Detailed description of the app intervention (content, frequency, duration); 4) Statistical methods used for analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion claims the app \"could replace first-line lifestyle counseling.\" This conclusion is not supported by the trial design, which compared the app to a waitlist control rather than active lifestyle counseling. Furthermore, no data on other lifestyle factors (diet, exercise) are presented.\n\n**Why it matters:** Replacing established clinical guidelines with unproven digital interventions poses patient safety risks. The claim oversteps the evidence provided by a superiority trial against a passive control.\n\n**Suggested Action:** Remove the statement that the app can replace first-line lifestyle counseling. Instead, frame the findings as complementary to standard care or requiring further head-to-head trials against active lifestyle interventions before such claims can be made."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results report a 9.4 mmHg difference but do not provide confidence intervals (CI) for the between-group difference or effect size measures (e.g., Cohen’s d). Only p-values are provided.\n\n**Why it matters:** P-values alone do not convey the precision of the estimate or clinical significance. Confidence intervals are necessary to interpret the magnitude and uncertainty of the treatment effect.\n\n**Suggested Action:** Report the 95% confidence interval for the between-group difference in SBP and provide an effect size metric."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The manuscript reports baseline and 8-week means but does not explicitly state the statistical test used (e.g., ANCOVA, t-test) or how missing data were handled. It also fails to report whether intention-to-treat (ITT) analysis was performed.\n\n**Why it matters:** The choice of statistical test and handling of missing data significantly impacts the validity of the results. Without this information, the robustness of the p < 0.001 finding cannot be verified.\n\n**Suggested Action:** Specify the statistical model used for the primary outcome analysis and describe how missing data were addressed (e.g., multiple imputation, last observation carried forward)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The Methods section does not define the inclusion/exclusion criteria beyond \"Adults with stage-1 hypertension.\" It lacks details on comorbidities, current medications (especially antihypertensives), and baseline health status.\n\n**Why it matters:** Hypertension management is heavily influenced by medication adherence and comorbid conditions. Without knowing if participants were on stable medication regimens, the observed BP reduction could be due to improved medication adherence rather than mindfulness.\n\n**Suggested Action:** Detail the inclusion/exclusion criteria, including requirements for stable antihypertensive medication regimens and exclusion of secondary hypertension causes."
+    },
+    {
+      "category": "evidence",
+      "severity": "minor",
+      "section_ref": "Results",
+      "content_md": "**Problem:** Adherence is reported as 71%, but it is unclear what metric this represents (e.g., days used, minutes engaged, modules completed). \n\n**Why it matters:** Ambiguous adherence metrics make it difficult to assess the fidelity of the intervention delivery and interpret the dose-response relationship.\n\n**Suggested Action:** Define how adherence was calculated (e.g., percentage of days with at least 10 minutes of app usage)."
+    }
+  ]
+}

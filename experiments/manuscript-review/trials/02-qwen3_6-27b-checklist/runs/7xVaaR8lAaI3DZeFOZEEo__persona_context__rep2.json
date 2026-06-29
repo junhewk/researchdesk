@@ -1,0 +1,57 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "persona_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / STARD-14",
+      "content_md": "**Problem: Severe Verification Bias (Partial Reference Standard Application)**\nAll reviewers identified a fundamental design flaw where the reference standard (ophthalmologist examination) was applied only to participants flagged as referable by the index test and a sample of those cleared. This creates severe verification bias (work-up bias).\n\n**Why it matters:**\n1. **Invalid Metrics:** Sensitivity and specificity cannot be accurately calculated without knowing the true disease status for *all* participants. The reported sensitivity (0.89) and specificity (0.91) are likely biased/inflated because false negatives in the unsampled 'cleared' group are unknown.\n2. **Statistical Invalidity:** Standard 2x2 table calculations are invalid under this design. Without statistical corrections (e.g., inverse probability weighting, multiple imputation, or weighted likelihood estimation), the accuracy estimates are unreliable.\n\n**Suggested Action:**\n1. If full reference standard data exists for all 410 participants, report the complete dataset.\n2. If not, apply rigorous statistical methods to correct for verification bias and explicitly state assumptions.\n3. Alternatively, acknowledge that unconditional sensitivity/specificity cannot be claimed and report conditional metrics (e.g., PPV among verified cases) with appropriate caveats."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results / STARD-17",
+      "content_md": "**Problem: Missing Cross-Tabulation (2x2 Contingency Table)**\nThe manuscript fails to provide the raw counts of True Positives, False Positives, True Negatives, and False Negatives. Only aggregate metrics are reported.\n\n**Why it matters:**\n1. **Verification Impossibility:** Without the 2x2 table, readers cannot verify calculations or assess the impact of the verification bias described above.\n2. **Lack of Transparency:** It is impossible to determine how many 'cleared' cases were actually examined versus assumed negative, nor can prevalence or likelihood ratios be computed for clinical context.\n\n**Suggested Action:** Include a complete 2x2 contingency table in the Results section showing counts for all four cells. Clearly indicate any cells that are unknown or estimated due to partial verification."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / STARD-10a",
+      "content_md": "**Problem: Insufficient Detail on Index Test (AI) Reproducibility**\nThe description of the 'smartphone camera with embedded deep-learning classifier' lacks critical technical details necessary for replication and assessment of bias.\n\n**Why it matters:**\n1. **Hardware/Software Variability:** AI performance depends heavily on smartphone model, lens attachments, lighting, and software version. Without these details, results are not generalizable.\n2. **Image Quality Handling:** It is unclear how poor-quality images were handled (rejected/re-taken), which affects real-world applicability.\n3. **Algorithm Transparency:** The specific AI model version, training data characteristics (risk of domain shift/overfitting), and decision threshold (probability cutoff) are missing.\n\n**Suggested Action:** Provide a detailed technical description including: smartphone hardware specs, lens type, image acquisition protocol, AI model version/architecture, training dataset info, image quality acceptance criteria/rejection rates, and the probability threshold used for classification."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / STARD-11",
+      "content_md": "**Problem: Ambiguity in Reference Standard Definition**\nThe reference standard ('dilated fundus examination by an ophthalmologist') lacks details on grading protocols and blinding.\n\n**Why it matters:**\n1. **Review Bias:** It is unclear if the ophthalmologist was masked to the AI results. Lack of masking can lead to incorporation bias, inflating agreement.\n2. **Subjectivity:** Diabetic retinopathy grading is subjective. Without knowing if a single grader or consensus panel was used, and without inter-rater reliability metrics (e.g., Kappa), the robustness of the reference standard is unknown.\n\n**Suggested Action:** Clarify if graders were masked to AI results. Specify the grading scale used (e.g., ETDRS), the number of graders, and report inter-rater agreement statistics if multiple graders were involved."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / STARD-6 & STARD-7",
+      "content_md": "**Problem: Insufficient Eligibility Criteria and Participant Identification**\nThe study mentions 'consecutive adults with diabetes' but lacks specific inclusion/exclusion criteria.\n\n**Why it matters:**\n1. **Generalizability:** Diagnostic accuracy varies by disease stage, duration, and comorbidities (e.g., cataracts/media opacities). Without clear criteria, external validity is unknown.\n2. **Selection Bias:** If participants with poor image quality or media opacities were excluded post-hoc without reporting, this introduces selection bias and limits applicability to real-world primary care settings.\n\n**Suggested Action:** Detail specific inclusion/exclusion criteria (e.g., age range, diabetes type/duration, exclusion of dense cataracts). Report the number of participants screened versus included, and explicitly state how many were excluded due to ungradable images."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem: Overstated Conclusions Regarding Clinical Deployment**\nThe discussion and abstract claim that 'smartphone AI can replace specialist screening' and is 'ready for deployment/wider rollout.'\n\n**Why it matters:**\n1. **Unsupported by Evidence:** These claims are not supported by a single-center study with critical methodological flaws (verification bias) and no external validation.\n2. **Clinical Risk:** Premature claims of replacement ignore the need for implementation science, cost-effectiveness analysis, and safety validation in diverse populations.\n\n**Suggested Action:** Tone down conclusions to reflect the preliminary/exploratory nature of the findings. Acknowledge limitations (verification bias, single center) and state that further validation with full reference standard application is required before considering clinical deployment."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Results / Abstract",
+      "content_md": "**Problem: Missing Confidence Intervals and Precision Estimates**\nThe results report point estimates for sensitivity (0.89) and specificity (0.91) without 95% confidence intervals (CIs).\n\n**Why it matters:** Point estimates alone do not convey the precision of the diagnostic accuracy measures. Given the sample size and design complexity, uncertainty is likely substantial. Without CIs, readers cannot assess if results are compatible with clinically unacceptable performance levels.\n\n**Suggested Action:** Calculate and report 95% confidence intervals for sensitivity and specificity in both the Results and Abstract. Use methods appropriate for the study design (e.g., bootstrap or adjusted Wald intervals) to account for verification bias."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract / STARD-1",
+      "content_md": "**Problem: Missing Study Design Description in Abstract**\nThe abstract does not explicitly state the study design (e.g., 'prospective diagnostic accuracy study') or clearly identify the reference standard used.\n\n**Why it matters:** Readers need immediate context for the accuracy metrics. Omitting the design and reference standard makes the sensitivity/specificity values ambiguous.\n\n**Suggested Action:** Add a sentence in the abstract describing the study design and the reference standard (e.g., 'against dilated fundus examination by masked ophthalmologists')."
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "KAa-iuCcKrsCLV0CKIX5M",
+  "title": "Effectiveness of digital CBT for insomnia: a systematic review",
+  "research_type": "systematic_review",
+  "study_id": null,
+  "guidelines": [
+    "PRISMA"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:funding:1",
+      "layer": "gate",
+      "source_ref": "funding",
+      "gold_severity": "minor",
+      "description": "No funding statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:ethics:2",
+      "layer": "gate",
+      "source_ref": "ethics",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:3",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:PRISMA-7",
+      "layer": "checklist",
+      "source_ref": "PRISMA PRISMA-7 (Methods)",
+      "gold_severity": "minor",
+      "description": "Search strategy with full electronic search of at least one database including dates and limits.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:PRISMA-12",
+      "layer": "checklist",
+      "source_ref": "PRISMA PRISMA-12 (Methods)",
+      "gold_severity": "minor",
+      "description": "Risk-of-bias assessment method for individual studies.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 4,
+    "checklist": 2
+  },
+  "reviewer_letters": [
+    {
+      "id": "w3b_budC6kvPfijlmiPuw",
+      "reviewer_label": "Editor",
+      "source": "decision_letter",
+      "round": 1,
+      "content_md": "This review needs substantial methods reporting before it can be considered: there is no registered protocol, no risk-of-bias assessment, no PRISMA flow diagram, and the search covers only PubMed with no dates or full strategy. The conclusion that dCBT-I 'should replace pharmacotherapy' is not warranted by the evidence presented.",
+      "atomized": false
+    }
+  ]
+}

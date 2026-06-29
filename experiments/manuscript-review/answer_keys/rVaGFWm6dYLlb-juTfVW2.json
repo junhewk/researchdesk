@@ -1,0 +1,66 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "rVaGFWm6dYLlb-juTfVW2",
+  "title": "Telehealth-delivered physiotherapy for chronic low back pain: a randomized controlled trial",
+  "research_type": "rct",
+  "study_id": null,
+  "guidelines": [
+    "CONSORT",
+    "CONSORT-AI"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:funding:1",
+      "layer": "gate",
+      "source_ref": "funding",
+      "gold_severity": "minor",
+      "description": "No funding statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:2",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:CONSORT-7a",
+      "layer": "checklist",
+      "source_ref": "CONSORT CONSORT-7a (Sample size)",
+      "gold_severity": "minor",
+      "description": "How sample size was determined.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:CONSORT-23",
+      "layer": "checklist",
+      "source_ref": "CONSORT CONSORT-23 (Registration)",
+      "gold_severity": "minor",
+      "description": "Registration number and name of trial registry.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:CONSORT-AI-25",
+      "layer": "checklist",
+      "source_ref": "CONSORT-AI CONSORT-AI-25 (Other)",
+      "gold_severity": "minor",
+      "description": "State whether and how the AI intervention and/or its code can be accessed, including any restrictions on access or re-use.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 3,
+    "checklist": 3
+  },
+  "reviewer_letters": []
+}

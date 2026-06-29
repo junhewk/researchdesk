@@ -1,0 +1,45 @@
+{
+  "mid": "7xVaaR8lAaI3DZeFOZEEo",
+  "arm": "ensemble_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Severe Verification Bias (Work-up/Partial Verification Bias)**\n\nAll reviewers identified that the reference standard (ophthalmologist examination) was performed only on participants flagged as referable by the AI and a sample of those cleared. Participants with negative index test results were not systematically verified against the reference standard.\n\n**Why it matters:**\nThis design fundamentally invalidates the calculation of diagnostic accuracy metrics, particularly specificity. Because patients with negative index test results were not verified, the number of false negatives cannot be accurately determined, and the denominator for true negatives is incomplete or based on unverified assumptions. Consequently, the reported sensitivity (0.89) is likely biased, and the specificity (0.91) is artificially inflated and unreliable. The core claim of diagnostic accuracy is unsupported by the current data structure.\n\n**Suggested Action:**\n1. **If raw data exists:** If all participants were examined but only a subset was reported, present the full 2x2 table for all 410 participants.\n2. **Statistical Correction:** If only a random sample of negatives was verified, use appropriate statistical methods (e.g., Begg’s method, multiple imputation, or inverse probability weighting) to estimate sensitivity and specificity while accounting for partial verification.\n3. **Limitations/Acknowledgment:** If full verification is impossible, the authors must acknowledge this as a major limitation. The study cannot support standard claims of diagnostic accuracy; it should be framed as a pilot/feasibility study, or specificity claims must be removed/heavily qualified."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem: Missing STARD Item 17 (Cross-tabulation/2x2 Contingency Table)**\n\nThe manuscript reports aggregate sensitivity (0.89) and specificity (0.91) but fails to provide the cross-tabulation of index test results by reference standard results. It does not state the raw counts for True Positives, False Positives, True Negatives, or False Negatives.\n\n**Why it matters:**\nWithout the raw counts, readers cannot verify the calculated metrics, assess disease prevalence, or calculate predictive values (PPV/NPV). Furthermore, given the verification bias identified above, the absence of this table hides the extent of the methodological flaw and prevents assessment of how many 'cleared' cases were actually verified.\n\n**Suggested Action:**\nInclude a 2x2 table showing:\n- True Positives (AI+, Ref+)\n- False Positives (AI+, Ref-)\n- False Negatives (AI-, Ref+)\n- True Negatives (AI-, Ref-)\nIf the reference standard was not applied to all AI- cases, clearly indicate which cells are missing data, report the number of AI-negatives that underwent reference testing separately, and explain how the reported metrics were derived despite this gap. Include 95% confidence intervals for sensitivity and specificity."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Inadequate Reporting of Index Test (STARD Item 10a)**\n\nThe manuscript describes the index test as a \"smartphone camera with an embedded deep-learning classifier\" but provides insufficient detail for replication. It lacks specifications on the smartphone model, lens attachments/adapters, lighting conditions, image resolution, AI algorithm name/version/developer, training data characteristics, and decision thresholds for 'referable' classification.\n\n**Why it matters:**\nAI diagnostic tools are highly sensitive to input data characteristics, hardware specifications, and software versions. Without these details, other researchers cannot replicate the study or assess if results are generalizable. Different optical qualities can significantly alter performance.\n\n**Suggested Action:**\n1. Specify the exact smartphone model, camera specifications, and any auxiliary lenses/adapters used.\n2. Identify the AI algorithm (name, version, developer) and whether it was proprietary or open-source.\n3. Describe the standardized protocol for capturing images (e.g., distance from eye, lighting setup).\n4. Report the decision threshold used to classify images as referable/non-referable."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Inadequate Reporting of Reference Standard (STARD Item 11)**\n\nThe reference standard is described as \"dilated fundus examination by an ophthalmologist\" but lacks critical details. It does not specify if this was a single grader or multiple graders, whether graders were masked to the AI results, what specific criteria defined \"referable diabetic retinopathy\" (e.g., ETDRS levels), or if additional modalities like OCT were included.\n\n**Why it matters:**\nThe validity of the accuracy assessment depends on the reliability and impartiality of the reference standard. Lack of masking introduces review bias (where the ophthalmologist’s judgment is influenced by knowing the AI result). Ambiguity in definitions makes comparison with other studies difficult.\n\n**Suggested Action:**\n1. State clearly whether the ophthalmologist was masked to the AI results.\n2. Define the specific clinical criteria used for \"referable DR\" (e.g., Moderate NPDR or worse).\n3. Specify if multiple graders were involved and how disagreements were resolved.\n4. Clarify if the reference standard was based solely on fundus photos or included clinical examination/OCT."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem: Overstated Conclusions**\n\nThe Discussion claims that \"smartphone AI can replace specialist screening in primary care\" and that \"wider rollout should proceed.\" This conclusion is not supported by the study design, which suffers from critical verification bias. Furthermore, a single-center study of 410 participants is insufficient to justify widespread replacement of specialist care without further validation in diverse populations, cost-effectiveness analysis, or assessment of clinical utility.\n\n**Why it matters:**\nClinical recommendations must be grounded in robust evidence. Making strong deployment claims based on biased data poses a risk to patient safety and misleads policymakers. The STARD guideline emphasizes that limitations should be discussed, and overgeneralization is a common pitfall.\n\n**Suggested Action:**\n1. Tone down the conclusions significantly. Acknowledge the study as preliminary or proof-of-concept at best, given the methodological flaws.\n2. Explicitly discuss the limitation of verification bias in the Discussion section.\n3. Replace calls for immediate replacement of specialists with recommendations for further prospective, fully verified multi-center trials before considering clinical deployment."
+    },
+    {
+      "category": "structural",
+      "severity": "minor",
+      "section_ref": "Methods",
+      "content_md": "**Problem: Missing Eligibility Criteria and Handling of Indeterminate Results (STARD Items 6, 7, & 14)**\n\nThe manuscript states \"Consecutive adults with diabetes\" were included but does not specify exclusion criteria (e.g., media opacities, inability to dilate pupils, previous vitrectomy) or demographic details (age, HbA1c). Additionally, it is unclear how images of poor quality or ambiguous AI outputs (indeterminate results) were handled.\n\n**Why it matters:**\nEligibility criteria affect the applicability of the results. Excluding patients with poor image quality (media opacities) artificially inflates accuracy in real-world settings. Failure to report indeterminate results hides potential exclusion bias, as image quality may correlate with disease severity.\n\n**Suggested Action:**\n1. Provide a flow diagram or detailed text describing specific inclusion and exclusion criteria, and the number of participants screened/excluded with reasons.\n2. Report the number and percentage of indeterminate/poor-quality results for both the index test and reference standard, and explain how they were handled (e.g., excluded, repeated imaging, counted as negative)."
+    }
+  ]
+}

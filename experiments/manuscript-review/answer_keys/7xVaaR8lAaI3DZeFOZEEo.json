@@ -1,0 +1,57 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "7xVaaR8lAaI3DZeFOZEEo",
+  "title": "Diagnostic accuracy of a smartphone retinal-photo AI for diabetic retinopathy",
+  "research_type": "diagnostic_accuracy",
+  "study_id": null,
+  "guidelines": [
+    "STARD"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:conflict_of_interest:1",
+      "layer": "gate",
+      "source_ref": "conflict_of_interest",
+      "gold_severity": "minor",
+      "description": "No conflict-of-interest declaration found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:funding:2",
+      "layer": "gate",
+      "source_ref": "funding",
+      "gold_severity": "minor",
+      "description": "No funding statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:ethics:3",
+      "layer": "gate",
+      "source_ref": "ethics",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:4",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 5,
+    "checklist": 0
+  },
+  "reviewer_letters": []
+}

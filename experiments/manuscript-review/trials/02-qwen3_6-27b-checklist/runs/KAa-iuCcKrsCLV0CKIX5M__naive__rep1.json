@@ -1,0 +1,39 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript claims to be a systematic review but fails to adhere to standard methodological reporting guidelines (e.g., PRISMA). Critical elements are missing: no registration of the protocol, no mention of other databases searched beyond PubMed (which introduces selection bias), no description of risk-of-bias assessment tools used, and no data synthesis method (meta-analysis or structured narrative synthesis criteria) defined.\n\n**Why it matters:** Without a pre-registered protocol and comprehensive search strategy, the review is susceptible to publication bias and selective reporting. The lack of quality appraisal means the 'effectiveness' conclusion may be driven by low-quality studies. This undermines the scientific validity of the systematic review.\n\n**Suggested Action:** Rewrite the Methods section to fully comply with PRISMA guidelines. Include: (1) Protocol registration details; (2) Comprehensive search strategy across multiple databases (e.g., Embase, Cochrane Library); (3) Detailed inclusion/exclusion criteria; (4) Description of data extraction and risk-of-bias assessment tools (e.g., Cochrane RoB 2); (5) Statistical methods for meta-analysis or justification for narrative synthesis only."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem:** The conclusion that 'dCBT-I should replace pharmacotherapy as first-line treatment' is not supported by the evidence presented. The manuscript reports only improvements in insomnia severity compared to controls (which are likely waitlist or treatment-as-usual, not active pharmacotherapy). There is no direct comparison with pharmacotherapy, nor any discussion of side effects, cost-effectiveness, or long-term adherence required to justify replacing an established first-line treatment.\n\n**Why it matters:** This is a significant overstatement and potentially harmful clinical recommendation. Current guidelines (e.g., AASM) recommend CBT-I as first-line, but usually in conjunction with or as an alternative to pharmacotherapy, not necessarily a total replacement without considering individual patient factors. Making such a broad policy claim based on superiority over inactive controls is scientifically unjustified.\n\n**Suggested Action:** Tone down the conclusion to reflect the actual findings: 'dCBT-I is effective in reducing insomnia severity compared to control conditions.' Remove the recommendation to replace pharmacotherapy unless the review includes direct head-to-head trials with medications. Discuss limitations regarding generalizability and comparison to standard care."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The Results section is extremely vague ('Most reported reductions... Effect sizes varied'). It lacks specific data: number of participants, mean differences, confidence intervals, heterogeneity statistics (I²), and characteristics of the included studies (e.g., type of digital platform, duration, control group types).\n\n**Why it matters:** Readers cannot assess the magnitude of the effect or the consistency of the findings. 'Varied' is not a scientific result. Without specific data, the review provides no actionable evidence for clinicians or researchers.\n\n**Suggested Action:** Provide a detailed summary of results. Include: (1) A PRISMA flow diagram; (2) A table of study characteristics; (3) Specific effect sizes (e.g., Hedges' g or SMD) with 95% CIs for each study or pooled analysis; (4) Subgroup analyses if applicable (e.g., by control type); (5) Assessment of heterogeneity and publication bias."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The eligibility criteria are insufficiently defined. 'Adult population' is not specific (age range?). 'Insomnia severity outcomes' does not specify which instruments were accepted (e.g., ISI, PSQI), leading to potential outcome heterogeneity. No mention of language restrictions or publication date limits.\n\n**Why it matters:** Vague criteria introduce ambiguity and reduce reproducibility. Different scales have different sensitivities, making cross-study comparison difficult without standardization.\n\n**Suggested Action:** Specify exact inclusion/exclusion criteria: age range (e.g., ≥18 years), specific diagnostic criteria for insomnia (e.g., DSM-5, ICSD-3), accepted outcome measures (e.g., Insomnia Severity Index), language limits, and publication date range."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract lacks structure and key quantitative data. It does not report the number of participants, the specific effect size range, or the certainty of evidence (e.g., GRADE).\n\n**Why it matters:** A structured abstract is standard for systematic reviews. Readers need quick access to the magnitude of effects and quality of evidence.\n\n**Suggested Action:** Restructure the abstract into Background, Methods, Results, and Conclusion. Include key numbers: total participants, range of effect sizes, and a statement on the overall quality of evidence."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "ensemble_context",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract / Methods",
+      "content_md": "**Problem**: The manuscript makes strong causal claims (e.g., \"directly lowers depression risk,\" \"prescribed as first-line prevention\") based on an observational cohort study. Observational data can demonstrate association, not causation, due to unmeasured confounding and reverse causality.\n\n**Why it matters**: This violates the fundamental distinction between correlation and causation and STROBE-19 requirements for discussing limitations. Claiming physical activity *causes* reduced depression risk without addressing residual confounding (e.g., baseline health status, social support, cognitive reserve) is scientifically inaccurate and potentially misleading for clinical guidelines.\n\n**Suggested Action**: Rewrite the Discussion and Abstract to use cautious, associative language (e.g., \"associated with lower risk,\" \"linked to reduced incidence\"). Explicitly acknowledge that causality cannot be inferred from this study design. Recommend further randomized controlled trials or instrumental variable analyses to establish causality."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: The statistical analysis fails to adjust for confounders. The Methods state that Cox models were fit with \"activity tertile as the exposure\" but do not list any covariates included in the model. STROBE-7 requires defining confounders, and STROBE-12 requires describing methods to control for them.\n\n**Why it matters**: Physical activity is strongly correlated with socioeconomic status, general health, social engagement, and cognitive function. Without adjusting for these variables (e.g., age, sex, comorbidities, income, baseline functional status), the observed association may be entirely spurious due to healthy user bias or confounding by indication. Reporting only unadjusted or insufficiently adjusted HRs renders the results unreliable.\n\n**Suggested Action**: Clearly specify all covariates included in the multivariable Cox models (e.g., age, sex, education, comorbidities, baseline GDS score). Present both unadjusted and fully adjusted hazard ratios with 95% confidence intervals as required by STROBE-16. If no adjustment was made, this is a fatal flaw requiring re-analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: Missing precision estimates. The results report a hazard ratio (0.72) and p-value (< 0.05) but omit the 95% confidence intervals (CI). Additionally, there is no mention of whether the proportional hazards assumption was tested.\n\n**Why it matters**: Without CIs, readers cannot assess the precision of the estimate or clinical significance. A wide CI might indicate that the null hypothesis is still plausible. Failing to test PH assumptions invalidates the Cox model if violated. STROBE-16 mandates reporting measures of association with their precision.\n\n**Suggested Action**: Report the 95% confidence intervals for all hazard ratios in both the abstract and results section. Include a statement confirming that the proportional hazards assumption was checked (e.g., using Schoenfeld residuals) and met."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: Undefined exposure and outcome measurement details. The methods mention a \"validated questionnaire\" for physical activity but do not specify which instrument was used (e.g., IPAQ, GPAQ) or how tertiles were derived. Similarly, incident depression is defined by GDS score (≥ 5) or \"new clinical diagnosis,\" but no details are provided on how clinical diagnoses were verified (self-report vs. medical records) or if GDS scores were treated as continuous or categorical.\n\n**Why it matters**: Physical activity is multidimensional; aggregating it into tertiles without describing the metric loses nuance and reproducibility. The outcome definition is critical for validity; relying solely on GDS ≥ 5 may capture sub-threshold depressive symptoms rather than clinical depression, leading to misclassification bias. STROBE-7 requires clear definitions of exposures and outcomes.\n\n**Suggested Action**: Name the specific physical activity instrument and cite its validation. Detail the algorithm for defining incident depression cases, including how self-reported diagnoses were validated against medical records if applicable. Clarify if GDS ≥ 5 was used as a proxy for clinical depression and acknowledge this limitation."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem**: Missing sample size justification and incomplete participant flow. The manuscript does not explain how the sample size of 512 was determined (no power calculation). Additionally, the Results state 498 were included but do not explain the exclusion of 14 participants from the initial 512, nor do they report loss to follow-up during the 4.2 years.\n\n**Why it matters**: Without a power calculation, readers cannot assess if the study was adequately powered to detect meaningful effects (STROBE-10). Attrition bias is a major threat in longitudinal studies; without knowing why participants were excluded or lost, selection bias cannot be assessed (STROBE-13).\n\n**Suggested Action**: Add a subsection in Methods describing the sample size calculation (or post-hoc power analysis). Provide a CONSORT-style flow diagram detailing recruitment, eligibility assessment, exclusions, reasons for exclusion, and final analysis sample. Report the number of participants lost to follow-up."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Discussion / Methods",
+      "content_md": "**Problem**: The discussion lacks a critical appraisal of limitations, particularly regarding measurement error (self-reported physical activity), residual confounding, and selection bias. Furthermore, the analysis appears to rely on a single Cox model with activity tertiles without testing for trend or analyzing physical activity as a continuous variable.\n\n**Why it matters**: Self-reported leisure-time activity is prone to recall and social desirability bias. Excluding those with baseline depression may introduce collider bias. Categorizing continuous variables into tertiles reduces statistical power and can introduce bias at cut-points. Ignoring these limitations overstates the validity of the findings.\n\n**Suggested Action**: Add a dedicated paragraph discussing key limitations: (1) potential misclassification of exposure due to self-report; (2) inability to fully control for unmeasured confounders; and (3) generalizability. Report whether proportional hazards assumptions were tested. Present results for physical activity as a continuous variable (per unit increase) in addition to tertiles, and include a p-value for trend across tertiles."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem**: Missing funding information. The Declarations section states no competing interests but omits the source of funding and the role of funders, which is a mandatory item under STROBE-22.\n\n**Why it matters**: Transparency regarding financial support is essential for assessing potential conflicts of interest.\n\n**Suggested Action**: Add a Funding section stating the source(s) of support and the role of funders in study design, data collection, analysis, interpretation, and writing. If unfunded, explicitly state \"This research received no specific grant from any funding agency...\""
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "mid": "wr0ecKa9GNTstwfLUKsuh",
+  "arm": "naive",
+  "rep": 1,
+  "nSub": 1,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Abstract, Discussion",
+      "content_md": "**Problem**: The manuscript claims causality (\"Screen time causes myopia\") based on a cross-sectional study design.\n**Why it matters**: Cross-sectional studies measure exposure and outcome simultaneously, making it impossible to establish temporal precedence or rule out reverse causation (e.g., children with uncorrected myopia may spend more time on screens due to visual comfort or other factors). Claiming causality is a fundamental logical error in epidemiological reasoning.\n**Suggested action**: Rewrite the conclusion to reflect association only. Replace \"causes\" with \"is associated with.\" Explicitly state that causal inference cannot be made from this study design and suggest longitudinal studies as needed for future research."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods, Results",
+      "content_md": "**Problem**: The study relies on a single-day self-reported questionnaire for screen time and does not account for significant confounders such as outdoor time, parental myopia, or near-work activities.\n**Why it matters**: Myopia development is strongly linked to lack of outdoor light exposure and genetic factors. Without adjusting for these key confounders in the logistic regression, the observed association (OR 2.1) is likely biased and may not reflect a true independent effect of screen time. Single-day recall is also prone to significant measurement error.\n**Suggested action**: Acknowledge these limitations prominently. If data exists, include multivariate models adjusting for known confounders. If not, clearly state that the association is unadjusted and potentially confounded, weakening the strength of the evidence."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem**: The method for refraction measurement is not specified (e.g., cycloplegic vs. non-cycloplegic).\n**Why it matters**: In schoolchildren, accommodation can mask hyperopia or exaggerate myopia if cycloplegia is not used. Non-cycloplegic refraction may lead to misclassification of myopia status, introducing bias into the outcome variable.\n**Suggested action**: Specify whether cycloplegic refraction was performed. If non-cycloplegic, discuss this as a limitation regarding the accuracy of myopia diagnosis."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract, Results",
+      "content_md": "**Problem**: The abstract and results lack essential statistical details, including confidence intervals for the odds ratio, p-values, and the distribution of covariates.\n**Why it matters**: An odds ratio of 2.1 without a confidence interval does not allow the reader to assess the precision of the estimate or its statistical significance. Clinical journals require complete reporting of effect sizes and uncertainty.\n**Suggested action**: Add 95% confidence intervals and p-values for the reported odds ratios. Provide basic demographic and clinical characteristics of the study population in the results."
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem**: The discussion makes strong policy recommendations (\"Schools should restrict device use\") without sufficient evidence to support such a broad public health intervention.\n**Why it matters**: Given the observational nature of the study and lack of causal proof, recommending specific restrictive policies is premature and potentially misleading. It oversteps the scope of the findings.\n**Suggested action**: Tone down recommendations. Suggest that further research is needed before implementing policy changes. Frame current findings as generating hypotheses for future longitudinal investigation rather than justifying immediate action."
+    }
+  ]
+}

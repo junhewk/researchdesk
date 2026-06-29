@@ -1,0 +1,33 @@
+{
+  "mid": "pb1-hypertension-app",
+  "arm": "grounded",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 4,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Abstract / Methods / Results",
+      "content_md": "**Protocol Deviation: Primary Outcome Timing and Comparator**\n\n*Problem:* The manuscript reports the primary outcome at 8 weeks using a waitlist control. The verified registered protocol specifies the primary outcome as change in SBP at **24 weeks** and mandates an **active control (sham relaxation audio)**.\n\n*Why it matters:* This constitutes a major deviation from the pre-registered protocol. Using a waitlist instead of an active control introduces significant expectancy bias, potentially inflating the treatment effect. Changing the analysis timepoint post-hoc without justification compromises the trial's internal validity and increases the risk of selective reporting (p-hacking).\n\n*Action:* The authors must explicitly justify these deviations in the Methods section. They should report the 24-week outcomes as the primary result per protocol. If the 8-week data is presented, it must be labeled as exploratory/secondary. The use of a waitlist control must be acknowledged as a limitation that weakens causal inference compared to an active comparator."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "References / Discussion",
+      "content_md": "**Non-Existent Citation [2]**\n\n*Problem:* Reference [2] (Lee K, et al., JAMA. 2021. doi:10.1001/jama.2021.55512) is cited to support the claim that \"digital delivery improves reach\" and that \"prior digital trials concur.\" Grounding validation confirms this DOI **does not exist** in Crossref or OpenAlex.\n\n*Why it matters:* Citing a non-existent study to support core conclusions is a serious integrity issue. It suggests fabricated evidence or severe negligence in reference management. The claim that prior trials concur with these specific results is unsupported by the provided bibliography.\n\n*Action:* Remove Reference [2] immediately. Replace it with a valid, existing citation that actually supports the claim about digital delivery reach or concordant trial results. If no such evidence exists, remove the claim that \"prior digital trials concur.\""
+    },
+    {
+      "category": "rewrite",
+      "severity": "major",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Overstated Conclusions Regarding Clinical Replacement**\n\n*Problem:* The Discussion states the app \"could replace first-line lifestyle counseling,\" and the Abstract concludes it \"should be offered in primary care.\" These claims are disproportionate to the evidence, especially given the protocol deviations (waitlist control) and the lack of long-term (24-week) data as per registration.\n\n*Why it matters:* Suggesting a digital intervention *replace* standard clinical counseling is a high-stakes claim requiring robust, protocol-adherent evidence with active controls. The current study design (post-hoc 8-week analysis vs waitlist) does not support such a definitive clinical recommendation.\n\n*Action:* Tone down the conclusions significantly. Remove the phrase \"replace first-line lifestyle counseling.\" Change the conclusion to reflect that the app *may be an adjunctive tool* pending further validation with active controls and longer-term follow-up as originally planned."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods / Declarations",
+      "content_md": "**Missing Justification for Analysis Method Deviation**\n\n*Problem:* The registered protocol pre-specified **ANCOVA adjusting for baseline SBP** as the primary analysis. The manuscript reports simple between-group differences in means (124.6 vs 134.0) and implies a t-test (consistent with the statistical recomputation of p≈2e-7). There is no mention of ANCOVA or adjustment for baseline covariates.\n\n*Why it matters:* While baseline means were identical here, deviating from the pre-specified statistical model without explanation undermines methodological rigor. ANCOVA is generally more powerful and adjusts for any minor imbalances.\n\n*Action:* Clarify why the pre-specified ANCOVA was not used. If ANCOVA was performed, report those adjusted estimates. If a t-test was used instead, provide a strong justification for this deviation from the registered statistical analysis plan."
+    }
+  ]
+}

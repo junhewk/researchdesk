@@ -1,0 +1,89 @@
+{
+  "schema": "answer-key/v1",
+  "manuscriptId": "wr0ecKa9GNTstwfLUKsuh",
+  "title": "Daily screen time and myopia among schoolchildren: a cross-sectional study",
+  "research_type": "cross_sectional",
+  "study_id": null,
+  "guidelines": [
+    "STROBE"
+  ],
+  "gold": [
+    {
+      "id": "gate:data_availability:0",
+      "layer": "gate",
+      "source_ref": "data_availability",
+      "gold_severity": "major",
+      "description": "No data-availability statement.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:conflict_of_interest:1",
+      "layer": "gate",
+      "source_ref": "conflict_of_interest",
+      "gold_severity": "minor",
+      "description": "No conflict-of-interest declaration found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:funding:2",
+      "layer": "gate",
+      "source_ref": "funding",
+      "gold_severity": "minor",
+      "description": "No funding statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:ethics:3",
+      "layer": "gate",
+      "source_ref": "ethics",
+      "gold_severity": "major",
+      "description": "No ethics/IRB approval statement found.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "gate:limitations:4",
+      "layer": "gate",
+      "source_ref": "limitations",
+      "gold_severity": "minor",
+      "description": "No explicit limitations section.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:STROBE-6",
+      "layer": "checklist",
+      "source_ref": "STROBE STROBE-6 (Methods)",
+      "gold_severity": "minor",
+      "description": "Eligibility criteria, sources, methods of selection.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:STROBE-10",
+      "layer": "checklist",
+      "source_ref": "STROBE STROBE-10 (Methods)",
+      "gold_severity": "minor",
+      "description": "Explain how the study size was arrived at.",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:STROBE-16",
+      "layer": "checklist",
+      "source_ref": "STROBE STROBE-16 (Results)",
+      "gold_severity": "minor",
+      "description": "Report unadjusted and confounder-adjusted estimates with precision (95% CI).",
+      "detect": "deterministic"
+    },
+    {
+      "id": "checklist:STROBE-19",
+      "layer": "checklist",
+      "source_ref": "STROBE STROBE-19 (Discussion)",
+      "gold_severity": "minor",
+      "description": "Discuss limitations, including sources of bias.",
+      "detect": "deterministic"
+    }
+  ],
+  "counts": {
+    "gate": 5,
+    "checklist": 4
+  },
+  "reviewer_letters": []
+}

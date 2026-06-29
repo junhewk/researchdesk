@@ -1,0 +1,57 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "persona_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 8,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods (Search Strategy)",
+      "content_md": "**Incomplete and Under-reported Search Strategy (PRISMA-7)**: The manuscript reports searching only PubMed without providing the full search string, keywords, MeSH terms, date limits, or filters. It fails to mention other major databases (e.g., Embase, Cochrane Central), grey literature, or trial registries.\n\n**Why it matters**: Relying on a single database increases the risk of publication bias and missing relevant studies, particularly those in non-English journals or digital health-specific sources. The lack of a reproducible search strategy violates core systematic review principles and undermines the validity of the evidence base.\n\n**Suggested Action**: Expand the search to include at least Embase and Cochrane Central. Provide the complete electronic search strategy for at least one database in an appendix, including Boolean operators, terms, dates searched, and any limits applied."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Missing Quantitative Synthesis and Heterogeneity Assessment (PRISMA-14)**: The manuscript relies on a 'narrative summary' despite including 14 trials with common outcomes. There is no meta-analysis, pooled effect sizes (e.g., SMD, MD), or confidence intervals. Furthermore, statistical measures of heterogeneity ($I^2$, $\tau^2$) are absent.\n\n**Why it matters**: Narrative summaries are subjective and insufficient for characterizing the evidence base of this size. Without quantitative synthesis, the magnitude and precision of the treatment effect cannot be determined. The absence of heterogeneity metrics prevents assessment of whether varied effect sizes represent clinical diversity or random error, weakening the basis for clinical recommendations.\n\n**Suggested Action**: Perform a random-effects meta-analysis for the primary outcome if data permit. Report pooled effect sizes with 95% CIs and calculate $I^2$/$\tau^2$. If pooling is inappropriate due to extreme heterogeneity, explicitly justify this decision and consider subgroup analyses rather than a purely narrative summary."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods & Results",
+      "content_md": "**Absence of Risk-of-Bias (RoB) Assessment (PRISMA-12, PRISMA-24)**: The methods do not describe a tool for assessing the risk of bias in included studies, and the results do not present RoB findings. Common issues in dCBT-I trials (e.g., lack of blinding, attrition bias) are not addressed.\n\n**Why it matters**: Randomisation alone does not guarantee low bias. Without RoB assessment, it is impossible to distinguish between high-quality evidence and flawed studies, undermining the validity of the conclusion that dCBT-I is 'effective.'\n\n**Suggested Action**: Use a validated tool (e.g., Cochrane Risk of Bias 2 [RoB 2]) to assess each included study. Present these assessments in a table or figure. Discuss how the risk of bias in individual studies might influence the overall conclusions and the strength of the recommendation."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion & Abstract",
+      "content_md": "**Unsupported Clinical Recommendation Lacking Comparative Evidence**: The abstract and discussion conclude that 'dCBT-I should replace pharmacotherapy as first-line treatment.' However, the review compares dCBT-I primarily against control conditions (e.g., waitlist, usual care), not directly against active pharmacotherapy. There is no head-to-head comparative data or indirect comparison (e.g., network meta-analysis) to support this claim.\n\n**Why it matters**: A systematic review of dCBT-I vs. control cannot logically support replacing another active treatment without direct or robust indirect comparative evidence. This is an overgeneralization that exceeds the scope of the data, ignoring differences in patient preference, speed of onset, and side-effect profiles.\n\n**Suggested Action**: Restrict conclusions to the effectiveness of dCBT-I compared to control conditions. If head-to-head trials with pharmacotherapy were included, present those results separately. Avoid recommending replacement of standard care without direct comparative efficacy data; if such data is missing, acknowledge this as a limitation."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract & Introduction",
+      "content_md": "**Inadequate Abstract Structure (PRISMA-2)**: The abstract is unstructured and omits key PRISMA elements, including explicit objectives (PICO), data sources beyond 'PubMed,' synthesis methods, study selection numbers, limitations, and registration details.\n\n**Why it matters**: A structured abstract allows readers to quickly assess the relevance and quality of the review. Missing information on limitations, registration, and specific results reduces transparency and trustworthiness.\n\n**Suggested Action**: Rewrite the abstract using a structured format (Background, Methods, Results, Discussion/Conclusion). Include PICO details, search databases, number of studies/participants, primary outcome results with effect sizes, key limitations, and PROSPERO registration number if applicable."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods & Results",
+      "content_md": "**Missing Study Selection Flow Diagram (PRISMA-17)**: The manuscript does not include a PRISMA flow diagram detailing the number of records identified, screened, assessed for eligibility, and included. Reasons for exclusion at the full-text stage are not reported.\n\n**Why it matters**: The flow diagram is essential for transparency in the selection process. Without it, readers cannot assess whether studies were excluded appropriately or if there was selective inclusion bias.\n\n**Suggested Action**: Create and include a PRISMA 2020 flow diagram. Report the number of records at each stage and provide specific reasons for excluding full-text articles."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods (Eligibility Criteria)",
+      "content_md": "**Vague Eligibility Criteria**: The eligibility criteria are insufficiently defined. While 'adults' and 'randomised design' are mentioned, there is no specification of comparator groups (e.g., waitlist vs. active control), the definition of 'digital' CBT-I, or minimum insomnia duration.\n\n**Why it matters**: Vague criteria compromise reproducibility and may lead to the inclusion of heterogeneous studies that are not clinically comparable, affecting the internal validity of the synthesis.\n\n**Suggested Action**: Explicitly define PICO elements: Population (e.g., chronic insomnia disorder per DSM-5/ICSD-3), Intervention (definition of dCBT-I, platform type), Comparator (types of controls accepted), and Outcomes (specific instruments like ISI). Document these clearly in the methods."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Missing Funding Statement Details (PRISMA-27)**: While competing interests are declared, the specific funding sources and their role in study design, data collection, analysis, and interpretation are not detailed.\n\n**Why it matters**: Full transparency regarding funding is necessary to assess potential conflicts of interest, especially for reviews with strong clinical recommendations.\n\n**Suggested Action**: Explicitly state the source(s) of funding for this review and describe any role funders played in the conduct of the systematic review. If no funding was received, state 'No specific funding was received.'"
+    }
+  ]
+}

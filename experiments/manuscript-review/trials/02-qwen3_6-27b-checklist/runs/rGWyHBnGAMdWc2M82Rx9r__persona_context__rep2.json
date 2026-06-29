@@ -1,0 +1,69 @@
+{
+  "mid": "rGWyHBnGAMdWc2M82Rx9r",
+  "arm": "persona_context",
+  "rep": 2,
+  "nSub": 4,
+  "nItems": 10,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion / Abstract",
+      "content_md": "**Problem:** The manuscript makes causal claims (\"directly lowers depression risk,\" \"should be prescribed as first-line prevention\") based on observational cohort data. This violates the fundamental statistical distinction between association and causation, ignoring residual confounding by indication, reverse causality (subclinical symptoms affecting activity), and selection bias.\n\n**Why it matters:** Causal language in observational studies misleads clinicians and policymakers. Without randomization or rigorous causal inference methods, one cannot claim that increasing activity *will* reduce depression risk. Current clinical guidelines do not designate exercise as a standalone \"first-line\" replacement based solely on this type of evidence.\n\n**Suggested Action:** Rewrite the Discussion and Abstract to use associative language (e.g., \"associated with,\" \"linked to\"). Explicitly state that causality cannot be inferred from this design. Recommend further research (e.g., RCTs) before suggesting clinical prescription based solely on these findings."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The manuscript fails to define the set of confounders adjusted for in the Cox proportional-hazards models and does not report Confidence Intervals (CIs) for the Hazard Ratio (HR), reporting only a p-value (< 0.05). STROBE-7, STROBE-12, and STROBE-16 require clear definition of confounders, description of control methods, and reporting of precision measures.\n\n**Why it matters:** The observed association (HR 0.72) may be spurious if driven by unmeasured or unadjusted factors (e.g., socioeconomic status, comorbidities, social isolation, baseline cognitive function). Without CIs, readers cannot assess the statistical precision or clinical plausibility of the effect. An HR of 0.72 could be compatible with no effect if the CI is wide.\n\n**Suggested Action:** Explicitly list all covariates included in the multivariable model and justify their inclusion (e.g., via DAGs). Report both unadjusted and fully adjusted estimates with 95% Confidence Intervals. If key confounders were not measured, acknowledge this as a major limitation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The handling of missing data and attrition is not described. The sample size dropped from 512 recruited to 498 analyzed (14 participants excluded). There is no flow diagram, explanation for exclusions, or discussion of attrition during the 4.2-year follow-up period. Additionally, the range of follow-up and handling of censored data are unclear.\n\n**Why it matters:** If exclusions or dropouts are related to both exposure (physical activity) and outcome (depression), this introduces selection bias (attrition bias). Differential loss to follow-up can distort the true association.\n\n**Suggested Action:** Include a CONSORT-style flow diagram showing recruitment, exclusions, and follow-up attrition. Report reasons for exclusion/dropout. Conduct sensitivity analyses (e.g., complete-case vs. multiple imputation) to assess robustness to missing data."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** Measurement error and reverse causality are not adequately addressed. Physical activity is self-reported at baseline only (single time-point), which is prone to recall and social desirability bias. Furthermore, using a GDS cutoff of <5 for exclusion excludes those with subthreshold symptoms who might be less active due to early depressive prodrome (reverse causality). The manuscript does not describe any lag period or sensitivity analysis to mitigate this.\n\n**Why it matters:** Self-report overestimates PA levels. Reverse causality can inflate the protective effect of PA if individuals already experiencing early depressive symptoms report lower activity. This biases the hazard ratio away from the null.\n\n**Suggested Action:** Acknowledge these limitations in the Discussion. In Methods, specify if a lag period (e.g., excluding depression cases in the first 1–2 years) was used to reduce reverse causality. Consider reporting sensitivity analyses adjusting for baseline subthreshold symptoms."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The study categorizes a continuous exposure (physical activity) into tertiles. This approach reduces statistical power, introduces arbitrary cut-points, and assumes a non-linear relationship without testing for linearity. Additionally, the assumption of proportional hazards in the Cox model is not tested or reported.\n\n**Why it matters:** Categorizing continuous variables discards information and can lead to residual confounding within categories. Violation of the proportional hazards assumption can lead to biased HR estimates.\n\n**Suggested Action:** Consider modeling physical activity as a continuous variable (e.g., per standard deviation increase) or use restricted cubic splines to assess non-linearity. Test and report Schoenfeld residuals for proportional hazards."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The justification for sample size (STROBE-10) is absent. There is no power calculation or discussion of the study’s ability to detect clinically meaningful effects.\n\n**Why it matters:** Without a priori power analysis, readers cannot assess whether the study was adequately sized to detect the observed effect or smaller, potentially important effects.\n\n**Suggested Action:** Add a statement describing how the sample size was determined (e.g., based on expected incidence rates and desired precision). If no formal calculation was done, acknowledge this as a limitation."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Methods / Results",
+      "content_md": "**Problem:** The outcome definition relies partly on a self-report screening tool (GDS ≥ 5) at annual follow-up. The GDS is a screening instrument, not a diagnostic criterion for Major Depressive Disorder. Furthermore, the manuscript does not specify how \"new clinical diagnosis\" was verified or if it was blinded to exposure status.\n\n**Why it matters:** Self-reported depression outcomes are subject to reporting bias. Using a screening cutoff as an endpoint may inflate the incidence rate compared to clinical diagnoses and fails to capture clinical severity.\n\n**Suggested Action:** Clarify whether GDS scores were validated against clinical interviews for incident cases. If not, discuss the limitation of using a screening tool as an outcome. Consider sensitivity analyses excluding those who did not seek clinical care."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The Discussion lacks a balanced assessment of limitations, particularly regarding measurement error (self-reported physical activity is prone to recall and social desirability bias), confounding, and the inability to establish causality.\n\n**Why it matters:** Failure to acknowledge these biases undermines the credibility of the conclusions. Readers need to understand the potential for residual confounding and misclassification to interpret the results correctly.\n\n**Suggested Action:** Add a dedicated paragraph on limitations, explicitly discussing measurement error in self-reported activity, potential residual confounding, and the inability to infer causality."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** Funding source is not explicitly stated in the provided text, though 'no competing interests' are reported. STROBE-22 requires disclosure of funding sources and their role.\n\n**Why it matters:** Transparency regarding funding is essential for assessing potential bias.\n\n**Suggested Action:** Explicitly state the funding agency/grant number and confirm whether funders had any role in study design, analysis, or reporting."
+    },
+    {
+      "category": "rewrite",
+      "severity": "minor",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The Introduction lacks specific objectives and pre-specified hypotheses (STROBE-3).\n\n**Why it matters:** Clear objectives help frame the study’s purpose and allow readers to evaluate whether the results address the stated aims.\n\n**Suggested Action:** Add a sentence explicitly stating the primary objective (e.g., \"To examine the prospective association between baseline leisure-time physical activity and incident depression...\")."
+    }
+  ]
+}

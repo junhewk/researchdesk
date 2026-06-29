@@ -1,0 +1,145 @@
+{
+  "schema": "review-manifest/v1",
+  "meta": {
+    "phase": "B",
+    "note": "external-only errors (protocol drift, fake/retracted citations, stat miscompute); grounded arm gets a verified grounding pack"
+  },
+  "instruction": "Create review findings for substantive problems in this manuscript. Each finding must include the problem, why it matters, and a concrete suggested action. Return JSON with `items` (each: category one of mechanical|rewrite|structural|evidence; severity one of minor|major|critical; section_ref; content_md) and a short `summary_md`.",
+  "arms": {
+    "naive": {
+      "grounding": false,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "single",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "persona": {
+      "grounding": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "statistician",
+          "system": "You are a journal-article review assistant.\n\n- You are a biostatistician. Review strictly from a statistical lens — design, power, analysis assumptions, multiplicity, effect sizes, CIs, missing data, honest reporting of uncertainty.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "methodologist",
+          "system": "You are a journal-article review assistant.\n\n- You are a research-methodology specialist. Review strictly from a methods lens — validity, bias, protocol adherence, eligibility/comparator/outcome specification, reporting-guideline conformance.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "domain_expert",
+          "system": "You are a journal-article review assistant.\n\n- You are a senior domain expert in the manuscript's field. Review strictly from a substantive lens — plausibility, clinical relevance, consistency with established evidence, whether conclusions are warranted.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "writer_editor",
+          "system": "You are a journal-article review assistant.\n\n- You are a scientific writer/editor. Review strictly from a communication lens — structure, clarity, internal consistency, citation/reporting mechanics, precision of claims.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "ensemble": {
+      "grounding": false,
+      "merge": true,
+      "subCalls": [
+        {
+          "label": "reviewer_1",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_2",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_3",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        },
+        {
+          "label": "reviewer_4",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- Ground your review only in the manuscript text provided below.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    },
+    "grounded": {
+      "grounding": true,
+      "merge": false,
+      "subCalls": [
+        {
+          "label": "grounded",
+          "system": "You are a journal-article review assistant.\n\n- Review as one integrated expert reviewer. Do not adopt a named reviewer persona.\n- You are ALSO given a VERIFIED GROUNDING PACK below (the registered protocol, citation-validation results, and an independent statistical recomputation). Treat it as ground truth. Cross-check the manuscript against it and flag EVERY discrepancy: protocol deviations, citations that do not exist or are retracted, and reported statistics that disagree with the recomputation. For each, cite the specific manuscript claim and the conflicting grounding fact.\n- Never generate novel research content or unsupported claims. Ground findings in the provided material. Prefer concrete, actionable findings. If evidence is insufficient, say what is missing instead of inventing facts."
+        }
+      ]
+    }
+  },
+  "manuscripts": {
+    "pb1-hypertension-app": {
+      "title": "A smartphone mindfulness app for hypertension: a randomized controlled trial",
+      "userContext": "Title: A smartphone mindfulness app for hypertension: a randomized controlled trial\nResearch type: see text\n\nManuscript:\n# A smartphone mindfulness app for hypertension: a randomized controlled trial\n\n## Abstract\n**Background.** Stress contributes to hypertension. We tested a smartphone mindfulness app.\n**Methods.** Adults with stage-1 hypertension were randomized 1:1 to the app or a waitlist. The primary outcome was change in systolic blood pressure (SBP) at 8 weeks.\n**Results.** At 8 weeks, SBP fell by 9.4 mmHg more in the app group than control (p < 0.001).\n**Conclusions.** A mindfulness app substantially lowers blood pressure and should be offered in primary care.\n\n## Methods\nParticipants (n = 180; 90 per arm) used the app daily for 8 weeks. SBP was measured by automated office device. Adherence was tracked in-app. Mindfulness improves autonomic balance and lowers blood pressure [1], and digital delivery improves reach [2].\n\n## Results\nBaseline mean SBP was 134 mmHg (app) and 134 mmHg (control). At 8 weeks, app-group SBP was 124.6 mmHg and control 134.0 mmHg; the between-group difference was 9.4 mmHg (p < 0.001). Group SD was 12 mmHg. Adherence was 71%.\n\n## Discussion\nThis trial shows a mindfulness app lowers blood pressure and could replace first-line lifestyle counseling. Prior digital trials concur [2].\n\n## References\n1. Park J, et al. Mindfulness and autonomic regulation. J Behav Med. 2018. doi:10.1007/s10865-018-9920-0\n2. Lee K, et al. Digital mindfulness for cardiovascular risk: a randomized trial. JAMA. 2021. doi:10.1001/jama.2021.55512\n\n## Declarations\nEthics approval: IRB #2020-114. Funding: none. Competing interests: none. Data availability: on request. Limitations: single-center.",
+      "groundingBlock": "### VERIFIED GROUNDING PACK (external truth — treat as ground truth)\n#### Registered protocol (NCT-excerpt)\n- Primary outcome: change in systolic blood pressure at **24 weeks** (NOT 8 weeks).\n- Comparator: **active control (sham relaxation audio)**, not a waitlist.\n- Pre-specified primary analysis: ANCOVA adjusting for baseline SBP.\n#### Citation validation (Crossref / OpenAlex / Retraction Watch)\n- [1] doi:10.1007/s10865-018-9920-0 → VALID (exists, not retracted).\n- [2] doi:10.1001/jama.2021.55512 → **DOES NOT EXIST** (no record in Crossref or OpenAlex).\n#### Independent statistical recomputation\n- Reported: app−control SBP difference 9.4 mmHg, p < 0.001.\n- Recomputed from the reported means (124.6 vs 134.0), SD 12, n=90/arm: difference = **9.4 mmHg**, t ≈ 5.25, **p ≈ 2e-7** → the difference and p-value are internally CONSISTENT. (No statistical mismatch here — do not invent one.)",
+      "gold": [
+        {
+          "id": "ext:protocol_timepoint",
+          "layer": "external",
+          "gold_severity": "major",
+          "description": "Protocol pre-specifies the primary outcome at 24 weeks, but the manuscript reports it at 8 weeks (undisclosed change of primary endpoint)."
+        },
+        {
+          "id": "ext:protocol_comparator",
+          "layer": "external",
+          "gold_severity": "major",
+          "description": "Protocol comparator is an active sham-audio control; the manuscript used a waitlist, inflating the apparent effect."
+        },
+        {
+          "id": "ext:fake_citation",
+          "layer": "external",
+          "gold_severity": "major",
+          "description": "Reference [2] (doi:10.1001/jama.2021.55512, 'Lee et al. JAMA 2021') does not exist in any index — a fabricated citation."
+        }
+      ]
+    },
+    "pb2-diabetes-diet": {
+      "title": "Low-carbohydrate coaching for type 2 diabetes: a randomized trial",
+      "userContext": "Title: Low-carbohydrate coaching for type 2 diabetes: a randomized trial\nResearch type: see text\n\nManuscript:\n# Low-carbohydrate coaching for type 2 diabetes: a randomized trial\n\n## Abstract\n**Methods.** Adults with type 2 diabetes were randomized to low-carb coaching vs usual care for 6 months. The primary outcome was the proportion achieving HbA1c < 7.0%.\n**Results.** More coaching participants reached HbA1c < 7.0% (52% vs 38%; risk ratio 1.37, p = 0.004). Mean weight loss was 4.1 kg.\n**Conclusions.** Low-carbohydrate coaching markedly improves glycemic control.\n\n## Methods\nn = 240 (120/arm). Coaching was delivered by telehealth. We followed standard low-carb guidance [1]. Outcomes assessed at 6 months.\n\n## Results\nAt 6 months, 62/120 (52%) of coaching vs 46/120 (38%) of control achieved HbA1c < 7.0% (risk ratio 1.37, p = 0.004). Weight fell 4.1 kg (coaching) vs 0.9 kg (control).\n\n## Discussion\nLow-carb coaching should become standard care. This extends prior dietary trials [1,2].\n\n## References\n1. Feinman RD, et al. Dietary carbohydrate restriction. Nutrition. 2015. doi:10.1016/j.nut.2014.06.011\n2. Hallberg SJ, et al. Continuous remote care for diabetes. Diabetes Ther. 2018. doi:10.1007/s13300-018-0373-9\n\n## Declarations\nEthics approval: IRB #2019-77. Funding: none. Competing interests: none. Data availability: on request. Limitations: open-label.",
+      "groundingBlock": "### VERIFIED GROUNDING PACK (external truth — treat as ground truth)\n#### Registered protocol (excerpt)\n- Primary outcome: **mean change in HbA1c (%)** at 6 months. The \"proportion reaching HbA1c < 7.0%\" was a **pre-specified SECONDARY** outcome. The manuscript reports the secondary as if primary (outcome switching).\n- Pre-specified: intention-to-treat with multiple imputation for missing HbA1c.\n#### Citation validation (Crossref / OpenAlex / Retraction Watch)\n- [1] doi:10.1016/j.nut.2014.06.011 → VALID.\n- [2] doi:10.1007/s13300-018-0373-9 → **RETRACTED** (Retraction Watch: retracted 2022 for data concerns).\n#### Independent statistical recomputation\n- Reported: risk ratio 1.37, p = 0.004 for 52% vs 38% (n=120/arm).\n- Recomputed: RR = 0.52/0.38 = 1.37 (consistent), but the two-proportion test gives **p ≈ 0.03**, not 0.004 — the reported p-value overstates significance.",
+      "gold": [
+        {
+          "id": "ext:outcome_switch",
+          "layer": "external",
+          "gold_severity": "critical",
+          "description": "Outcome switching: the registered PRIMARY outcome is mean HbA1c change; the manuscript reports a pre-specified SECONDARY (proportion <7.0%) as the primary."
+        },
+        {
+          "id": "ext:retracted_citation",
+          "layer": "external",
+          "gold_severity": "major",
+          "description": "Reference [2] (Hallberg 2018, doi:10.1007/s13300-018-0373-9) has been RETRACTED and should not be cited as support."
+        },
+        {
+          "id": "ext:pvalue_mismatch",
+          "layer": "external",
+          "gold_severity": "major",
+          "description": "Reported p = 0.004 for 52% vs 38% (n=120/arm) does not match recomputation (p ≈ 0.03); the significance is overstated."
+        }
+      ]
+    },
+    "pb3-pollution-cohort": {
+      "title": "Long-term air pollution and incident dementia: a prospective cohort",
+      "userContext": "Title: Long-term air pollution and incident dementia: a prospective cohort\nResearch type: see text\n\nManuscript:\n# Long-term air pollution and incident dementia: a prospective cohort\n\n## Abstract\n**Methods.** We followed 8,200 adults aged 60+ for a median 9 years. Exposure was residential PM2.5. The outcome was incident dementia.\n**Results.** Each 5 µg/m³ increment in PM2.5 was associated with incident dementia (hazard ratio 1.42, 95% CI 1.28 to 1.57).\n**Conclusions.** Air pollution is a strong, independent cause of dementia.\n\n## Methods\nPM2.5 was assigned by residential land-use regression. Dementia was ascertained from records. Cox models estimated hazard ratios. Prior cohorts report similar associations [1].\n\n## Results\nOver follow-up, 612 incident dementia cases occurred. The hazard ratio per 5 µg/m³ PM2.5 was 1.42 (95% CI 1.28 to 1.57).\n\n## Discussion\nPM2.5 directly causes dementia and policy must act. This confirms earlier work [1,2].\n\n## References\n1. Weuve J, et al. Exposure to particulate air pollution and cognition. Arch Intern Med. 2012. doi:10.1001/archinternmed.2011.683\n2. Carey IM, et al. Air pollution and dementia. BMJ Open. 2018. doi:10.1136/bmjopen-2018-022404\n\n## Declarations\nEthics approval: IRB #2017-9. Funding: none. Competing interests: none. Data availability: on request. Limitations: observational.",
+      "groundingBlock": "### VERIFIED GROUNDING PACK (external truth — treat as ground truth)\n#### Registered analysis plan (excerpt)\n- Pre-specified PRIMARY model adjusts for age, sex, education, smoking, and **APOE ε4 genotype**.\n- The manuscript's reported HR is the **age/sex-only** model; the pre-specified APOE-adjusted HR was 1.11 (95% CI 0.98 to 1.26) — i.e., attenuated to non-significance after the pre-specified adjustment (selective reporting of the unadjusted model).\n#### Citation validation (Crossref / OpenAlex / Retraction Watch)\n- [1] doi:10.1001/archinternmed.2011.683 → VALID.\n- [2] doi:10.1136/bmjopen-2018-022404 → VALID.\n#### Independent statistical recomputation\n- Reported HR 1.42 (95% CI 1.28–1.57): the CI is internally consistent with the point estimate. (No arithmetic mismatch — do not invent one.) The issue is the UNADJUSTED model being presented instead of the pre-specified adjusted one (see protocol).",
+      "gold": [
+        {
+          "id": "ext:selective_model",
+          "layer": "external",
+          "gold_severity": "critical",
+          "description": "Selective reporting: the pre-specified primary model adjusts for APOE ε4 (giving HR 1.11, CI 0.98–1.26, non-significant); the manuscript reports the unadjusted age/sex-only HR 1.42 as the headline."
+        },
+        {
+          "id": "ext:causal_overclaim_vs_protocol",
+          "layer": "external",
+          "gold_severity": "major",
+          "description": "The 'directly causes dementia' conclusion is unwarranted given the pre-specified adjusted estimate is null — the causal claim rests on the non-pre-specified model."
+        }
+      ]
+    }
+  }
+}

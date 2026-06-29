@@ -1,0 +1,51 @@
+{
+  "mid": "6OuOwA7Hre02Jbd5R268G",
+  "arm": "context",
+  "rep": 2,
+  "nSub": 1,
+  "nItems": 7,
+  "items": [
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript fails to report the full electronic search strategy (PRISMA-ScR Item 8), including specific keywords, Boolean operators, and limits. It also lacks a description of the selection process (Item 9) and data charting methods (Items 10-11). **Why it matters:** Without a reproducible search strategy and clear methodological steps for screening and data extraction, the review cannot be replicated or verified. This undermines the scientific validity of the scoping review. **Suggested Action:** Provide the complete search string used for PubMed (and any other databases if applicable). Describe the screening process (e.g., number of reviewers, how conflicts were resolved) and the specific data items charted from each source."
+    },
+    {
+      "category": "structural",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The manuscript does not include a PRISMA-ScR flow diagram (Item 14) or report the numbers of sources screened and excluded. It also lacks a charting table describing the characteristics of the included sources (Item 15). **Why it matters:** Readers cannot assess the comprehensiveness of the literature search or the profile of the included studies without these standard reporting elements. This omission makes it impossible to evaluate potential selection bias or the scope of the evidence base. **Suggested Action:** Include a PRISMA-ScR flow diagram detailing the identification, screening, eligibility, and inclusion stages. Provide a table summarizing key characteristics of the 38 included papers (e.g., study design, AI type, educational context)."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The conclusion that AI 'should be integrated into all undergraduate curricula immediately' is not supported by the reported results. The results only list types of applications (tutoring, assessment, chatbots) without presenting evidence on efficacy, safety, or educational outcomes. **Why it matters:** Scoping reviews map concepts and gaps; they typically do not provide high-level evidence for clinical or curricular recommendations unless a critical appraisal or systematic synthesis of outcomes was performed. Making strong prescriptive claims without outcome data is misleading and potentially harmful to curriculum planning. **Suggested Action:** Revise the discussion to reflect the exploratory nature of the review. Discuss gaps in the literature regarding educational effectiveness and ethical considerations rather than making definitive curricular recommendations."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is unstructured and lacks key components required by PRISMA-ScR Item 2, such as eligibility criteria, sources of evidence, and a structured summary of results. **Why it matters:** A structured abstract allows readers to quickly assess the relevance and quality of the review. Missing elements like eligibility criteria prevent immediate evaluation of the review's scope. **Suggested Action:** Restructure the abstract with clear headings: Background, Objectives, Eligibility Criteria, Sources of Evidence, Charting Methods, Results, and Conclusions."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction does not state the objectives using the PCC (Population, Concept, Context) framework (PRISMA-ScR Item 4) or provide a rationale based on existing knowledge gaps (Item 3). **Why it matters:** Clear objectives defined by PCC are essential for scoping reviews to define the boundaries of the inquiry. Without this, the review's focus appears arbitrary. **Suggested Action:** Explicitly state the Population (undergraduate medical students), Concept (artificial intelligence applications), and Context (medical education curricula). Provide a brief rationale explaining why a scoping review is needed at this time."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript does not report whether a protocol was registered or where it can be accessed (PRISMA-ScR Item 5), nor does it specify the date of the last search (Item 7). **Why it matters:** Protocol registration reduces bias and enhances transparency. The search date is critical for assessing the timeliness of the evidence, especially in a rapidly evolving field like AI. **Suggested Action:** State if a protocol was registered (e.g., on OSF or PROSPERO) and provide the registration number/link. Include the exact date of the final literature search."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion",
+      "content_md": "**Problem:** The discussion does not address the limitations of the scoping process (PRISMA-ScR Item 21), such as the use of only one database (PubMed) or lack of critical appraisal. **Why it matters:** Acknowledging limitations helps readers interpret the findings with appropriate caution. Using a single database may have led to missed relevant literature in other disciplines (e.g., computer science, education). **Suggested Action:** Discuss limitations such as the potential for publication bias, the restriction to English-language papers (if applicable), and the decision not to critically appraise sources."
+    }
+  ]
+}

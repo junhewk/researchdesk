@@ -1,0 +1,45 @@
+{
+  "mid": "pb2-diabetes-diet",
+  "arm": "ensemble",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 6,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The manuscript lacks essential methodological details required to assess internal validity, reproducibility, and adherence to CONSORT guidelines. Specifically, it omits: 1) Participant eligibility criteria (inclusion/exclusion); 2) Randomization procedures (sequence generation, block size, stratification, allocation concealment); 3) Blinding status (specifically for outcome assessors, despite being open-label for participants); 4) A precise operational definition of the comparator ('usual care'); and 5) The statistical analysis plan (handling of missing data, intention-to-treat vs. per-protocol approaches).\n\n**Why it matters:** Without these details, readers cannot determine if selection bias, performance bias, or detection bias influenced the results. The claim of a 'randomized trial' cannot be verified, and the lack of statistical method description prevents verification of reported p-values and risk ratios.\n\n**Suggested Action:** Rewrite the Methods section to adhere to CONSORT guidelines. Include explicit subsections for Participants (with eligibility criteria), Randomization (sequence generation and allocation concealment), Intervention (detailed description of coaching protocol and control arm), Outcomes, Sample Size Calculation, and Statistical Analysis."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Results",
+      "content_md": "**Problem:** The results section is severely under-reported. It provides only aggregate percentages for the primary outcome and mean weight loss, lacking: 1) Confidence intervals (CI) for the risk ratio and weight difference; 2) Standard deviations or interquartile ranges for continuous variables; 3) Data on attrition/dropout rates and reasons for withdrawal; 4) Adverse events or safety data (critical for dietary interventions in diabetes, e.g., hypoglycemia, lipid changes); 5) Baseline comparability of groups; and 6) Data on adherence to the coaching program and changes in diabetes medications.\n\n**Why it matters:** P-values alone are insufficient for interpreting clinical significance. The absence of CIs prevents assessment of precision. Missing attrition data raises concerns about attrition bias. Lack of safety data is a major ethical and clinical oversight for a diabetes intervention, and omitting medication changes confounds the interpretation of HbA1c improvements.\n\n**Suggested Action:** Expand the Results section to include: 1) A baseline table comparing groups; 2) Primary outcome with 95% CI for the risk ratio; 3) Secondary outcomes (weight, etc.) with mean differences and CIs/SDs; 4) A CONSORT flow diagram detailing recruitment, allocation, follow-up, and analysis numbers; 5) A dedicated subsection on adverse events and safety laboratory values; and 6) Data on adherence metrics and medication changes."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Discussion & Conclusions",
+      "content_md": "**Problem:** The conclusion states that low-carb coaching 'should become standard care' based on a single, short-term (6-month), open-label trial with no reported long-term sustainability metrics or comprehensive safety data. The discussion is brief and fails to address limitations (e.g., open-label design, potential biases), alternative explanations, or generalizability. It also lacks context from the broader literature beyond two citations.\n\n**Why it matters:** This overstates the evidence. A 6-month trial is insufficient to establish 'standard of care,' which requires evidence of long-term efficacy, safety, and cost-effectiveness. The jump from a statistically significant p-value to a policy recommendation is not supported by the limited data presented and may mislead clinical practice.\n\n**Suggested Action:** Tone down the conclusion to reflect the study's scope and limitations. State that low-carb coaching 'may improve short-term glycemic control' and call for larger, longer-duration trials with safety monitoring before recommending it as standard care. Expand the Discussion to interpret results in light of the open-label nature, compare with other relevant trials, and explicitly discuss limitations."
+    },
+    {
+      "category": "evidence",
+      "severity": "major",
+      "section_ref": "Declarations",
+      "content_md": "**Problem:** The data availability statement is 'on request,' which is increasingly considered insufficient for transparency and reproducibility in modern research. Additionally, the funding source is listed as 'none,' which raises questions given the scale of a 240-person RCT involving telehealth coaching and laboratory testing.\n\n**Why it matters:** 'On request' data availability hinders independent verification of results and meta-analysis. Lack of clear funding disclosure may raise concerns about potential conflicts of interest or sustainability of the intervention model.\n\n**Suggested Action:** Deposit de-identified individual participant data in a recognized public repository (e.g., Dryad, Zenodo, Figshare) and provide the DOI/link in the manuscript. Clarify how the trial was funded if no external grant was involved (e.g., institutional support)."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Abstract/Methods/Results",
+      "content_md": "**Problem:** The manuscript lacks a clear distinction between primary and secondary outcomes. Weight loss is presented as a key result but was not defined as a co-primary outcome in the Methods or Abstract. The abstract itself is incomplete, lacking background, detailed methods (sample size calculation, setting), and balanced conclusions.\n\n**Why it matters:** Multiple unadjusted comparisons increase the risk of Type I error. Readers may misinterpret weight loss as a prespecified primary endpoint rather than an exploratory finding. An incomplete abstract reduces its utility for initial screening.\n\n**Suggested Action:** Clearly define primary and secondary outcomes in the Abstract and Methods. If weight was secondary, report its p-value with caution or label it as exploratory. Restructure the abstract to include Background, Methods (with sample size justification), Results (including confidence intervals), and Conclusion sections."
+    },
+    {
+      "category": "mechanical",
+      "severity": "minor",
+      "section_ref": "Abstract",
+      "content_md": "**Problem:** The abstract is incomplete. It lacks a background section, detailed methods (sample size calculation, setting), and a balanced conclusion.\n\n**Why it matters:** Abstracts should stand alone as a complete summary of the paper. Readers often rely on abstracts for initial screening; missing key methodological details reduces its utility.\n\n**Suggested Action:** Restructure the abstract to include Background, Methods (with sample size justification and setting), Results (including confidence intervals), and Conclusion sections."
+    }
+  ]
+}

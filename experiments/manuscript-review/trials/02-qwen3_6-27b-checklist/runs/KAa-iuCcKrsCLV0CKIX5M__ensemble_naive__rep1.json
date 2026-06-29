@@ -1,0 +1,39 @@
+{
+  "mid": "KAa-iuCcKrsCLV0CKIX5M",
+  "arm": "ensemble_naive",
+  "rep": 1,
+  "nSub": 4,
+  "nItems": 5,
+  "items": [
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods",
+      "content_md": "**Problem:** The search strategy is critically insufficient for a systematic review. Only PubMed was searched, with no details on search terms, Boolean operators, date ranges, or other major databases (e.g., Embase, Cochrane Central, PsycINFO). Additionally, the screening process is inadequately described; it mentions only title screening by two reviewers, omitting abstract and full-text screening stages, conflict resolution methods, and agreement rates.\n\n**Why it matters:** Systematic reviews require comprehensive literature searches across multiple databases to minimize selection and publication bias. Relying solely on PubMed risks missing relevant trials indexed elsewhere. Incomplete description of the screening process violates PRISMA guidelines, undermines reproducibility, and prevents assessment of selection bias.\n\n**Suggested Action:** Expand the search to include at least three major biomedical databases (e.g., Embase, Cochrane Library, PsycINFO). Provide a detailed search strategy including keywords and operators for at least one database. Describe the full screening process (title, abstract, full-text), specify how disagreements were resolved, and mention the use of a PRISMA flow diagram."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Methods/Results",
+      "content_md": "**Problem:** The manuscript lacks critical methodological details required for assessing study quality and synthesizing evidence. There is no mention of risk of bias assessment (e.g., Cochrane RoB 2), data extraction methods, or heterogeneity analysis. The results section provides only a vague narrative summary stating 'effect sizes varied' without reporting specific quantitative data such as effect sizes, confidence intervals, p-values, or heterogeneity statistics (e.g., I²). Furthermore, the definition of control conditions (e.g., waitlist vs. active control) is unclear.\n\n**Why it matters:** Without risk of bias assessment, the reliability of included trials cannot be evaluated. Lack of quantitative data prevents readers from understanding the magnitude and precision of the intervention's impact. Ambiguity regarding control conditions makes it impossible to assess the clinical significance of the findings (e.g., effects against inactive vs. active controls). This omission renders the claim of 'effectiveness' unsubstantiated and non-reproducible.\n\n**Suggested Action:** Include a section on risk of bias assessment using a standard tool (e.g., Cochrane RoB 2). Report specific quantitative outcomes (mean differences, odds ratios, or standardized mean differences with 95% CIs) for insomnia severity. If meta-analysis was not performed, justify why and provide a structured table of results from each included study, categorized by control type."
+    },
+    {
+      "category": "evidence",
+      "severity": "critical",
+      "section_ref": "Discussion/Abstract",
+      "content_md": "**Problem:** The conclusion that 'dCBT-I should replace pharmacotherapy as first-line treatment' is a major overstatement not supported by the evidence presented. The review did not include studies directly comparing dCBT-I to pharmacotherapy, nor did it assess comparative effectiveness, safety profiles, cost-effectiveness, or patient preferences against standard care. Additionally, broad policy recommendations for health system adoption are made without addressing implementation barriers such as digital literacy or accessibility.\n\n**Why it matters:** Making definitive clinical practice recommendations or policy changes based on an incomplete body of evidence (especially without direct comparison to the alternative treatment) is misleading and potentially harmful. It overstates the certainty of the findings and may influence clinical guidelines prematurely, ignoring nuances like comorbidities or cost-effectiveness.\n\n**Suggested Action:** Temper the conclusions to reflect the actual evidence. State that dCBT-I appears effective compared to control conditions (e.g., treatment-as-usual), but acknowledge limitations regarding comparisons with pharmacotherapy. Remove definitive statements about replacing first-line treatments. Discuss limitations, including generalizability and implementation barriers, before suggesting broad adoption."
+    },
+    {
+      "category": "structural",
+      "severity": "major",
+      "section_ref": "Introduction",
+      "content_md": "**Problem:** The introduction lacks a clear research question, objectives, and context regarding current standard of care. It does not define dCBT-I, discuss the burden of insomnia, or explain why this review is needed (e.g., gaps in previous reviews). It fails to outline the PICO framework (Population, Intervention, Comparison, Outcome) or justify the rationale for digital delivery.\n\n**Why it matters:** A strong introduction sets the stage for the review by defining the problem, its significance, and the specific aim of the study. Without this context, readers cannot fully appreciate the relevance of the findings or how this work adds to existing knowledge.\n\n**Suggested Action:** Expand the introduction to include: 1) Prevalence and burden of chronic insomnia; 2) Current first-line treatments (CBT-I vs. meds) and their limitations; 3) Rationale for digital delivery; 4) A clear statement of the research question using the PICO framework; 5) Citation of previous reviews to identify specific gaps this study fills."
+    },
+    {
+      "category": "mechanical",
+      "severity": "major",
+      "section_ref": "Declarations/Methods",
+      "content_md": "**Problem:** There is no mention of protocol registration (e.g., PROSPERO) or adherence to reporting guidelines (e.g., PRISMA). The declarations section is minimal and lacks details on data availability, funding sources, or ethical approvals if applicable. The abstract is also overly brief and lacks structured sections (Background, Methods, Results, Conclusion).\n\n**Why it matters:** Registration of systematic review protocols prevents bias from changing methods post-hoc. Adherence to PRISMA ensures transparent and complete reporting. Missing these elements reduces the credibility and transparency of the review. Structured abstracts improve readability and allow quick assessment of validity.\n\n**Suggested Action:** State whether the review protocol was registered and provide the registration number. Include a statement confirming adherence to PRISMA guidelines. Add data availability, funding, and conflict of interest statements. Rewrite the abstract in a structured format with clear headings."
+    }
+  ]
+}
