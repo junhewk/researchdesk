@@ -9,7 +9,6 @@ import {
 } from "next/navigation";
 import Link from "next/link";
 import {
-  Bell,
   Check,
   ChevronDown,
   Clock,
@@ -442,6 +441,32 @@ export default function ManuscriptWorkspacePage() {
   const isRunning = sessionStatus === "running";
   const canSend =
     !!session && !sending && !isRunning && composerText.trim().length > 0;
+  const canRunReview = !!session && !sending && !isRunning;
+
+  // Basic, one-click entry to the product's context-grounded ensemble review
+  // (equivalent to typing /review in the composer). The provider/model used is
+  // whatever the Advanced drawer selects.
+  const runReview = useCallback(async () => {
+    if (!session || sending || sessionStatus === "running") return;
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/sessions/${session.id}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: "/review" }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Review failed (${res.status})`);
+      }
+      setTab("peer");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not start review");
+    } finally {
+      setSending(false);
+    }
+  }, [session, sending, sessionStatus, setTab]);
 
   // ─── Bail-out states ───────────────────────────────────────────────────
 
@@ -516,42 +541,10 @@ export default function ManuscriptWorkspacePage() {
           </div>
 
           <div className="ml-auto flex items-center gap-3 flex-wrap">
-            <label className="flex items-center gap-2 text-[12px] text-[color:var(--color-on-surface-variant)] select-none cursor-pointer">
-              <span>Revision Tracking</span>
-              <span
-                role="switch"
-                aria-checked={revisionTracking}
-                tabIndex={0}
-                onClick={() => setRevisionTracking((v) => !v)}
-                onKeyDown={(e) => {
-                  if (e.key === " " || e.key === "Enter") {
-                    e.preventDefault();
-                    setRevisionTracking((v) => !v);
-                  }
-                }}
-                className={`inline-flex h-[18px] w-[30px] items-center rounded-full transition-colors ${
-                  revisionTracking
-                    ? "bg-[color:var(--color-primary)]"
-                    : "bg-[color:var(--color-outline-variant)]"
-                }`}
-              >
-                <span
-                  className={`block h-[14px] w-[14px] rounded-full bg-[color:var(--color-on-primary)] transition-transform ${
-                    revisionTracking ? "translate-x-[14px]" : "translate-x-[2px]"
-                  }`}
-                />
-              </span>
-            </label>
             <button
               type="button"
-              aria-label="Notifications"
-              className="grid h-8 w-8 place-items-center rounded text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-surface-container-low)] hover:text-[color:var(--color-on-surface)] transition-colors"
-            >
-              <Bell className="h-4 w-4" strokeWidth={1.75} />
-            </button>
-            <button
-              type="button"
-              aria-label="Workspace settings"
+              aria-label="Advanced settings"
+              title="Advanced: provider, model, revision tracking"
               onClick={() => setSettingsOpen((v) => !v)}
               className="grid h-8 w-8 place-items-center rounded text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-surface-container-low)] hover:text-[color:var(--color-on-surface)] transition-colors"
             >
@@ -648,18 +641,31 @@ export default function ManuscriptWorkspacePage() {
               <h2 className="font-display text-[15px] font-semibold text-[color:var(--color-on-surface)]">
                 Peer Feedback
               </h2>
-              <span className="ml-auto rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] bg-[color:var(--color-primary-container)] text-[color:var(--color-on-primary)]">
-                {openCount} Open
-              </span>
+              <div className="ml-auto flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void runReview()}
+                  disabled={!canRunReview}
+                  title="Run the context-grounded ensemble review"
+                  className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
+                >
+                  <MessageSquareText className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {isRunning ? "Reviewing…" : "Run review"}
+                </button>
+                <span className="rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] bg-[color:var(--color-primary-container)] text-[color:var(--color-on-primary)]">
+                  {openCount} Open
+                </span>
+              </div>
             </div>
 
             {/* Scrollable comment list */}
             <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3 space-y-3">
               {comments.length === 0 ? (
                 <p className="px-2 py-6 text-center text-[13px] italic text-[color:var(--color-on-surface-variant)]">
-                  No feedback yet. Type{" "}
-                  <code className="font-mono not-italic">/review</code> in the
-                  composer to begin.
+                  No feedback yet. Press{" "}
+                  <span className="not-italic font-medium">Run review</span> above
+                  (or type <code className="font-mono not-italic">/review</code> in
+                  the composer) to begin.
                 </p>
               ) : (
                 comments.map((c) => (
@@ -701,9 +707,10 @@ export default function ManuscriptWorkspacePage() {
                 </div>
               )}
 
-              {/* Settings drawer */}
+              {/* Advanced drawer — provider/model/effort + revision tracking */}
               {settingsOpen && (
                 <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-4 py-3 space-y-3">
+                  <p className="label">Advanced</p>
                   <ProviderSelector
                     value={provider}
                     onChange={chooseProvider}
@@ -721,6 +728,32 @@ export default function ManuscriptWorkspacePage() {
                     Applies to new sessions. The current thread keeps its
                     provider until closed.
                   </p>
+                  <label className="flex items-center justify-between gap-2 border-t border-[color:var(--color-outline-variant)] pt-3 text-[12px] text-[color:var(--color-on-surface-variant)] select-none cursor-pointer">
+                    <span>Revision tracking (inline change markers)</span>
+                    <span
+                      role="switch"
+                      aria-checked={revisionTracking}
+                      tabIndex={0}
+                      onClick={() => setRevisionTracking((v) => !v)}
+                      onKeyDown={(e) => {
+                        if (e.key === " " || e.key === "Enter") {
+                          e.preventDefault();
+                          setRevisionTracking((v) => !v);
+                        }
+                      }}
+                      className={`inline-flex h-[18px] w-[30px] shrink-0 items-center rounded-full transition-colors ${
+                        revisionTracking
+                          ? "bg-[color:var(--color-primary)]"
+                          : "bg-[color:var(--color-outline-variant)]"
+                      }`}
+                    >
+                      <span
+                        className={`block h-[14px] w-[14px] rounded-full bg-[color:var(--color-on-primary)] transition-transform ${
+                          revisionTracking ? "translate-x-[14px]" : "translate-x-[2px]"
+                        }`}
+                      />
+                    </span>
+                  </label>
                 </div>
               )}
 

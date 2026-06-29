@@ -26,11 +26,17 @@ import {
 import { getCardDef, getCardStage } from "@/server/methods/cardSchema";
 import { parseValue } from "@/server/methods/preflight";
 import { searchCommentaries, searchReviews } from "@/server/search";
+import { buildGroundingPack } from "@/server/reviewGrounding";
 import type { EvidenceItemKind, ReviewCategory, Severity } from "@/server/types";
 import { runStructured, truncateForPrompt } from "./structuredRunner";
 import type { ApiAgentConfig } from "./providers";
 
-const CORE_RULES = [
+/** Number of identical grounded reviewers the product runs by default before the
+ * neutral merge. The persona-vs-context experiment's winning arm was a grounded
+ * ensemble; 3 is the chosen quality/cost balance (a single pass is `fanout: 1`). */
+export const DEFAULT_ENSEMBLE_FANOUT = 3;
+
+export const CORE_RULES = [
   "Never generate novel research content or unsupported claims.",
   "Ground findings in the provided manuscript, study cards, prior review context, or reporting guidelines.",
   "Prefer concrete, actionable findings over generic advice.",
@@ -74,7 +80,7 @@ const ReviewPlanSchema = z.object({
   article_search_queries: z.array(z.string().min(1)).max(3).default([]),
 });
 
-const ReviewResultSchema = z.object({
+export const ReviewResultSchema = z.object({
   items: z.array(z.object({
     category: z.enum(["mechanical", "rewrite", "structural", "evidence"]),
     severity: z.enum(["minor", "major", "critical"]).nullable().default(null),
@@ -83,6 +89,12 @@ const ReviewResultSchema = z.object({
   })).default([]),
   summary_md: z.string().min(1),
 });
+
+/** One structured review finding (item of {@link ReviewResultSchema}). Exported
+ * so the experiment harness (src/server/experiment/reviewArms.ts) can type the
+ * per-persona sub-reviews and the merged output it feeds back through this same
+ * schema. */
+export type ReviewItem = z.infer<typeof ReviewResultSchema>["items"][number];
 
 const ReviewerResponseDraftSchema = z.object({
   items: z.array(z.object({
@@ -98,7 +110,7 @@ function asJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-function manuscriptContext(manuscriptId: string): string {
+export function manuscriptContext(manuscriptId: string): string {
   const manuscript = getManuscript(manuscriptId);
   if (!manuscript) throw new Error("manuscript not found");
   return [
@@ -405,7 +417,7 @@ export async function runCardProposalAgent(opts: {
   return { created, summary_md: result.parsed.summary_md };
 }
 
-async function gatherReviewContext(
+export async function gatherReviewContext(
   config: ApiAgentConfig,
   manuscriptId: string,
 ): Promise<string> {
@@ -442,27 +454,263 @@ async function gatherReviewContext(
   ].join("\n");
 }
 
-export async function runReviewAgent(opts: {
+// Factor clauses for the review system prompt. The product (and the
+// context-only experiment arm) makes its anti-persona, grounded stance explicit
+// here so the persona/context factors can be toggled independently and audited.
+// These two lines are the one deliberate refinement vs. the older implicit
+// prompt: the product now *states* "ground, don't role-play" rather than only
+// implying it through CORE_RULES.
+export const ANTI_PERSONA_CLAUSE =
+  "Review as one integrated expert reviewer. Do not adopt a named reviewer persona.";
+const GROUND_CONTEXT_CLAUSE =
+  "Calibrate and ground your review in the user's prior review patterns and the scholarly search results provided below.";
+const SOLO_GROUND_CLAUSE =
+  "Ground your review only in the manuscript text provided below.";
+
+/** Compose the review system prompt from the two factors. Pure (no I/O) so the
+ * experiment harness can hash it and a unit test can prove factor isolation
+ * without spending API tokens: toggling one factor changes exactly one line. */
+export function composeReviewSystemPrompt(opts: {
+  grounding: boolean;
+  personaClause?: string | null;
+}): string {
+  return [
+    "You are a journal-article review assistant.",
+    "",
+    `- ${opts.personaClause ?? ANTI_PERSONA_CLAUSE}`,
+    `- ${opts.grounding ? GROUND_CONTEXT_CLAUSE : SOLO_GROUND_CLAUSE}`,
+    `- ${CORE_RULES}`,
+  ].join("\n");
+}
+
+export interface ReviewRunResult {
+  items: ReviewItem[];
+  summary_md: string;
+  rawText: string;
+  attempts: number;
+  /** The fully composed system prompt actually sent. Returned so the experiment
+   * harness can hash it and prove factor isolation (e.g. naive vs context differ
+   * only by the grounding clause). Small; safe to persist. */
+  systemPrompt: string;
+}
+
+/**
+ * Core review pass shared by the product and by every experiment arm. Composes
+ * the system prompt from two independent factors and returns the parsed result
+ * WITHOUT persisting (no createReview) so callers decide what to do with it.
+ *
+ * - Factor A (persona): pass `personaClause` to review from a named disciplinary
+ *   lens; pass null/omit for the integrated, anti-persona reviewer.
+ * - Factor B (context): `grounding` toggles the prior-review/scholarly context.
+ *   Pass a precomputed `toolContext` to gather once and share across a persona
+ *   panel (fairness + cost); otherwise it is gathered here when grounding is on.
+ */
+export async function reviewManuscriptStructured(opts: {
   manuscriptId: string;
   config: ApiAgentConfig;
-}): Promise<{ created: number; summary_md: string }> {
-  const toolContext = await gatherReviewContext(opts.config, opts.manuscriptId);
+  grounding: boolean;
+  personaClause?: string | null;
+  toolContext?: string;
+  temperature?: number;
+}): Promise<ReviewRunResult> {
+  const toolContext = opts.grounding
+    ? opts.toolContext ?? (await gatherReviewContext(opts.config, opts.manuscriptId))
+    : "";
+  const systemPrompt = composeReviewSystemPrompt({
+    grounding: opts.grounding,
+    personaClause: opts.personaClause,
+  });
+  const userPrompt = [
+    manuscriptContext(opts.manuscriptId),
+    ...(opts.grounding ? ["", toolContext] : []),
+    "",
+    "Create review findings for substantive problems. Each finding must include the problem, why it matters, and a concrete suggested action.",
+  ].join("\n");
+
   const result = await runStructured({
     config: opts.config,
     schema: ReviewResultSchema,
     schemaName: "ReviewResult",
-    systemPrompt: `You are a journal-article review assistant.\n\n- ${CORE_RULES}`,
+    systemPrompt,
+    userPrompt,
+    temperature: opts.temperature,
+  });
+  return {
+    items: result.parsed.items,
+    summary_md: result.parsed.summary_md,
+    rawText: result.rawText,
+    attempts: result.attempts,
+    systemPrompt,
+  };
+}
+
+/** Neutral merge step for an ensemble of reviews. Reuses the product review
+ * schema so merged output is directly comparable to a single pass. Exported (with
+ * {@link AGGREGATOR_SYSTEM}) so the experiment harness consolidates its panel/
+ * ensemble arms through the exact same code — one source of truth for the merge. */
+export const AGGREGATOR_SYSTEM = [
+  "You are a neutral review aggregator. You receive several independent review reports of the same manuscript and must consolidate them into one.",
+  "",
+  `- ${ANTI_PERSONA_CLAUSE}`,
+  "- Merge items that describe the same underlying problem into a single item; keep the union of all genuinely distinct issues.",
+  "- Never drop a real issue just because only one source raised it, and never invent an issue that no source raised.",
+  "- Preserve the most specific section_ref available for each merged issue.",
+  "- Assign one final severity per merged issue: the most severe credible assessment among the sources.",
+  `- ${CORE_RULES}`,
+].join("\n");
+
+export async function aggregateReviews(opts: {
+  config: ApiAgentConfig;
+  subReviews: { persona?: string | null; items: ReviewItem[] }[];
+  temperature?: number;
+}): Promise<{ items: ReviewItem[]; summary_md: string }> {
+  const payload = opts.subReviews.map((r, i) => ({
+    reviewer: r.persona ?? `reviewer_${i + 1}`,
+    items: r.items,
+  }));
+  const result = await runStructured({
+    config: opts.config,
+    schema: ReviewResultSchema,
+    schemaName: "ReviewResult",
+    systemPrompt: AGGREGATOR_SYSTEM,
     userPrompt: [
-      manuscriptContext(opts.manuscriptId),
+      "Independent review reports (JSON):",
+      asJson(payload),
       "",
-      toolContext,
-      "",
-      "Create review findings for substantive problems. Each finding must include the problem, why it matters, and a concrete suggested action.",
+      "Return the consolidated review: the union of distinct issues, duplicates merged, exactly one severity per issue.",
     ].join("\n"),
+    temperature: opts.temperature,
+  });
+  return { items: result.parsed.items, summary_md: result.parsed.summary_md };
+}
+
+export interface EnsembleRunResult {
+  items: ReviewItem[];
+  summary_md: string;
+  /** the per-reviewer passes that succeeded (≤ fanout; failed ones are dropped) */
+  subReviews: ReviewRunResult[];
+  merged: boolean;
+  /** how many reviewers were requested vs how many failed and were dropped */
+  attempted: number;
+  dropped: number;
+  /** the shared grounded context block sent to each reviewer ("" when ungrounded) */
+  toolContext: string;
+}
+
+/**
+ * The product review architecture: a context-grounded ensemble. Gathers the
+ * grounding context **once** (prior-review/scholarly retrieval + the deterministic
+ * grounding pack — GRIM / DOI / protocol drift), shares it across `fanout`
+ * identical integrated reviewers, then consolidates with one neutral merge. This
+ * is the experiment's winning `ensemble_context` shape made the default; pass
+ * `fanout: 1` for a single grounded pass (the Advanced escape hatch).
+ *
+ * Returns the merged items WITHOUT persisting — callers decide what to do.
+ */
+export async function reviewManuscriptEnsemble(opts: {
+  manuscriptId: string;
+  config: ApiAgentConfig;
+  grounding: boolean;
+  fanout: number;
+  personaClause?: string | null;
+  toolContext?: string;
+  temperature?: number;
+  /** allow the grounding pack's network DOI/retraction checks (own-article path) */
+  allowExternal?: boolean;
+}): Promise<EnsembleRunResult> {
+  const fanout = Math.max(1, Math.floor(opts.fanout));
+
+  // Factor B — gather once, share across the ensemble (fairness + cost). The
+  // retrieval context and the deterministic pack are concatenated into one block.
+  let toolContext = "";
+  if (opts.grounding) {
+    if (opts.toolContext !== undefined) {
+      toolContext = opts.toolContext;
+    } else {
+      const retrieval = await gatherReviewContext(opts.config, opts.manuscriptId);
+      const pack = await buildGroundingPack({
+        manuscriptId: opts.manuscriptId,
+        allowExternal: opts.allowExternal ?? false,
+      });
+      toolContext = [retrieval, pack.block].filter(Boolean).join("\n\n");
+    }
+  }
+
+  // Fan out the reviewers tolerantly: a single sub-reviewer that fails (e.g. a
+  // weak/local model emitting malformed structured output) must not sink the
+  // whole review — drop it and merge the survivors. Only a total wipeout throws.
+  const settled = await Promise.allSettled(
+    Array.from({ length: fanout }, () =>
+      reviewManuscriptStructured({
+        manuscriptId: opts.manuscriptId,
+        config: opts.config,
+        grounding: opts.grounding,
+        personaClause: opts.personaClause ?? null,
+        toolContext: opts.grounding ? toolContext : undefined,
+        temperature: opts.temperature,
+      }),
+    ),
+  );
+  const subReviews = settled
+    .filter((s): s is PromiseFulfilledResult<ReviewRunResult> => s.status === "fulfilled")
+    .map((s) => s.value);
+  const dropped = fanout - subReviews.length;
+  if (subReviews.length === 0) {
+    const firstRejected = settled.find((s) => s.status === "rejected") as
+      | PromiseRejectedResult
+      | undefined;
+    throw firstRejected?.reason instanceof Error
+      ? firstRejected.reason
+      : new Error("all reviewers failed");
+  }
+
+  if (subReviews.length === 1) {
+    return {
+      items: subReviews[0].items,
+      summary_md: subReviews[0].summary_md,
+      subReviews,
+      merged: false,
+      attempted: fanout,
+      dropped,
+      toolContext,
+    };
+  }
+
+  const merged = await aggregateReviews({
+    config: opts.config,
+    subReviews: subReviews.map((r) => ({ items: r.items })),
+    temperature: opts.temperature,
+  });
+  return {
+    items: merged.items,
+    summary_md: merged.summary_md,
+    subReviews,
+    merged: true,
+    attempted: fanout,
+    dropped,
+    toolContext,
+  };
+}
+
+export async function runReviewAgent(opts: {
+  manuscriptId: string;
+  config: ApiAgentConfig;
+}): Promise<{ created: number; summary_md: string }> {
+  // The product review path is now a context-grounded ensemble (the experiment's
+  // winning architecture): N identical grounded reviewers + a neutral merge, with
+  // the deterministic grounding pack injected. This is the own-article path, so
+  // external DOI/retraction validation is allowed. Persistence stays here.
+  const result = await reviewManuscriptEnsemble({
+    manuscriptId: opts.manuscriptId,
+    config: opts.config,
+    grounding: true,
+    fanout: opts.config.ensembleCount ?? DEFAULT_ENSEMBLE_FANOUT,
+    personaClause: null,
+    allowExternal: true,
   });
 
   let created = 0;
-  for (const item of result.parsed.items) {
+  for (const item of result.items) {
     createReview({
       manuscript_id: opts.manuscriptId,
       category: item.category as ReviewCategory,
@@ -472,7 +720,7 @@ export async function runReviewAgent(opts: {
     });
     created += 1;
   }
-  return { created, summary_md: result.parsed.summary_md };
+  return { created, summary_md: result.summary_md };
 }
 
 export async function runReviewerResponseAgent(opts: {

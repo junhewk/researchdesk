@@ -11,9 +11,24 @@ interface SearchOptions {
   limit?: number;
 }
 
+/**
+ * Turn arbitrary text (often LLM-generated, e.g. "self-management: digital
+ * health") into a safe FTS5 MATCH query. Raw text is unsafe: FTS5 reads `:` as a
+ * column filter, `-`/`^`/`*`/`"`/`()` and `AND|OR|NOT|NEAR` as operators, so an
+ * innocent phrase throws "no such column: …". We extract alphanumeric tokens and
+ * quote each as a phrase (implicit AND), which neutralises all operators.
+ * Returns "" when nothing usable remains — callers should then skip the search.
+ */
+export function toFtsMatchQuery(raw: string): string {
+  const tokens = raw.match(/[\p{L}\p{N}]+/gu) ?? [];
+  return tokens.map((t) => `"${t}"`).join(" ");
+}
+
 export function searchCommentaries(opts: SearchOptions): SearchResult[] {
   const db = getDb();
   const limit = opts.limit ?? 10;
+  const match = toFtsMatchQuery(opts.query);
+  if (!match) return [];
 
   const rows = db.prepare(`
     SELECT c.id, snippet(commentaries_fts, 0, '<mark>', '</mark>', '...', 40) as snippet,
@@ -27,7 +42,7 @@ export function searchCommentaries(opts: SearchOptions): SearchResult[] {
     ORDER BY rank
     LIMIT ?
   `).all(
-    ...[opts.query, opts.research_domain, opts.journal_type, limit].filter((v): v is string | number => v !== undefined),
+    ...[match, opts.research_domain, opts.journal_type, limit].filter((v): v is string | number => v !== undefined),
   ) as Array<{ id: string; snippet: string; rank: number }>;
 
   return rows.map((r) => ({
@@ -41,8 +56,10 @@ export function searchCommentaries(opts: SearchOptions): SearchResult[] {
 export function searchRevisions(opts: SearchOptions): SearchResult[] {
   const db = getDb();
   const limit = opts.limit ?? 10;
+  const match = toFtsMatchQuery(opts.query);
+  if (!match) return [];
 
-  const params: (string | number)[] = [opts.query];
+  const params: (string | number)[] = [match];
   const conditions: string[] = [];
 
   if (opts.category) {
@@ -79,8 +96,10 @@ export function searchRevisions(opts: SearchOptions): SearchResult[] {
 export function searchReviews(opts: SearchOptions): SearchResult[] {
   const db = getDb();
   const limit = opts.limit ?? 10;
+  const match = toFtsMatchQuery(opts.query);
+  if (!match) return [];
 
-  const params: (string | number)[] = [opts.query];
+  const params: (string | number)[] = [match];
   const conditions: string[] = [];
 
   if (opts.category) {
@@ -117,6 +136,8 @@ export function searchReviews(opts: SearchOptions): SearchResult[] {
 
 export function searchManuscripts(query: string, limit: number = 10): SearchResult[] {
   const db = getDb();
+  const match = toFtsMatchQuery(query);
+  if (!match) return [];
 
   const rows = db.prepare(`
     SELECT m.id, snippet(manuscripts_fts, 0, '<mark>', '</mark>', '...', 40) as snippet,
@@ -126,7 +147,7 @@ export function searchManuscripts(query: string, limit: number = 10): SearchResu
     WHERE manuscripts_fts MATCH ?
     ORDER BY rank
     LIMIT ?
-  `).all(query, limit) as Array<{ id: string; snippet: string; rank: number }>;
+  `).all(match, limit) as Array<{ id: string; snippet: string; rank: number }>;
 
   return rows.map((r) => ({
     id: r.id,

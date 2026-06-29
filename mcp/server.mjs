@@ -526,6 +526,109 @@ tool(
 );
 
 // ---------------------------------------------------------------------------
+// Manuscripts & review — run the product's context-grounded ensemble review and
+// read back its findings. The review pathway (see SPEC.md / the persona-vs-
+// context experiment) is an ensemble of grounded reviewers + a neutral merge,
+// with a deterministic grounding pack (GRIM, DOI/retraction, protocol drift)
+// injected. There is no persona role-play.
+// ---------------------------------------------------------------------------
+
+tool(
+  "list_manuscripts",
+  {
+    title: "List manuscripts",
+    description:
+      "List manuscripts (id, title, status, study_id). Use this to find a manuscript's id before running a review.",
+    inputSchema: {
+      status: z
+        .enum(["draft", "in_revision", "in_review", "completed"])
+        .optional()
+        .describe("filter by status"),
+      study_id: z.string().optional().describe("only manuscripts linked to this study (st_…)"),
+    },
+  },
+  async ({ status, study_id }) => {
+    const qs = new URLSearchParams();
+    if (status) qs.set("status", status);
+    if (study_id) qs.set("study_id", study_id);
+    const manuscripts = await apiJson(`/api/manuscripts?${qs.toString()}`);
+    const slim = (Array.isArray(manuscripts) ? manuscripts : []).map((m) => ({
+      id: m.id,
+      title: m.title,
+      status: m.status,
+      study_id: m.study_id,
+      research_domain: m.research_domain,
+    }));
+    return jsonCue(
+      slim,
+      "Pick a manuscript id, then call review_manuscript to run the context-grounded ensemble review.",
+    );
+  },
+);
+
+tool(
+  "review_manuscript",
+  {
+    title: "Review manuscript (context-grounded ensemble)",
+    description:
+      "Run the product's context-grounded ensemble review on a manuscript and persist the findings. Runs N grounded reviewers (default 3) + a neutral merge, grounded in prior-review retrieval, scholarly search, and a deterministic pack (GRIM impossible means, DOI/retraction checks, protocol drift). Returns {created, summary_md}. This is the product's recommended review — not a persona panel.",
+    inputSchema: {
+      manuscript_id: z.string().describe("manuscript id (from list_manuscripts)"),
+      ensemble_count: z
+        .number()
+        .int()
+        .min(1)
+        .max(5)
+        .optional()
+        .describe("reviewers before the merge; omit for the default (3), 1 = single grounded pass"),
+      provider: z
+        .enum(["openai", "gemini", "deepseek", "ollama", "lmstudio", "llama_server"])
+        .optional()
+        .describe("override the app's default provider; omit to use the app's configured provider"),
+      model: z.string().optional().describe("override the model for the chosen provider"),
+    },
+  },
+  async ({ manuscript_id, ensemble_count, provider, model }) => {
+    const body = {};
+    if (ensemble_count !== undefined) body.ensemble_count = ensemble_count;
+    if (provider) body.provider = provider;
+    if (model) body.model = model;
+    const result = await apiJson(`/api/manuscripts/${manuscript_id}/reviews/run-agent`, {
+      method: "POST",
+      body,
+    });
+    return jsonCue(
+      result,
+      `${result?.created ?? 0} review items were created — call get_reviews for ${manuscript_id} to read them, then relay the findings to the author.`,
+    );
+  },
+);
+
+tool(
+  "get_reviews",
+  {
+    title: "Get review findings",
+    description:
+      "List the review findings recorded for a manuscript (category, severity, section_ref, content, status). Use after review_manuscript, or to read existing findings.",
+    inputSchema: {
+      manuscript_id: z.string().describe("manuscript id"),
+      category: z
+        .enum(["mechanical", "rewrite", "structural", "evidence"])
+        .optional()
+        .describe("filter by category"),
+      status: z.enum(["pending", "applied", "dismissed"]).optional().describe("filter by status"),
+    },
+  },
+  async ({ manuscript_id, category, status }) => {
+    const qs = new URLSearchParams();
+    if (category) qs.set("category", category);
+    if (status) qs.set("status", status);
+    const reviews = await apiJson(`/api/manuscripts/${manuscript_id}/reviews?${qs.toString()}`);
+    return json(reviews);
+  },
+);
+
+// ---------------------------------------------------------------------------
 // Prompts — reusable playbooks the calling agent can load (Claude Code surfaces
 // these as slash commands). They encode the give-and-take loop and the hard
 // no-invent rule so the agent runs the intake consistently.
@@ -585,6 +688,36 @@ server.registerPrompt(
             "2. Call `list_records` with needs_review=true (then decision='unscreened') to fetch the records that need the author's attention. Present each with its title, abstract, and the imported screen reason.",
             "3. Ask the author for the decision on each (include / exclude / maybe), and why if they wish — do not decide for them.",
             "4. Record each answer with `set_record_decision` (use the record's internal id, set user_confirmed=true). Re-check with `corpus_overview` and summarise what still needs the author's confirmation.",
+          ].join("\n"),
+        },
+      },
+    ],
+  }),
+);
+
+server.registerPrompt(
+  "manuscript_review",
+  {
+    title: "Manuscript review (context-grounded ensemble)",
+    description:
+      "Run the product's context-grounded ensemble review on a manuscript and walk the author through the findings.",
+    argsSchema: { manuscript_id: z.string().optional().describe("manuscript id (optional; otherwise pick one)") },
+  },
+  ({ manuscript_id }) => ({
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `Review a manuscript with the reviewer-agent MCP tools. This is a context-grounded ensemble review (grounded reviewers + a neutral merge, with deterministic GRIM / DOI-retraction / protocol-drift grounding) — NOT a persona panel. Do not role-play "the statistician" etc.; the value is the grounding, not a costume.`,
+            "",
+            manuscript_id
+              ? `1. The manuscript is ${manuscript_id}. Confirm it exists with list_manuscripts if unsure.`
+              : "1. Call `list_manuscripts` and ask the author which manuscript to review (by title).",
+            "2. Call `review_manuscript` (omit ensemble_count for the default 3-reviewer ensemble; pass 1 only if the author wants a fast single pass).",
+            "3. Call `get_reviews` to read the merged findings.",
+            "4. Summarise for the author grouped by severity (critical → minor), each with its section_ref and the concrete suggested action. Flag any citation-integrity (unresolved/retracted DOI), GRIM, or protocol-drift findings prominently — those are facts the manuscript text alone cannot reveal. Let the author decide what to act on; do not invent findings the review did not produce.",
           ].join("\n"),
         },
       },

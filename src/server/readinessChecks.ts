@@ -290,28 +290,39 @@ function significantTokens(s: string): string[] {
   return [...out];
 }
 
-/**
- * Deterministic protocol↔manuscript comparison. Diffs a manuscript against the
- * study's compiled design (decision cards + reporting-checklist commitments)
- * and emits readiness findings for the kinds of drift the workshop slide names:
- * claim-support / outcome mismatch, comparator mismatch, protocol drift,
- * outcome-timing ambiguity, data-dictionary inconsistency, and reporting-
- * checklist gaps. No LLM — semantic/paraphrase drift is left to the readiness
- * agent, which appends items under the same gate names.
- */
-export function runProtocolCompareChecks(opts: {
-  checkId: string;
+// Deterministic protocol↔manuscript comparison. Diffs a manuscript against the
+// study's compiled design (decision cards + reporting-checklist commitments) and
+// emits findings for the kinds of drift the workshop slide names: claim-support /
+// outcome mismatch, comparator mismatch, protocol drift, outcome-timing
+// ambiguity, data-dictionary inconsistency, and reporting-checklist gaps. No LLM
+// — semantic/paraphrase drift is left to the readiness agent, which appends items
+// under the same gate names.
+
+/** One protocol↔manuscript drift finding, before persistence. */
+export interface ProtocolCompareFinding {
+  gate: string;
+  severity: Severity;
+  finding_md: string;
+  suggested_fix_md: string;
+}
+
+/** Pure computation behind {@link runProtocolCompareChecks}: diff the manuscript
+ * against the study's design cards + checklist commitments and return the drift
+ * findings WITHOUT persisting. Shared by the readiness flow (which persists them
+ * as readiness items) and the review grounding pack (which injects them as
+ * verified context). */
+export function computeProtocolCompareFindings(opts: {
   manuscriptId: string;
   studyId: string;
-}): { detected: number } {
+}): ProtocolCompareFinding[] {
   const manuscript = getManuscript(opts.manuscriptId);
   const study = getStudy(opts.studyId);
-  if (!manuscript || !study) return { detected: 0 };
+  if (!manuscript || !study) return [];
   const text = manuscript.content_md;
   const lower = text.toLowerCase();
   const decisions = listDecisions(opts.studyId);
   const byType = new Map(decisions.map((d) => [d.card_type, d] as const));
-  let detected = 0;
+  const findings: ProtocolCompareFinding[] = [];
 
   const valueOf = (cardType: string) =>
     parseValue(byType.get(cardType)?.value_json ?? null);
@@ -322,15 +333,7 @@ export function runProtocolCompareChecks(opts: {
     finding_md: string,
     suggested_fix_md: string,
   ) => {
-    appendReadinessItem({
-      checkId: opts.checkId,
-      gate,
-      severity,
-      finding_md,
-      suggested_fix_md,
-      auto_detected: true,
-    });
-    detected += 1;
+    findings.push({ gate, severity, finding_md, suggested_fix_md });
   };
   const mentioned = (phrase: string): boolean => {
     const p = phrase.trim().toLowerCase();
@@ -439,5 +442,32 @@ export function runProtocolCompareChecks(opts: {
     }
   }
 
-  return { detected };
+  return findings;
+}
+
+/**
+ * Deterministic protocol↔manuscript comparison for the readiness flow. Computes
+ * the drift findings (see {@link computeProtocolCompareFindings}) and persists
+ * each as an auto-detected readiness item.
+ */
+export function runProtocolCompareChecks(opts: {
+  checkId: string;
+  manuscriptId: string;
+  studyId: string;
+}): { detected: number } {
+  const findings = computeProtocolCompareFindings({
+    manuscriptId: opts.manuscriptId,
+    studyId: opts.studyId,
+  });
+  for (const f of findings) {
+    appendReadinessItem({
+      checkId: opts.checkId,
+      gate: f.gate,
+      severity: f.severity,
+      finding_md: f.finding_md,
+      suggested_fix_md: f.suggested_fix_md,
+      auto_detected: true,
+    });
+  }
+  return { detected: findings.length };
 }

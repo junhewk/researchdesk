@@ -34,6 +34,7 @@ export async function POST(
         baseUrl: parsed.data.base_url,
         timeoutMs: parsed.data.timeout_ms,
         maxToolSteps: parsed.data.max_tool_steps,
+        ensembleCount: parsed.data.ensemble_count,
       },
     });
     return NextResponse.json(result, { status: 201 });

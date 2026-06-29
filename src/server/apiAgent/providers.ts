@@ -73,6 +73,9 @@ export const apiAgentRequestSchema = z.object({
   base_url: z.string().trim().optional().nullable(),
   timeout_ms: z.number().int().positive().max(600_000).optional(),
   max_tool_steps: z.number().int().positive().max(12).optional(),
+  /** Reviewers in the grounded ensemble before the neutral merge. Omit for the
+   * product default (3); pass 1 for a single grounded pass. Capped to bound cost. */
+  ensemble_count: z.number().int().min(1).max(5).optional(),
 });
 
 export type ApiAgentRequest = z.infer<typeof apiAgentRequestSchema>;
@@ -84,6 +87,8 @@ export interface ApiAgentConfig {
   baseUrl?: string | null;
   timeoutMs?: number;
   maxToolSteps?: number;
+  /** Grounded-ensemble fanout for the review pathway (see DEFAULT_ENSEMBLE_FANOUT). */
+  ensembleCount?: number;
 }
 
 export interface ApiChatModel {
