@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Copy, Check, Download, Sparkles } from "lucide-react";
+import { Disclosure } from "@/components/ui/Disclosure";
 
 interface FindingPrompt {
   gateLabel: string;
@@ -126,9 +127,8 @@ export function RevisionHarnessPanel({ checkId, openCount }: Props) {
           />
 
           {data.findingPrompts.length > 0 && (
-            <div>
-              <h3 className="label mb-2">Per-finding prompts</h3>
-              <div className="space-y-4">
+            <Disclosure summary={`Per-finding prompts (${data.findingPrompts.length})`}>
+              <div className="space-y-4 pt-1">
                 {data.findingPrompts.map((f, i) => (
                   <PromptBlock
                     key={`${f.gateLabel}-${i}`}
@@ -140,12 +140,11 @@ export function RevisionHarnessPanel({ checkId, openCount }: Props) {
                   />
                 ))}
               </div>
-            </div>
+            </Disclosure>
           )}
 
-          <div>
-            <h3 className="label mb-2">Download a file</h3>
-            <div className="flex flex-wrap gap-2">
+          <Disclosure summary="Download a file">
+            <div className="flex flex-wrap gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => download("agents", "AGENTS.md")}
@@ -169,7 +168,7 @@ export function RevisionHarnessPanel({ checkId, openCount }: Props) {
               <span className="font-mono">revision-harness.md</span> is a plain
               document to attach or upload anywhere.
             </p>
-          </div>
+          </Disclosure>
         </div>
       )}
     </section>

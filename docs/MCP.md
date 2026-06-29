@@ -4,14 +4,16 @@ Drive the Reviewer-Agent app from **Claude Code** or **Codex** via the Model
 Context Protocol. The MCP server (`mcp/server.mjs`) is a small stdio process that
 bridges to the app's existing local REST API — so a CLI agent can find or create
 a study, import scoping-review CSVs, inspect the screened corpus + PRISMA flow,
-and generate a self-contained drafting brief / `AGENTS.md` for any paper section.
+generate a self-contained drafting brief / `AGENTS.md` for any paper section, and
+run the product's context-grounded **ensemble review** on a manuscript.
 
 ```
 Claude Code / Codex ──stdio(MCP)──▶ reviewer-agent-mcp ──HTTP(+token)──▶ app (127.0.0.1:3871)
 ```
 
-The MCP server holds no business logic; every tool wraps one `/api/studies/*`
-route. The app is the single source of truth (SQLite + markdown exports).
+The MCP server holds no business logic; every tool wraps one `/api/studies/*` or
+`/api/manuscripts/*` route. The app is the single source of truth (SQLite +
+markdown exports).
 
 ## 1. Run the app headless (Linux server, no GUI)
 
@@ -117,6 +119,22 @@ freeform `task`. Results/Discussion are grounded in the screened corpus + PRISMA
 counts; every prompt instructs the model to use only the recorded material and
 never invent findings.
 
+**Manuscripts & review** (run the context-grounded ensemble review, read findings)
+
+| Tool                  | Wraps                                          | Use                                                          |
+| --------------------- | ---------------------------------------------- | ----------------------------------------------------------- |
+| `list_manuscripts`    | `GET /api/manuscripts`                         | find a manuscript id (+ title/status/linked study)          |
+| `review_manuscript`   | `POST …/{id}/reviews/run-agent`                | run the grounded **ensemble** review (default 3 reviewers + merge); returns `{created, summary_md}` |
+| `get_reviews`         | `GET …/{id}/reviews`                           | read the merged findings (category, severity, section_ref)  |
+
+`review_manuscript` is the product's recommended review — an ensemble of grounded
+reviewers + a neutral merge, with a deterministic grounding pack (GRIM impossible
+means, DOI/retraction checks, protocol drift when a study is linked) injected.
+**It is not a persona panel.** Omit `ensemble_count` for the default (3); pass `1`
+for a fast single grounded pass. `provider`/`model` override the app's configured
+default. DOI/retraction validation makes external calls (DOI strings only) — this
+is the own-article path, which permits it.
+
 ## 5a. Prompts (give-and-take playbooks)
 
 The server also exposes MCP **prompts** — reusable playbooks the calling agent
@@ -132,6 +150,11 @@ author *decides*; the agent never fabricates research content.
 - **`screening_review(study_id)`** — walk the author through the records the
   imported AI screening flagged (`list_records` needs_review), ask for each
   decision, and record it with `set_record_decision`.
+- **`manuscript_review(manuscript_id?)`** — pick a manuscript (`list_manuscripts`),
+  run the grounded ensemble review (`review_manuscript`), read the merged findings
+  (`get_reviews`), and walk the author through them by severity — flagging the
+  citation-integrity / GRIM / protocol-drift findings the text alone can't reveal.
+  Explicitly **not** a persona panel.
 
 This is the intended flow after the author imports their files: import → run
 `methods_intake` to fill gaps and tighten the design through Q&A → `build_drafting_brief`.
@@ -155,6 +178,15 @@ In Claude Code, with the two CSVs on disk:
 The agent will: `create_study` → `import_review_csv([both files])` →
 `corpus_overview` → `build_drafting_brief(sections: ["results","discussion"])`,
 and save the returned `AGENTS.md`.
+
+To review a manuscript instead:
+
+> Use the reviewer-agent MCP to review my manuscript "Effect of …" and give me the
+> findings grouped by severity.
+
+The agent will: `list_manuscripts` (resolve the title → id) → `review_manuscript`
+(grounded 3-reviewer ensemble + merge) → `get_reviews`, then relay the findings —
+surfacing any unresolved/retracted DOI, GRIM, or protocol-drift items first.
 
 ## 7. Local smoke test (no agent)
 
