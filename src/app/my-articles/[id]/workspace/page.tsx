@@ -34,6 +34,7 @@ import { AgentModelEffortPicker } from "@/components/AgentModelEffortPicker";
 import { MarkdownText } from "@/components/MarkdownText";
 import { ManuscriptDiff } from "@/components/ManuscriptDiff";
 import { AttachmentsPanel } from "@/components/AttachmentsPanel";
+import { ReviewInputPanel } from "@/components/ReviewInputPanel";
 import {
   agentRunLabel,
   normalizeEffortForProvider,
@@ -439,15 +440,20 @@ export default function ManuscriptWorkspacePage() {
 
   const openCount = comments.filter((c) => c.severity !== "Resolved").length;
   const isRunning = sessionStatus === "running";
+  const reviewInputsReady = Boolean(manuscript?.review_request?.trim());
   const canSend =
     !!session && !sending && !isRunning && composerText.trim().length > 0;
-  const canRunReview = !!session && !sending && !isRunning;
+  const canRunReview = !!session && !sending && !isRunning && reviewInputsReady;
 
   // Basic, one-click entry to the product's context-grounded ensemble review
   // (equivalent to typing /review in the composer). The provider/model used is
   // whatever the Advanced drawer selects.
   const runReview = useCallback(async () => {
     if (!session || sending || sessionStatus === "running") return;
+    if (!manuscript?.review_request?.trim()) {
+      setError("Add a review focus in Review Inputs before running the pre-submission review.");
+      return;
+    }
     setSending(true);
     setError(null);
     try {
@@ -466,7 +472,13 @@ export default function ManuscriptWorkspacePage() {
     } finally {
       setSending(false);
     }
-  }, [session, sending, sessionStatus, setTab]);
+  }, [manuscript?.review_request, session, sending, sessionStatus, setTab]);
+
+  const prepareInputScan = useCallback(() => {
+    setComposerText(
+      "/explain\n\nScan this manuscript project for missing inputs needed before a high-quality pre-submission review. Focus only on missing or weak project inputs, not manuscript critique yet. Return required, recommended, and suggested inputs with the reason each matters.",
+    );
+  }, []);
 
   // ─── Bail-out states ───────────────────────────────────────────────────
 
@@ -626,8 +638,14 @@ export default function ManuscriptWorkspacePage() {
           )}
         </main>
 
-        {/* RIGHT — ATTACHMENTS + PEER FEEDBACK PANEL */}
+        {/* RIGHT — INPUTS + ATTACHMENTS + PEER FEEDBACK PANEL */}
         <aside className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-6rem)] flex flex-col gap-4">
+          <ReviewInputPanel
+            manuscript={manuscript}
+            onManuscriptChange={setManuscript}
+            onAgentScan={prepareInputScan}
+          />
+
           {/* Attachments panel */}
           <AttachmentsPanel manuscriptId={manuscript.id} />
 
@@ -646,7 +664,11 @@ export default function ManuscriptWorkspacePage() {
                   type="button"
                   onClick={() => void runReview()}
                   disabled={!canRunReview}
-                  title="Run the context-grounded ensemble review"
+                  title={
+                    reviewInputsReady
+                      ? "Run the context-grounded ensemble review"
+                      : "Add a review focus in Review Inputs first"
+                  }
                   className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
                 >
                   <MessageSquareText className="h-3.5 w-3.5" strokeWidth={1.75} />

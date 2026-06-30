@@ -16,6 +16,8 @@ import {
   type UploadKind,
   type UploadKindOption,
 } from "@/components/FileUploadList";
+import { InputReadinessPanel } from "@/components/InputReadinessPanel";
+import { buildReviewSetupInputs } from "@/lib/inputReadiness";
 
 type AssetKind =
   | "table"
@@ -70,6 +72,18 @@ export default function NewManuscriptPage() {
     [entries],
   );
   const manuscriptCount = entries.filter((e) => e.kind === "manuscript").length;
+  const inputItems = useMemo(
+    () =>
+      buildReviewSetupInputs({
+        entries,
+        title,
+        researchDomain,
+        journalType,
+        researchType,
+        reviewRequest,
+      }),
+    [entries, journalType, researchDomain, researchType, reviewRequest, title],
+  );
 
   // Auto-fill title from the manuscript file once it lands.
   useEffect(() => {
@@ -192,6 +206,13 @@ export default function NewManuscriptPage() {
         </div>
       )}
 
+      <InputReadinessPanel
+        title="Review inputs"
+        description="Start with the manuscript and review focus, then add venue and supporting material for a better pre-submission critique."
+        items={inputItems}
+        className="mb-8"
+      />
+
       <FileUploadList
         entries={entries}
         onChange={setEntries}
@@ -278,14 +299,14 @@ export default function NewManuscriptPage() {
 
         <div>
           <label htmlFor="review-request" className="label block mb-1.5">
-            What do you want from the agent?
+            Review focus
           </label>
           <textarea
             id="review-request"
             value={reviewRequest}
             onChange={(e) => setReviewRequest(e.target.value)}
             rows={3}
-            placeholder="Optional. E.g. 'Focus on the statistical claims in §3.'"
+            placeholder="E.g. 'General pre-submission review, with extra attention to the statistical claims in section 3.'"
             className="w-full rounded border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-3 py-2 text-[13px] text-[color:var(--color-on-surface)] focus:border-[color:var(--color-primary)] outline-none resize-y"
           />
         </div>

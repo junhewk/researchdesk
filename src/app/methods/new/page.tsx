@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { InputReadinessPanel } from "@/components/InputReadinessPanel";
 import { useProviderHealth } from "@/lib/hooks/useProviderHealth";
+import { buildWorkbenchSetupInputs } from "@/lib/inputReadiness";
 import { PROVIDER_INFO } from "@/lib/methodsLabels";
 import type { StudyMode } from "@/server/types";
 
@@ -83,6 +85,15 @@ export default function NewStudyPage() {
   const [localOnly, setLocalOnly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const inputItems = useMemo(
+    () =>
+      buildWorkbenchSetupInputs({
+        title,
+        mode,
+        researchQuestion: question,
+      }),
+    [mode, question, title],
+  );
 
   async function create() {
     if (!title.trim() || !mode) return;
@@ -124,6 +135,13 @@ export default function NewStudyPage() {
         A few questions to set up the right decision canvas. You can refine
         everything later — nothing here is locked in.
       </p>
+
+      <InputReadinessPanel
+        title="What to prepare"
+        description="Start with the required setup, then bring evidence/search material as the canvas asks for it."
+        items={inputItems}
+        className="mb-8"
+      />
 
       <label className="label block mb-2">Working title</label>
       <input

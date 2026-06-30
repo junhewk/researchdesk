@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { InputReadinessPanel } from "@/components/InputReadinessPanel";
 import { SessionStream } from "@/components/SessionStream";
 import { AgentStatusChip } from "@/components/methods/AgentStatusChip";
 import { CanvasIntro, CANVAS_INTRO_STORAGE_KEY } from "@/components/methods/CanvasIntro";
@@ -23,6 +24,13 @@ import {
   STALE_CARD_EXPLAIN,
   STUDY_MODE_INFO,
 } from "@/lib/methodsLabels";
+import {
+  buildWorkbenchInputs,
+  type InputReadinessItem,
+  type WorkbenchCorpusState,
+  type WorkbenchCardInput,
+  type WorkbenchInputArgs,
+} from "@/lib/inputReadiness";
 import {
   DECISION_STATE_STYLES,
   PREFLIGHT_SEVERITY_STYLES,
@@ -170,6 +178,30 @@ async function loadAll(base: string) {
   };
 }
 
+async function loadCorpusState(
+  base: string,
+  mode: Study["mode"],
+): Promise<WorkbenchCorpusState | null> {
+  if (mode !== "scoping_review") return null;
+  try {
+    const [pRes, rRes] = await Promise.all([
+      fetch(`${base}/prisma`),
+      fetch(`${base}/records?limit=1`),
+    ]);
+    const prisma = pRes.ok ? await pRes.json() : {};
+    const records = rRes.ok ? await rRes.json() : {};
+    const stats = records.stats ?? {};
+    return {
+      searches: Array.isArray(prisma.searches) ? prisma.searches.length : 0,
+      records: Number(stats.total ?? records.total ?? 0),
+      confirmed: Number(stats.confirmed ?? 0),
+      needs_review: Number(stats.needs_review ?? 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function StudyWorkspace({
   studyId,
   initialStudy,
@@ -183,6 +215,7 @@ export function StudyWorkspace({
   const [inspector, setInspector] = useState<Inspector | null>(null);
   const [artifacts, setArtifacts] = useState<ArtifactSummary[]>([]);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [corpus, setCorpus] = useState<WorkbenchCorpusState | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [stream, setStream] = useState<StreamTarget | null>(null);
@@ -244,16 +277,27 @@ export function StudyWorkspace({
   }, []);
 
   const refresh = useCallback(async () => {
-    apply(await loadAll(base));
-  }, [base, apply]);
+    const [data, corpusState] = await Promise.all([
+      loadAll(base),
+      loadCorpusState(base, study.mode),
+    ]);
+    apply(data);
+    setCorpus(corpusState);
+  }, [base, apply, study.mode]);
 
   useEffect(() => {
     let active = true;
-    loadAll(base).then((d) => active && apply(d));
+    Promise.all([loadAll(base), loadCorpusState(base, study.mode)]).then(
+      ([data, corpusState]) => {
+        if (!active) return;
+        apply(data);
+        setCorpus(corpusState);
+      },
+    );
     return () => {
       active = false;
     };
-  }, [base, apply]);
+  }, [base, apply, study.mode]);
 
   const scrollToCard = useCallback((cardType: string, alsoExpand = true) => {
     if (alsoExpand) setExpanded((s) => new Set(s).add(cardType));
@@ -286,6 +330,31 @@ export function StudyWorkspace({
     setPending({ cardType, value });
     scrollToCard(cardType);
   }
+
+  const inputItems = useMemo(() => {
+    const evidenceCount = Object.values(grouped).reduce(
+      (sum, items) => sum + items.length,
+      0,
+    );
+    return buildWorkbenchInputs({
+      studyId,
+      mode: study.mode,
+      cards: cards as WorkbenchCardInput[],
+      evidenceCount,
+      corpus,
+    } satisfies WorkbenchInputArgs);
+  }, [cards, corpus, grouped, study.mode, studyId]);
+
+  const handleInputAction = useCallback(
+    (item: InputReadinessItem) => {
+      if (item.target === "import-evidence") {
+        setImporting(true);
+        return;
+      }
+      if (item.target) scrollToCard(item.target);
+    },
+    [scrollToCard],
+  );
 
   return (
     <div className="reveal">
@@ -340,12 +409,14 @@ export function StudyWorkspace({
           base={base}
           inspector={inspector}
           cards={cards}
+          inputItems={inputItems}
           requiresLocalProvider={requiresLocalProvider}
           localProvider={localProvider}
           agentHealth={agentHealth}
           setNotice={setNotice}
           onChange={refresh}
           onJump={(card) => scrollToCard(card)}
+          onInputAction={handleInputAction}
         />
       </div>
 
@@ -1129,22 +1200,26 @@ function InspectorPanel({
   base,
   inspector,
   cards,
+  inputItems,
   requiresLocalProvider,
   localProvider,
   agentHealth,
   setNotice,
   onChange,
   onJump,
+  onInputAction,
 }: {
   base: string;
   inspector: Inspector | null;
   cards: CardView[];
+  inputItems: InputReadinessItem[];
   requiresLocalProvider: boolean;
   localProvider: LocalProvider | null;
   agentHealth: ProviderHealthView | null;
   setNotice: (s: string | null) => void;
   onChange: () => void;
   onJump: (cardType: string) => void;
+  onInputAction: (item: InputReadinessItem) => void;
 }) {
   const [riskRunning, setRiskRunning] = useState(false);
 
@@ -1178,7 +1253,22 @@ function InspectorPanel({
       );
     }
   }
-  if (!inspector) return <aside />;
+  if (!inspector) {
+    return (
+      <aside className="border-l border-[color:var(--color-outline-variant)] pl-4 max-h-[72vh] overflow-y-auto sticky top-[96px]">
+        <InputReadinessPanel
+          title="Inputs"
+          description="Required inputs must be present before artifacts and checks are dependable."
+          items={inputItems}
+          onItemAction={onInputAction}
+          onAgentScan={runRisk}
+          agentScanLabel={riskRunning ? "Checking..." : "Scan for missing inputs"}
+          agentScanDisabled={riskRunning}
+          className="mb-4"
+        />
+      </aside>
+    );
+  }
   const byType = new Map(cards.map((c) => [c.card_type, c]));
   const blocking = [
     ...inspector.findings.filter((f) => f.severity === "blocking"),
@@ -1190,6 +1280,17 @@ function InspectorPanel({
   ];
   return (
     <aside className="border-l border-[color:var(--color-outline-variant)] pl-4 max-h-[72vh] overflow-y-auto sticky top-[96px]">
+      <InputReadinessPanel
+        title="Inputs"
+        description="Required inputs must be present before artifacts and checks are dependable."
+        items={inputItems}
+        onItemAction={onInputAction}
+        onAgentScan={runRisk}
+        agentScanLabel={riskRunning ? "Checking..." : "Scan for missing inputs"}
+        agentScanDisabled={riskRunning}
+        className="mb-4"
+      />
+
       <div className="flex items-baseline justify-between mb-1">
         <h2 className="label">Checks</h2>
         <button
@@ -1563,4 +1664,3 @@ function StreamModal({
     </div>
   );
 }
-
