@@ -5,6 +5,7 @@ import type { DesignDecision, EvidenceItem, Study } from "../types";
 export interface ProposalSeed {
   label: string;
   value_suggestion: string;
+  fields_suggestion?: Record<string, string>;
   consequence_md: string;
 }
 
@@ -25,6 +26,7 @@ function uniqPush(
   out.push({
     label: seed.label.trim() || value,
     value_suggestion: value,
+    fields_suggestion: seed.fields_suggestion,
     consequence_md: seed.consequence_md.trim(),
   });
 }
@@ -60,6 +62,7 @@ export function buildSeedProposalOptions(opts: {
     uniqPush(out, seen, {
       label: "Keep current value",
       value_suggestion: value.value,
+      fields_suggestion: value.fields,
       consequence_md:
         "Already entered on this card; revise the required sub-fields before saving if the framing changes.",
     });

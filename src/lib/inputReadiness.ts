@@ -436,6 +436,8 @@ export function buildReviewInputs(args: {
       tier: "recommended",
       status: statusFrom(hasText(manuscript.journal_type)),
       stage: "context",
+      actionLabel: hasText(manuscript.journal_type) ? "Edit journal" : "Add journal",
+      target: "journal-context",
     },
     {
       id: "research-context",
@@ -449,13 +451,18 @@ export function buildReviewInputs(args: {
         hasText(manuscript.research_domain) && hasText(manuscript.research_type),
       ),
       stage: "context",
+      actionLabel:
+        hasText(manuscript.research_domain) && hasText(manuscript.research_type)
+          ? "Edit context"
+          : "Add context",
+      target: "research-context",
     },
     {
       id: "source-methods",
       label: "Source methods",
       detail: hasMethods
         ? "This manuscript is linked to a Methods Workbench study."
-        : "Linking a study lets readiness/review compare manuscript claims against planned methods.",
+        : "Articles generated from Methods Workbench can be checked against their planned methods.",
       tier: "recommended",
       status: hasMethods ? "present" : "missing",
       stage: "context",

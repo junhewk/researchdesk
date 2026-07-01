@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { InputReadinessPanel } from "@/components/InputReadinessPanel";
 import { SessionStream } from "@/components/SessionStream";
 import { AgentStatusChip } from "@/components/methods/AgentStatusChip";
@@ -39,16 +38,60 @@ import {
 import type { Provider, Study } from "@/server/types";
 
 type LocalProvider = Extract<Provider, "ollama" | "lmstudio" | "llama_server">;
+type PendingProposal = {
+  cardType: string;
+  value: string;
+  fields?: Record<string, string> | null;
+};
 
+const WORKBENCH_PROVIDER_STORAGE_KEY = "reviewer.methods.provider";
 const LOCAL_PROVIDER_STORAGE_KEY = "reviewer.methods.localProvider";
+const PROVIDER_OPTIONS: { value: Provider; label: string }[] = [
+  { value: "openai", label: "OpenAI" },
+  { value: "gemini", label: "Gemini" },
+  { value: "deepseek", label: "DeepSeek" },
+  { value: "ollama", label: "Ollama" },
+  { value: "lmstudio", label: "LM Studio" },
+  { value: "llama_server", label: "llama-server" },
+];
 const LOCAL_PROVIDER_OPTIONS: { value: LocalProvider; label: string }[] = [
   { value: "ollama", label: "Ollama" },
   { value: "lmstudio", label: "LM Studio" },
   { value: "llama_server", label: "llama-server" },
 ];
 
+function isProvider(value: string | null): value is Provider {
+  return PROVIDER_OPTIONS.some((option) => option.value === value);
+}
+
 function isLocalProvider(value: string | null): value is LocalProvider {
   return LOCAL_PROVIDER_OPTIONS.some((option) => option.value === value);
+}
+
+function normalizeWorkbenchProvider(
+  provider: Provider | null,
+  requiresLocalProvider: boolean,
+): Provider | null {
+  if (!provider) return requiresLocalProvider ? "ollama" : null;
+  if (requiresLocalProvider && !isLocalProvider(provider)) return "ollama";
+  return provider;
+}
+
+function storedWorkbenchProvider(requiresLocalProvider: boolean): Provider | null {
+  if (typeof window === "undefined") return requiresLocalProvider ? "ollama" : null;
+  try {
+    const stored = window.localStorage.getItem(WORKBENCH_PROVIDER_STORAGE_KEY);
+    if (isProvider(stored)) {
+      return normalizeWorkbenchProvider(stored, requiresLocalProvider);
+    }
+    const oldLocal = window.localStorage.getItem(LOCAL_PROVIDER_STORAGE_KEY);
+    if (isLocalProvider(oldLocal)) {
+      return oldLocal;
+    }
+  } catch {
+    /* ignore */
+  }
+  return requiresLocalProvider ? "ollama" : null;
 }
 
 interface StreamTarget {
@@ -221,34 +264,59 @@ export function StudyWorkspace({
   const [stream, setStream] = useState<StreamTarget | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [highlight, setHighlight] = useState<string | null>(null);
-  const [pending, setPending] = useState<{ cardType: string; value: string } | null>(null);
+  const [pending, setPending] = useState<PendingProposal | null>(null);
   const [introOpen, setIntroOpen] = useState(false);
-  const [localProvider, setLocalProvider] = useState<LocalProvider | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const stored = window.localStorage.getItem(LOCAL_PROVIDER_STORAGE_KEY);
-      return isLocalProvider(stored) ? stored : null;
-    } catch {
-      return null;
-    }
-  });
+  const requiresLocalProvider = study.confidentiality_mode === "local_only";
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(() =>
+    storedWorkbenchProvider(requiresLocalProvider),
+  );
   const initialized = useRef(false);
 
   const base = `/api/studies/${studyId}`;
-  const requiresLocalProvider = study.confidentiality_mode === "local_only";
-  // The provider agent passes will actually use: the chosen local provider
-  // for private studies, otherwise the default cloud provider.
-  const activeProvider = requiresLocalProvider ? localProvider : "openai";
+  const activeProvider = selectedProvider;
   const { health: agentHealth } = useProviderHealth(activeProvider);
 
-  const chooseLocalProvider = useCallback((provider: LocalProvider) => {
-    setLocalProvider(provider);
+  const chooseProvider = useCallback((provider: Provider) => {
+    const next = normalizeWorkbenchProvider(provider, requiresLocalProvider);
+    setSelectedProvider(next);
     try {
-      window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, provider);
+      if (next) {
+        window.localStorage.setItem(WORKBENCH_PROVIDER_STORAGE_KEY, next);
+        if (isLocalProvider(next)) {
+          window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, next);
+        }
+      }
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [requiresLocalProvider]);
+
+  useEffect(() => {
+    let active = true;
+    if (selectedProvider) return;
+    fetch("/api/settings/providers")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { defaultProvider?: Provider } | null) => {
+        if (!active) return;
+        const next = normalizeWorkbenchProvider(data?.defaultProvider ?? null, requiresLocalProvider);
+        if (!next) return;
+        setSelectedProvider(next);
+        try {
+          window.localStorage.setItem(WORKBENCH_PROVIDER_STORAGE_KEY, next);
+          if (isLocalProvider(next)) {
+            window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, next);
+          }
+        } catch {
+          /* ignore */
+        }
+      })
+      .catch(() => {
+        if (active && requiresLocalProvider) setSelectedProvider("ollama");
+      });
+    return () => {
+      active = false;
+    };
+  }, [requiresLocalProvider, selectedProvider]);
 
   const apply = useCallback((d: Awaited<ReturnType<typeof loadAll>>) => {
     setCards(d.cards);
@@ -325,9 +393,13 @@ export function StudyWorkspace({
     refresh();
   }
 
-  function useProposal(cardType: string, value: string) {
+  function useProposal(
+    cardType: string,
+    value: string,
+    fields?: Record<string, string> | null,
+  ) {
     setStream(null);
-    setPending({ cardType, value });
+    setPending({ cardType, value, fields });
     scrollToCard(cardType);
   }
 
@@ -361,9 +433,9 @@ export function StudyWorkspace({
       <Header
         study={study}
         inspector={inspector}
-        localProvider={localProvider}
+        selectedProvider={selectedProvider}
         activeProvider={activeProvider}
-        onLocalProviderChange={chooseLocalProvider}
+        onProviderChange={chooseProvider}
         onJumpNext={() =>
           inspector?.nextBestActionCard && scrollToCard(inspector.nextBestActionCard)
         }
@@ -382,7 +454,7 @@ export function StudyWorkspace({
       />
       <ProgressRail cards={cards} onJump={(card) => scrollToCard(card)} />
 
-      <div className="grid grid-cols-[250px_1fr_290px] gap-6 mt-5 items-start">
+      <div className="mt-5 grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[250px_minmax(0,1fr)_290px] xl:items-start">
         <EvidenceTray
           grouped={grouped}
           cards={cards}
@@ -397,7 +469,7 @@ export function StudyWorkspace({
           highlight={highlight}
           pending={pending}
           requiresLocalProvider={requiresLocalProvider}
-          localProvider={localProvider}
+          activeProvider={activeProvider}
           agentHealth={agentHealth}
           onToggle={toggleCard}
           onChange={refresh}
@@ -411,7 +483,7 @@ export function StudyWorkspace({
           cards={cards}
           inputItems={inputItems}
           requiresLocalProvider={requiresLocalProvider}
-          localProvider={localProvider}
+          activeProvider={activeProvider}
           agentHealth={agentHealth}
           setNotice={setNotice}
           onChange={refresh}
@@ -433,7 +505,7 @@ export function StudyWorkspace({
         <ImportEvidenceModal
           base={base}
           requiresLocalProvider={requiresLocalProvider}
-          localProvider={localProvider}
+          activeProvider={activeProvider}
           agentHealth={agentHealth}
           onClose={() => setImporting(false)}
           onDone={(msg) => {
@@ -463,59 +535,32 @@ export function StudyWorkspace({
 function Header({
   study,
   inspector,
-  localProvider,
+  selectedProvider,
   activeProvider,
-  onLocalProviderChange,
+  onProviderChange,
   onJumpNext,
   onShowIntro,
 }: {
   study: Study;
   inspector: Inspector | null;
-  localProvider: LocalProvider | null;
-  activeProvider: string | null;
-  onLocalProviderChange: (provider: LocalProvider) => void;
+  selectedProvider: Provider | null;
+  activeProvider: Provider | null;
+  onProviderChange: (provider: Provider) => void;
   onJumpNext: () => void;
   onShowIntro: () => void;
 }) {
-  const router = useRouter();
-  const [creatingArticle, setCreatingArticle] = useState(false);
-  const [articleError, setArticleError] = useState<string | null>(null);
   const [showDraftingPrompts, setShowDraftingPrompts] = useState(false);
-
-  async function createArticleDraft() {
-    setCreatingArticle(true);
-    setArticleError(null);
-    try {
-      const res = await fetch(`/api/studies/${study.id}/article`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reuse_existing: true }),
-      });
-      const data = (await res.json().catch(() => null)) as
-        | { links?: { workspace?: string }; manuscript?: { id: string }; error?: string }
-        | null;
-      if (!res.ok || !data) {
-        throw new Error(data?.error || `article creation failed (${res.status})`);
-      }
-      router.push(data.links?.workspace ?? `/my-articles/${data.manuscript?.id}/workspace`);
-      router.refresh();
-    } catch (err) {
-      setArticleError(err instanceof Error ? err.message : "article creation failed");
-    } finally {
-      setCreatingArticle(false);
-    }
-  }
 
   return (
     <div className="border-b-2 border-[color:var(--color-ink)] pb-3 sticky top-0 z-30 bg-[color:var(--color-surface)]">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Link
           href="/methods-workbench"
-          className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
+          className="shrink-0 text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
         >
           ← Methods Workbench
         </Link>
-        <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-wide">
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 text-[10px] font-mono uppercase tracking-wide">
           <button
             onClick={onShowIntro}
             className="text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
@@ -536,12 +581,11 @@ function Header({
               className="px-2 text-[10px]"
             />
           )}
-          {study.confidentiality_mode === "local_only" && (
-            <LocalProviderPicker
-              value={localProvider}
-              onChange={onLocalProviderChange}
-            />
-          )}
+          <WorkbenchProviderPicker
+            value={selectedProvider}
+            localOnly={study.confidentiality_mode === "local_only"}
+            onChange={onProviderChange}
+          />
           {activeProvider && <AgentStatusChip provider={activeProvider} />}
           <InfoTip explain={READY_PCT_EXPLAIN} underline={false}>
             <span className="px-2 py-0.5 border border-[color:var(--color-ink)]">
@@ -550,10 +594,10 @@ function Header({
           </InfoTip>
         </div>
       </div>
-      <div className="flex items-end justify-between gap-4">
-        <div>
+      <div className="mt-2 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-4">
+        <div className="min-w-0">
           <h1
-            className="font-display text-[28px] leading-tight mt-2"
+            className="font-display text-[28px] leading-tight"
             style={{ fontVariationSettings: "'opsz' 48, 'wght' 420" }}
           >
             {study.title}
@@ -564,8 +608,8 @@ function Header({
             </p>
           )}
         </div>
-        <div className="shrink-0 mb-1 flex flex-col items-end gap-1">
-          <div className="flex flex-wrap justify-end gap-2">
+        <div className="flex flex-col gap-1 lg:mb-1 lg:items-end">
+          <div className="flex flex-wrap gap-2 lg:justify-end">
             {study.mode === "scoping_review" && (
               <>
                 <Link
@@ -593,24 +637,11 @@ function Header({
             <button
               type="button"
               onClick={() => setShowDraftingPrompts(true)}
-              className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
+              className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] transition-colors"
             >
               Drafting prompts
             </button>
-            <button
-              type="button"
-              onClick={createArticleDraft}
-              disabled={creatingArticle}
-              className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] disabled:opacity-50 transition-colors"
-            >
-              {creatingArticle ? "Creating article..." : "Create Article Draft"}
-            </button>
           </div>
-          {articleError && (
-            <span className="max-w-[280px] text-right text-[11px] leading-snug text-[color:var(--color-error)]">
-              {articleError}
-            </span>
-          )}
         </div>
       </div>
       {showDraftingPrompts && (
@@ -623,20 +654,23 @@ function Header({
   );
 }
 
-function LocalProviderPicker({
+function WorkbenchProviderPicker({
   value,
+  localOnly,
   onChange,
 }: {
-  value: LocalProvider | null;
-  onChange: (provider: LocalProvider) => void;
+  value: Provider | null;
+  localOnly: boolean;
+  onChange: (provider: Provider) => void;
 }) {
+  const options = localOnly ? LOCAL_PROVIDER_OPTIONS : PROVIDER_OPTIONS;
   return (
-    <div className="inline-flex items-center gap-1">
+    <div className="inline-flex min-w-0 flex-wrap items-center gap-1">
       <span className="text-[color:var(--color-on-surface-variant)]">
-        Local provider
+        AI provider
       </span>
-      <div className="inline-flex border border-[color:var(--color-outline-variant)]">
-        {LOCAL_PROVIDER_OPTIONS.map((option) => (
+      <div className="inline-flex flex-wrap border border-[color:var(--color-outline-variant)]">
+        {options.map((option) => (
           <button
             key={option.value}
             type="button"
@@ -731,7 +765,7 @@ function EvidenceTray({
   }
 
   return (
-    <aside className="border-r border-[color:var(--color-outline-variant)] pr-4 min-h-[400px]">
+    <aside className="min-w-0 border-b border-[color:var(--color-outline-variant)] pb-4 xl:min-h-[400px] xl:border-b-0 xl:border-r xl:pb-0 xl:pr-4">
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="label">Evidence</h2>
         <button
@@ -830,7 +864,7 @@ function Canvas({
   highlight,
   pending,
   requiresLocalProvider,
-  localProvider,
+  activeProvider,
   agentHealth,
   onToggle,
   onChange,
@@ -843,9 +877,9 @@ function Canvas({
   inspector: Inspector | null;
   expanded: Set<string>;
   highlight: string | null;
-  pending: { cardType: string; value: string } | null;
+  pending: PendingProposal | null;
   requiresLocalProvider: boolean;
-  localProvider: LocalProvider | null;
+  activeProvider: Provider | null;
   agentHealth: ProviderHealthView | null;
   onToggle: (cardType: string) => void;
   onChange: () => void;
@@ -871,12 +905,12 @@ function Canvas({
   }
 
   return (
-    <section className="space-y-5 max-h-[72vh] overflow-y-auto pr-1">
+    <section className="min-w-0 space-y-5 xl:max-h-[72vh] xl:overflow-y-auto xl:pr-1">
       {stages.map((stage) => {
         const ready = stage.cards.filter((c) => isReady(c.state)).length;
         return (
           <div key={stage.label}>
-            <div className="flex items-baseline gap-2 mb-2 sticky top-0 bg-[color:var(--color-surface)] py-1 z-10">
+            <div className="mb-2 flex items-baseline gap-2 bg-[color:var(--color-surface)] py-1 xl:sticky xl:top-0 xl:z-10">
               <h2 className="label">{stage.label}</h2>
               <span className="text-[10px] font-mono text-[color:var(--color-on-surface-variant)]">
                 {ready}/{stage.cards.length}
@@ -892,11 +926,11 @@ function Canvas({
                   conflict={conflictCards.has(card.card_type)}
                   open={expanded.has(card.card_type)}
                   highlighted={highlight === card.card_type}
-                  pendingValue={
-                    pending?.cardType === card.card_type ? pending.value : null
+                  pendingProposal={
+                    pending?.cardType === card.card_type ? pending : null
                   }
                   requiresLocalProvider={requiresLocalProvider}
-                  localProvider={localProvider}
+                  activeProvider={activeProvider}
                   agentHealth={agentHealth}
                   onToggle={() => onToggle(card.card_type)}
                   onChange={onChange}
@@ -919,9 +953,9 @@ function CardItem({
   conflict,
   open,
   highlighted,
-  pendingValue,
+  pendingProposal,
   requiresLocalProvider,
-  localProvider,
+  activeProvider,
   agentHealth,
   onToggle,
   onChange,
@@ -934,9 +968,9 @@ function CardItem({
   conflict: boolean;
   open: boolean;
   highlighted: boolean;
-  pendingValue: string | null;
+  pendingProposal: PendingProposal | null;
   requiresLocalProvider: boolean;
-  localProvider: LocalProvider | null;
+  activeProvider: Provider | null;
   agentHealth: ProviderHealthView | null;
   onToggle: () => void;
   onChange: () => void;
@@ -952,6 +986,7 @@ function CardItem({
   const [askingQuestion, setAskingQuestion] = useState(false);
   const [questionDraft, setQuestionDraft] = useState("");
 
+  /* eslint-disable react-hooks/set-state-in-effect -- this inline editor keeps a local draft in sync with persisted card values and accepted proposal drafts. */
   useEffect(() => {
     setValue(card.value.value ?? "");
     setFields(card.value.fields ?? {});
@@ -960,13 +995,19 @@ function CardItem({
 
   // Apply an agent proposal's "Use this" pre-fill (unsaved).
   useEffect(() => {
-    if (pendingValue != null) {
-      setValue(pendingValue);
+    if (pendingProposal) {
+      setValue(pendingProposal.value);
+      if (pendingProposal.fields && Object.keys(pendingProposal.fields).length > 0) {
+        setFields((previous) => ({
+          ...previous,
+          ...pendingProposal.fields,
+        }));
+      }
       setDirty(true);
       onPendingApplied();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingValue]);
+  }, [onPendingApplied, pendingProposal]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function save() {
     if (!dirty) return;
@@ -985,8 +1026,12 @@ function CardItem({
     onChange();
   }
   async function propose() {
-    if (requiresLocalProvider && !localProvider) {
-      setNotice("Pick where the AI runs first — choose Ollama, LM Studio, or llama-server in the header above.");
+    if (!activeProvider) {
+      setNotice(
+        requiresLocalProvider
+          ? "Pick where the AI runs first — choose Ollama, LM Studio, or llama-server in the header above."
+          : "Pick where the AI runs first in the header above.",
+      );
       return;
     }
     if (agentHealth && !agentHealth.ok) {
@@ -997,7 +1042,7 @@ function CardItem({
     }
     const r = await post(
       `${base}/cards/${card.card_type}/propose`,
-      requiresLocalProvider ? { provider: localProvider } : {},
+      { provider: activeProvider },
     );
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.session_id) {
@@ -1039,12 +1084,12 @@ function CardItem({
       {/* Header row — click to expand/collapse */}
       <button
         onClick={onToggle}
-        className="w-full flex items-baseline gap-2 p-3 text-left"
+        className="flex w-full items-start gap-2 p-3 text-left"
       >
         <span className="text-[10px] text-[color:var(--color-on-surface-variant)] font-mono">
           {open ? "▾" : "▸"}
         </span>
-        <h3 className="font-display text-[16px] flex-1">{card.label}</h3>
+        <h3 className="min-w-0 flex-1 font-display text-[16px]">{card.label}</h3>
         {card.stale && (
           <TermChip
             info={{ label: "re-check", explain: STALE_CARD_EXPLAIN }}
@@ -1084,8 +1129,8 @@ function CardItem({
             className="w-full bg-transparent border border-[color:var(--color-outline-variant)] rounded p-2 text-[13px] focus:outline-none focus:border-[color:var(--color-primary)]"
           />
           {card.requiredFields.map((f) => (
-            <div key={f.id} className="flex items-center gap-2">
-              <span className="w-[34%] shrink-0 text-[11px] text-[color:var(--color-on-surface-variant)]">
+            <div key={f.id} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+              <span className="text-[11px] text-[color:var(--color-on-surface-variant)] sm:w-[34%] sm:shrink-0">
                 {f.label}
               </span>
               <input
@@ -1095,7 +1140,7 @@ function CardItem({
                   setDirty(true);
                 }}
                 onBlur={save}
-                className="flex-1 bg-transparent border-b border-[color:var(--color-outline-variant)] py-1 text-[12px] focus:outline-none focus:border-[color:var(--color-primary)]"
+                className="min-w-0 flex-1 bg-transparent border-b border-[color:var(--color-outline-variant)] py-1 text-[12px] focus:outline-none focus:border-[color:var(--color-primary)]"
               />
             </div>
           ))}
@@ -1155,7 +1200,7 @@ function CardItem({
             )}
           </div>
           {askingQuestion && (
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center">
               <input
                 autoFocus
                 value={questionDraft}
@@ -1169,7 +1214,7 @@ function CardItem({
                   if (e.key === "Escape") setAskingQuestion(false);
                 }}
                 placeholder="What needs answering before you can decide? (e.g. ask the statistician about…)"
-                className="flex-1 bg-transparent border-b border-[color:var(--color-outline-variant)] py-1 text-[12px] focus:outline-none focus:border-[color:var(--color-primary)]"
+                className="min-w-0 flex-1 bg-transparent border-b border-[color:var(--color-outline-variant)] py-1 text-[12px] focus:outline-none focus:border-[color:var(--color-primary)]"
               />
               <button
                 disabled={!questionDraft.trim()}
@@ -1202,7 +1247,7 @@ function InspectorPanel({
   cards,
   inputItems,
   requiresLocalProvider,
-  localProvider,
+  activeProvider,
   agentHealth,
   setNotice,
   onChange,
@@ -1214,7 +1259,7 @@ function InspectorPanel({
   cards: CardView[];
   inputItems: InputReadinessItem[];
   requiresLocalProvider: boolean;
-  localProvider: LocalProvider | null;
+  activeProvider: Provider | null;
   agentHealth: ProviderHealthView | null;
   setNotice: (s: string | null) => void;
   onChange: () => void;
@@ -1224,8 +1269,12 @@ function InspectorPanel({
   const [riskRunning, setRiskRunning] = useState(false);
 
   async function runRisk() {
-    if (requiresLocalProvider && !localProvider) {
-      setNotice("Pick where the AI runs first — choose Ollama, LM Studio, or llama-server in the header above.");
+    if (!activeProvider) {
+      setNotice(
+        requiresLocalProvider
+          ? "Pick where the AI runs first — choose Ollama, LM Studio, or llama-server in the header above."
+          : "Pick where the AI runs first in the header above.",
+      );
       return;
     }
     if (agentHealth && !agentHealth.ok) {
@@ -1238,7 +1287,7 @@ function InspectorPanel({
     setNotice("Checking your design for methodological risks — this can take a minute or two…");
     const r = await post(
       `${base}/preflight/run-risk`,
-      requiresLocalProvider ? { provider: localProvider } : {},
+      { provider: activeProvider },
     );
     const j = await r.json().catch(() => ({}));
     setRiskRunning(false);
@@ -1255,7 +1304,7 @@ function InspectorPanel({
   }
   if (!inspector) {
     return (
-      <aside className="border-l border-[color:var(--color-outline-variant)] pl-4 max-h-[72vh] overflow-y-auto sticky top-[96px]">
+      <aside className="min-w-0 border-t border-[color:var(--color-outline-variant)] pt-4 xl:sticky xl:top-[96px] xl:max-h-[72vh] xl:overflow-y-auto xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
         <InputReadinessPanel
           title="Inputs"
           description="Required inputs must be present before artifacts and checks are dependable."
@@ -1279,7 +1328,7 @@ function InspectorPanel({
     ...inspector.riskFindings.filter((f) => f.severity === "important").map((f) => ({ ...f })),
   ];
   return (
-    <aside className="border-l border-[color:var(--color-outline-variant)] pl-4 max-h-[72vh] overflow-y-auto sticky top-[96px]">
+    <aside className="min-w-0 border-t border-[color:var(--color-outline-variant)] pt-4 xl:sticky xl:top-[96px] xl:max-h-[72vh] xl:overflow-y-auto xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
       <InputReadinessPanel
         title="Inputs"
         description="Required inputs must be present before artifacts and checks are dependable."
@@ -1534,7 +1583,12 @@ interface ProposalOption {
   id: string;
   label: string;
   value_suggestion: string | null;
+  fields_suggestion: Record<string, string> | null;
   consequence_md: string | null;
+}
+
+function proposalFieldLabel(id: string): string {
+  return id.replace(/_/g, " ");
 }
 
 function StreamModal({
@@ -1548,7 +1602,11 @@ function StreamModal({
   target: StreamTarget;
   onClose: () => void;
   onTurnComplete: () => void;
-  onUseProposal: (cardType: string, value: string) => void;
+  onUseProposal: (
+    cardType: string,
+    value: string,
+    fields?: Record<string, string> | null,
+  ) => void;
 }) {
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
@@ -1615,10 +1673,24 @@ function StreamModal({
                         {o.consequence_md}
                       </div>
                     )}
+                    {Object.entries(o.fields_suggestion ?? {}).length > 0 && (
+                      <dl className="mt-1 space-y-0.5 text-[11px] text-[color:var(--color-on-surface-variant)]">
+                        {Object.entries(o.fields_suggestion ?? {}).map(([key, value]) => (
+                          <div key={key} className="grid gap-1 sm:grid-cols-[130px_minmax(0,1fr)]">
+                            <dt className="font-mono uppercase">{proposalFieldLabel(key)}</dt>
+                            <dd className="min-w-0">{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    )}
                   </div>
                   <button
                     onClick={() =>
-                      onUseProposal(target.cardType!, o.value_suggestion ?? o.label)
+                      onUseProposal(
+                        target.cardType!,
+                        o.value_suggestion ?? o.label,
+                        o.fields_suggestion,
+                      )
                     }
                     className="shrink-0 px-2 py-1 text-[11px] font-mono uppercase border border-[color:var(--color-primary)] text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)] hover:text-[color:var(--color-on-primary)]"
                   >

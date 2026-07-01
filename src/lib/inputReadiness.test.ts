@@ -75,6 +75,48 @@ test("review setup requires manuscript title and focus", () => {
   );
 });
 
+test("review inputs expose editable journal and research context actions", () => {
+  const manuscript: Manuscript = {
+    id: "ms_1",
+    study_id: "st_1",
+    title: "Draft",
+    content_md: "Protocol draft.",
+    original_content_md: null,
+    original_file: "draft.md",
+    file_format: "md",
+    journal_type: "",
+    research_domain: "Evidence synthesis",
+    research_type: "scoping review",
+    review_request: "General pre-submission review.",
+    project_root: null,
+    primary_file: null,
+    is_git: false,
+    status: "draft",
+    created_at: 1,
+    updated_at: 1,
+  };
+  const items = buildReviewInputs({
+    manuscript,
+    assets: [],
+    commentaries: [] as Commentary[],
+  });
+
+  assert.deepEqual(
+    {
+      actionLabel: items.find((item) => item.id === "journal-context")?.actionLabel,
+      target: items.find((item) => item.id === "journal-context")?.target,
+    },
+    { actionLabel: "Add journal", target: "journal-context" },
+  );
+  assert.deepEqual(
+    {
+      actionLabel: items.find((item) => item.id === "research-context")?.actionLabel,
+      target: items.find((item) => item.id === "research-context")?.target,
+    },
+    { actionLabel: "Edit context", target: "research-context" },
+  );
+});
+
 test("review inputs suggest missing referenced assets", () => {
   const manuscript: Manuscript = {
     id: "ms_1",

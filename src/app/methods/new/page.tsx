@@ -110,8 +110,9 @@ export default function NewStudyPage() {
           confidentiality_mode: localOnly ? "local_only" : "cloud_default",
         }),
       });
-      if (!res.ok) throw new Error("could not create study");
-      const study = await res.json();
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "could not create study");
+      const study = body as { id: string };
       router.push(
         mode === "scoping_review"
           ? `/methods-workbench/${study.id}/corpus`

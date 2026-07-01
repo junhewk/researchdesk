@@ -76,6 +76,7 @@ export async function POST(
         session_id: session.id,
         label: option.label,
         value_suggestion: option.value_suggestion,
+        fields_suggestion: option.fields_suggestion,
         consequence_md: option.consequence_md,
       });
     }

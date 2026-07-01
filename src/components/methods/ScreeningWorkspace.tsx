@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ProviderSelector } from "@/components/ProviderSelector";
 import { cn } from "@/lib/utils";
 import {
   SCREENING_DECISION_STYLES,
@@ -10,6 +11,7 @@ import {
   SCREEN_CONFIDENCE_STYLES,
 } from "@/lib/styles";
 import type { ReviewRecord, ScreeningDecision, Study } from "@/server/types";
+import type { Provider } from "@/server/types";
 
 interface Stats {
   total: number;
@@ -45,6 +47,33 @@ interface Filters {
 
 const EMPTY_FILTERS: Filters = { decision: "", tier: "", confidence: "", needs_review: "", q: "" };
 
+interface CsvImportMapping {
+  fields: Record<string, string | null | undefined>;
+  decision: {
+    column: string | null;
+    values: Record<string, ScreeningDecision>;
+    default_decision: ScreeningDecision;
+  };
+  needs_review: {
+    column: string | null;
+    true_values: string[];
+  };
+  confidence: "high" | "medium" | "low";
+  rationale_md: string;
+  warnings: string[];
+}
+
+interface CsvImportPreviewFile {
+  filename: string;
+  kind: "search" | "records";
+  row_count: number;
+  headers: string[];
+  sample_rows: Record<string, string>[];
+  value_profile: Record<string, string[]>;
+  mapping?: CsvImportMapping;
+  warning?: string | null;
+}
+
 function Chip({ label, className }: { label: string; className: string }) {
   return (
     <span
@@ -61,12 +90,18 @@ function Chip({ label, className }: { label: string; className: string }) {
 export function ScreeningWorkspace({
   study,
 }: {
-  study: Pick<Study, "id" | "title" | "research_question" | "mode">;
+  study: Pick<Study, "id" | "title" | "research_question" | "mode" | "confidentiality_mode">;
 }) {
   const [records, setRecords] = useState<ReviewRecord[]>([]);
   const [stats, setStats] = useState<Stats>(EMPTY_STATS);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [provider, setProvider] = useState<Provider>(
+    study.confidentiality_mode === "local_only" ? "ollama" : "openai",
+  );
+  const [model, setModel] = useState("");
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [previewFiles, setPreviewFiles] = useState<CsvImportPreviewFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -117,7 +152,56 @@ export function ScreeningWorkspace({
     try {
       const fd = new FormData();
       for (const f of list) fd.append("file", f);
-      const res = await fetch(`/api/studies/${study.id}/import`, { method: "POST", body: fd });
+      fd.append("provider", provider);
+      if (model.trim()) fd.append("model", model.trim());
+      const res = await fetch(`/api/studies/${study.id}/import/preview`, { method: "POST", body: fd });
+      const data = (await res.json().catch(() => null)) as
+        | { files?: CsvImportPreviewFile[]; error?: string }
+        | null;
+      if (!res.ok || !data?.files) throw new Error(data?.error || `preview failed (${res.status})`);
+      setPendingFiles(list);
+      setPreviewFiles(data.files);
+      const summary = data.files
+        .map((r) =>
+          r.kind === "search"
+            ? `${r.filename}: search-process CSV`
+            : `${r.filename}: ${r.row_count} records mapped`,
+        )
+        .join("; ");
+      setNotice(`Review mapped import: ${summary}.`);
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : "preview error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function updatePreviewFile(filename: string, mapping: CsvImportMapping) {
+    setPreviewFiles((files) =>
+      files.map((file) => (file.filename === filename ? { ...file, mapping } : file)),
+    );
+  }
+
+  async function applyImport() {
+    if (pendingFiles.length === 0 || previewFiles.length === 0) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const fd = new FormData();
+      for (const f of pendingFiles) fd.append("file", f);
+      fd.append(
+        "mappings",
+        JSON.stringify({
+          files: previewFiles
+            .filter((file) => file.kind === "records")
+            .map((file) => ({
+              filename: file.filename,
+              mapping: file.mapping,
+              overwrite_confirmed: false,
+            })),
+        }),
+      );
+      const res = await fetch(`/api/studies/${study.id}/import/apply`, { method: "POST", body: fd });
       const data = (await res.json().catch(() => null)) as
         | { results?: Array<{ kind: string; searches?: number; records?: number; inserted?: number; updated?: number; duplicates?: number }>; error?: string }
         | null;
@@ -129,6 +213,8 @@ export function ScreeningWorkspace({
             : `${r.records ?? 0} records (${r.inserted ?? 0} new, ${r.updated ?? 0} updated${r.duplicates ? `, ${r.duplicates} dup` : ""})`,
         )
         .join("; ");
+      setPendingFiles([]);
+      setPreviewFiles([]);
       setNotice(`Imported: ${summary}.`);
       await fetchRecords(filters);
     } catch (err) {
@@ -198,7 +284,28 @@ export function ScreeningWorkspace({
     <div className="reveal">
       <ScreeningHeader study={study} stats={stats} />
 
-      <ImportPanel onImport={handleImport} busy={busy} compact={hasData} />
+      <ImportAgentControls
+        provider={provider}
+        model={model}
+        localOnly={study.confidentiality_mode === "local_only"}
+        onProvider={setProvider}
+        onModel={setModel}
+      />
+
+      <ImportPanel onImport={handleImport} busy={busy} compact={hasData || previewFiles.length > 0} />
+
+      {previewFiles.length > 0 && (
+        <ImportPreviewPanel
+          files={previewFiles}
+          busy={busy}
+          onChange={updatePreviewFile}
+          onCancel={() => {
+            setPendingFiles([]);
+            setPreviewFiles([]);
+          }}
+          onApply={applyImport}
+        />
+      )}
 
       {notice && (
         <div className="mt-3 px-3 py-2 text-[12px] border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]">
@@ -299,6 +406,233 @@ function ScreeningHeader({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ImportAgentControls({
+  provider,
+  model,
+  localOnly,
+  onProvider,
+  onModel,
+}: {
+  provider: Provider;
+  model: string;
+  localOnly: boolean;
+  onProvider: (provider: Provider) => void;
+  onModel: (model: string) => void;
+}) {
+  return (
+    <div className="mt-4 flex flex-wrap items-end gap-4 border border-[color:var(--color-outline-variant)] px-3 py-3">
+      <ProviderSelector
+        value={provider}
+        onChange={onProvider}
+        excluded={localOnly ? ["openai", "gemini", "deepseek"] : undefined}
+        excludedReason={localOnly ? "This study is local-only." : undefined}
+      />
+      <label className="block">
+        <span className="label mb-2 block">Model override</span>
+        <input
+          value={model}
+          onChange={(event) => onModel(event.target.value)}
+          placeholder="provider default"
+          className="w-52 bg-transparent border-b border-[color:var(--color-outline-variant)] py-1 text-[13px] focus:outline-none focus:border-[color:var(--color-primary)]"
+        />
+      </label>
+    </div>
+  );
+}
+
+function cloneMapping(mapping: CsvImportMapping): CsvImportMapping {
+  return {
+    ...mapping,
+    fields: { ...mapping.fields },
+    decision: { ...mapping.decision, values: { ...mapping.decision.values } },
+    needs_review: {
+      ...mapping.needs_review,
+      true_values: [...mapping.needs_review.true_values],
+    },
+    warnings: [...mapping.warnings],
+  };
+}
+
+function decisionValues(file: CsvImportPreviewFile): string[] {
+  const column = file.mapping?.decision.column;
+  if (!column) return Object.keys(file.mapping?.decision.values ?? {});
+  const profiled = file.value_profile[column] ?? [];
+  return Array.from(new Set([...profiled, ...Object.keys(file.mapping?.decision.values ?? {})]));
+}
+
+function ImportPreviewPanel({
+  files,
+  busy,
+  onChange,
+  onCancel,
+  onApply,
+}: {
+  files: CsvImportPreviewFile[];
+  busy: boolean;
+  onChange: (filename: string, mapping: CsvImportMapping) => void;
+  onCancel: () => void;
+  onApply: () => void;
+}) {
+  const recordFiles = files.filter((file) => file.kind === "records");
+  const canApply = recordFiles.every((file) => Boolean(file.mapping));
+  return (
+    <div className="mt-4 border border-[color:var(--color-ink)] bg-[color:var(--color-surface-container-low)]">
+      <div className="flex items-center justify-between border-b border-[color:var(--color-outline-variant)] px-3 py-2">
+        <div>
+          <p className="font-display text-[15px]">Mapped CSV import</p>
+          <p className="text-[11px] text-[color:var(--color-on-surface-variant)]">
+            {files.length} file{files.length === 1 ? "" : "s"} ready for review
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            className="px-3 py-1.5 text-[12px] font-mono uppercase tracking-wide border border-[color:var(--color-outline-variant)] disabled:opacity-40"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onApply}
+            disabled={busy || !canApply}
+            className="px-3 py-1.5 text-[12px] font-mono uppercase tracking-wide border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] disabled:opacity-40"
+          >
+            {busy ? "Applying..." : "Apply import"}
+          </button>
+        </div>
+      </div>
+      <div className="divide-y divide-[color:var(--color-outline-variant)]">
+        {files.map((file) =>
+          file.kind === "search" ? (
+            <div key={file.filename} className="px-3 py-3 text-[13px]">
+              <span className="font-medium">{file.filename}</span>
+              <span className="ml-2 font-mono text-[11px] uppercase text-[color:var(--color-on-surface-variant)]">
+                search-process
+              </span>
+            </div>
+          ) : file.mapping ? (
+            <RecordMappingEditor
+              key={file.filename}
+              file={file}
+              mapping={file.mapping}
+              onChange={(mapping) => onChange(file.filename, mapping)}
+            />
+          ) : (
+            <div key={file.filename} className="px-3 py-3 text-[13px] text-[color:var(--color-error)]">
+              {file.filename}: mapping failed
+            </div>
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RecordMappingEditor({
+  file,
+  mapping,
+  onChange,
+}: {
+  file: CsvImportPreviewFile;
+  mapping: CsvImportMapping;
+  onChange: (mapping: CsvImportMapping) => void;
+}) {
+  const fileWithMapping = { ...file, mapping };
+  const values = decisionValues(fileWithMapping);
+  const mappedFields = Object.entries(mapping.fields)
+    .filter(([, column]) => column)
+    .slice(0, 8);
+
+  return (
+    <div className="px-3 py-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="font-medium text-[13px]">{file.filename}</p>
+          <p className="text-[11px] text-[color:var(--color-on-surface-variant)]">
+            {file.row_count} records · confidence {mapping.confidence}
+          </p>
+        </div>
+        <label className="flex items-center gap-2 text-[12px]">
+          <span className="font-mono uppercase tracking-wide text-[10px] text-[color:var(--color-on-surface-variant)]">
+            Decision column
+          </span>
+          <select
+            value={mapping.decision.column ?? ""}
+            onChange={(event) => {
+              const column = event.target.value || null;
+              const next = cloneMapping(mapping);
+              next.decision.column = column;
+              const profileValues = column ? file.value_profile[column] ?? [] : [];
+              next.decision.values = Object.fromEntries(
+                profileValues.map((value) => [
+                  value,
+                  next.decision.values[value] ?? "unscreened",
+                ]),
+              ) as Record<string, ScreeningDecision>;
+              onChange(next);
+            }}
+            className="bg-transparent border border-[color:var(--color-outline-variant)] px-2 py-1"
+          >
+            <option value="">none</option>
+            {file.headers.map((header) => (
+              <option key={header} value={header}>
+                {header}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {mapping.rationale_md && (
+        <p className="mt-2 text-[12px] italic text-[color:var(--color-on-surface-variant)]">
+          {mapping.rationale_md}
+        </p>
+      )}
+      {mapping.warnings.length > 0 && (
+        <ul className="mt-2 text-[12px] text-[color:var(--color-error)]">
+          {mapping.warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      )}
+      {mappedFields.length > 0 && (
+        <p className="mt-2 text-[11px] font-mono text-[color:var(--color-on-surface-variant)]">
+          {mappedFields.map(([field, column]) => `${field} <- ${column}`).join(" · ")}
+        </p>
+      )}
+
+      {values.length > 0 && (
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {values.map((value) => (
+            <label key={value} className="flex items-center justify-between gap-2 text-[12px]">
+              <span className="truncate" title={value}>
+                {value || "(blank)"}
+              </span>
+              <select
+                value={mapping.decision.values[value] ?? mapping.decision.default_decision}
+                onChange={(event) => {
+                  const next = cloneMapping(mapping);
+                  next.decision.values[value] = event.target.value as ScreeningDecision;
+                  onChange(next);
+                }}
+                className="shrink-0 bg-transparent border border-[color:var(--color-outline-variant)] px-1.5 py-0.5 font-mono text-[11px]"
+              >
+                {DECISIONS.map((decision) => (
+                  <option key={decision} value={decision}>
+                    {decision}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

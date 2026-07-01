@@ -3,6 +3,12 @@ import { getDb } from "../db";
 import { nowUnix } from "@/lib/utils";
 import { parseCsvRows, toCsv } from "../csv";
 import { getStudy, getDecision, patchDecision, updateStudy, touchStudy } from "../studies";
+import {
+  detectCsvImportKind,
+  sanitizeCsvImportMapping,
+  type CsvImportMapping,
+  type CsvRecordField,
+} from "./csvImportMapping";
 import type {
   PrismaFlow,
   ReviewRecord,
@@ -339,8 +345,7 @@ const PCC_CONCEPT = new Set(["c", "concept"]);
 const PCC_CONTEXT = new Set(["context", "co"]);
 
 function detectKind(rows: string[][]): ImportKind {
-  const first = (rows[0]?.[0] ?? "").trim().toLowerCase();
-  return first === "record_id" ? "records" : "search";
+  return detectCsvImportKind(rows);
 }
 
 /** `260618` → `2026-06-18`. Returns the raw token if it is not a YYMMDD. */
@@ -434,7 +439,7 @@ function importSearchProcess(studyId: string, rows: string[][]): ImportResult {
 }
 
 function normalizeKey(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return s.replace(/^\ufeff/, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
 function header(row: string[]): Map<string, number> {
@@ -453,8 +458,15 @@ function seedDecision(aiFinal: string): ScreeningDecision {
   return "unscreened";
 }
 
-function importRecords(studyId: string, rows: string[][]): ImportResult {
+function importRecords(
+  studyId: string,
+  rows: string[][],
+  mapping?: CsvImportMapping,
+  opts: { overwriteConfirmed?: boolean } = {},
+): ImportResult {
   const head = header(rows[0]);
+  const headers = (rows[0] ?? []).map((h) => h.replace(/^\ufeff/, "").trim());
+  const safeMapping = mapping ? sanitizeCsvImportMapping(mapping, headers) : null;
   const get = (row: string[], ...names: string[]): string => {
     for (const n of names) {
       const idx = head.get(normalizeKey(n));
@@ -464,6 +476,50 @@ function importRecords(studyId: string, rows: string[][]): ImportResult {
       }
     }
     return "";
+  };
+  const mapped = (row: string[], field: CsvRecordField, ...fallbacks: string[]): string => {
+    const column = safeMapping?.fields[field];
+    if (column) {
+      const v = get(row, column);
+      if (v) return v;
+    }
+    return get(row, ...fallbacks);
+  };
+  const mappedNeedsReview = (row: string[]): number => {
+    const raw = safeMapping?.needs_review.column
+      ? get(row, safeMapping.needs_review.column)
+      : get(row, "needs_review");
+    if (!raw) return 0;
+    const truthy = new Set(
+      (safeMapping?.needs_review.true_values ?? ["Y", "Yes", "true", "1"])
+        .map((v) => normalizeKey(v)),
+    );
+    return truthy.has(normalizeKey(raw)) || /^y(es)?$/i.test(raw) ? 1 : 0;
+  };
+  const mappedDecision = (
+    row: string[],
+  ): { decision: ScreeningDecision; reason: string | null; hasDecision: boolean } => {
+    const column = safeMapping?.decision.column;
+    if (column) {
+      const raw = get(row, column);
+      const exact = raw ? safeMapping.decision.values[raw] : undefined;
+      const folded = raw
+        ? Object.entries(safeMapping.decision.values).find(
+            ([key]) => normalizeKey(key) === normalizeKey(raw),
+          )?.[1]
+        : undefined;
+      return {
+        decision: exact ?? folded ?? safeMapping.decision.default_decision,
+        reason: raw ? `Imported from ${column}: ${raw}` : `Imported from ${column}`,
+        hasDecision: true,
+      };
+    }
+    const finalRaw = get(row, "final");
+    return {
+      decision: seedDecision(finalRaw),
+      reason: finalRaw ? `Imported from final: ${finalRaw}` : null,
+      hasDecision: Boolean(finalRaw),
+    };
   };
 
   const db = getDb();
@@ -476,8 +532,6 @@ function importRecords(studyId: string, rows: string[][]): ImportResult {
   const findByExternal = db.prepare(
     "SELECT id, decision, decision_reason, user_confirmed, charting_json FROM review_records WHERE study_id = ? AND external_id = ?",
   );
-  // node:sqlite binds positionally (the wrapper rejects named-object params),
-  // so these use ordered ? placeholders.
   const insert = db.prepare(
     `INSERT INTO review_records
        (id, study_id, external_id, title, authors, year, journal, volume, issue,
@@ -495,7 +549,8 @@ function importRecords(studyId: string, rows: string[][]): ImportResult {
         doi=?, pmid=?, other_ids_json=?, abstract=?, keywords=?, language=?,
         url=?, source_databases=?, screen_stage=?, screen_tier=?,
         screen_reason=?, screen_confidence=?, needs_review=?, ai_final=?,
-        ai_final_reason=?, dedupe_key=?, updated_at=?
+        ai_final_reason=?, decision=?, decision_reason=?, dedupe_key=?,
+        updated_at=?
       WHERE id=?`,
   );
 
@@ -507,12 +562,12 @@ function importRecords(studyId: string, rows: string[][]): ImportResult {
   db.transaction(() => {
     rows.slice(1).forEach((row, i) => {
       if (row.every((c) => !(c ?? "").trim())) return;
-      const title = get(row, "title");
-      const doi = get(row, "doi");
-      const externalId = get(row, "record_id", "id");
+      const title = mapped(row, "title", "title");
+      const doi = mapped(row, "doi", "doi");
+      const externalId = mapped(row, "external_id", "record_id", "id");
       const otherIds: Record<string, string> = {};
-      for (const k of ["scopus_eid", "wos_uid", "cinahl_an"]) {
-        const v = get(row, k);
+      for (const k of ["scopus_eid", "wos_uid", "cinahl_an"] as const) {
+        const v = mapped(row, k, k);
         if (v) otherIds[k] = v;
       }
       const dedupeKey = normalizeKey(doi || title).slice(0, 200) || null;
@@ -521,50 +576,61 @@ function importRecords(studyId: string, rows: string[][]): ImportResult {
         seen.set(dedupeKey, n);
         if (n > 1) duplicates++;
       }
-      const yearRaw = get(row, "year");
+      const yearRaw = mapped(row, "year", "year");
+      const importedDecision = mappedDecision(row);
       const data = {
         study_id: studyId,
         external_id: externalId || null,
         title,
-        authors: get(row, "authors") || null,
+        authors: mapped(row, "authors", "authors") || null,
         year: yearRaw ? parseInt(yearRaw.replace(/[^\d]/g, ""), 10) || null : null,
-        journal: get(row, "journal", "source") || null,
-        volume: get(row, "volume") || null,
-        issue: get(row, "issue") || null,
-        pages: get(row, "pages") || null,
+        journal: mapped(row, "journal", "journal", "source") || null,
+        volume: mapped(row, "volume", "volume") || null,
+        issue: mapped(row, "issue", "issue") || null,
+        pages: mapped(row, "pages", "pages") || null,
         doi: doi || null,
-        pmid: get(row, "pmid") || null,
+        pmid: mapped(row, "pmid", "pmid") || null,
         other_ids_json: Object.keys(otherIds).length ? JSON.stringify(otherIds) : null,
-        abstract: get(row, "abstract") || null,
-        keywords: get(row, "keywords") || null,
-        language: get(row, "language") || null,
-        url: get(row, "url") || null,
-        source_databases: get(row, "source_databases", "source_database", "databases") || null,
-        screen_stage: get(row, "screen_stage") || null,
-        screen_tier: get(row, "screen_tier") || null,
-        screen_reason: get(row, "screen_reason") || null,
-        screen_confidence: get(row, "screen_confidence") || null,
-        needs_review: /^y(es)?$/i.test(get(row, "needs_review")) ? 1 : 0,
-        ai_final: get(row, "final") || null,
-        ai_final_reason: get(row, "final_reason") || null,
+        abstract: mapped(row, "abstract", "abstract") || null,
+        keywords: mapped(row, "keywords", "keywords") || null,
+        language: mapped(row, "language", "language") || null,
+        url: mapped(row, "url", "url") || null,
+        source_databases: mapped(row, "source_databases", "source_databases", "source_database", "databases") || null,
+        screen_stage: mapped(row, "screen_stage", "screen_stage") || null,
+        screen_tier: mapped(row, "screen_tier", "screen_tier") || null,
+        screen_reason: mapped(row, "screen_reason", "screen_reason") || null,
+        screen_confidence: mapped(row, "screen_confidence", "screen_confidence") || null,
+        needs_review: mappedNeedsReview(row),
+        ai_final: mapped(row, "ai_final", "final") || null,
+        ai_final_reason: mapped(row, "ai_final_reason", "final_reason") || null,
         dedupe_key: dedupeKey,
         updated_at: now,
       };
 
       const existingRow = externalId
         ? (findByExternal.get(studyId, externalId) as
-            | { id: string }
+            | {
+                id: string;
+                decision: ScreeningDecision;
+                decision_reason: string | null;
+                user_confirmed: number;
+              }
             | undefined)
         : undefined;
       if (existingRow) {
+        const updateDecision =
+          importedDecision.hasDecision &&
+          (opts.overwriteConfirmed || !Boolean(existingRow.user_confirmed));
         refresh.run(
           data.title, data.authors, data.year, data.journal, data.volume,
           data.issue, data.pages, data.doi, data.pmid, data.other_ids_json,
           data.abstract, data.keywords, data.language, data.url,
           data.source_databases, data.screen_stage, data.screen_tier,
           data.screen_reason, data.screen_confidence, data.needs_review,
-          data.ai_final, data.ai_final_reason, data.dedupe_key,
-          data.updated_at, existingRow.id,
+          data.ai_final, data.ai_final_reason,
+          updateDecision ? importedDecision.decision : existingRow.decision,
+          updateDecision ? importedDecision.reason : existingRow.decision_reason,
+          data.dedupe_key, data.updated_at, existingRow.id,
         );
         updated++;
       } else {
@@ -575,8 +641,8 @@ function importRecords(studyId: string, rows: string[][]): ImportResult {
           data.keywords, data.language, data.url, data.source_databases,
           data.screen_stage, data.screen_tier, data.screen_reason,
           data.screen_confidence, data.needs_review, data.ai_final,
-          data.ai_final_reason, seedDecision(get(row, "final")), null, 0, null,
-          data.dedupe_key, startPos + i, now, data.updated_at,
+          data.ai_final_reason, importedDecision.decision, importedDecision.reason,
+          0, null, data.dedupe_key, startPos + i, now, data.updated_at,
         );
         inserted++;
       }
@@ -607,6 +673,22 @@ export function importScopingCsv(
   return kind === "records"
     ? importRecords(studyId, rows)
     : importSearchProcess(studyId, rows);
+}
+
+export function importScopingCsvWithMapping(
+  studyId: string,
+  _filename: string,
+  text: string,
+  mapping: CsvImportMapping,
+  opts: { overwriteConfirmed?: boolean } = {},
+): ImportResult {
+  if (!getStudy(studyId)) throw new Error("study not found");
+  const rows = parseCsvRows(text);
+  if (rows.length === 0) throw new Error("empty CSV");
+  if (detectKind(rows) !== "records") {
+    return importSearchProcess(studyId, rows);
+  }
+  return importRecords(studyId, rows, mapping, opts);
 }
 
 // --------------------------------------------------------------------------

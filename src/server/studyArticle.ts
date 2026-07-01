@@ -15,6 +15,7 @@ import { parseValue } from "@/server/methods/preflight";
 import {
   getOrCreateArtifact,
   getStudy,
+  listStudies,
   listDecisions,
   updateArtifact,
 } from "@/server/studies";
@@ -32,6 +33,26 @@ export interface StudyArticleResult {
     article: string;
     workspace: string;
     sourceStudy: string;
+  };
+}
+
+export interface StudyArticleImportOption {
+  study: Pick<
+    Study,
+    | "id"
+    | "title"
+    | "mode"
+    | "research_question"
+    | "status"
+    | "confidentiality_mode"
+    | "created_at"
+    | "updated_at"
+  >;
+  manuscript: Pick<Manuscript, "id" | "title" | "status" | "updated_at"> | null;
+  links: {
+    sourceStudy: string;
+    article: string | null;
+    workspace: string | null;
   };
 }
 
@@ -279,6 +300,39 @@ function attachArtifacts(study: Study, manuscriptId: string, decisions: DesignDe
       content_md: md,
     });
   }
+}
+
+export function listStudyArticleImportOptions(opts?: {
+  limit?: number;
+}): StudyArticleImportOption[] {
+  return listStudies({ limit: opts?.limit ?? 100 }).map((study) => {
+    const manuscript = listManuscripts({ studyId: study.id, limit: 1 })[0] ?? null;
+    return {
+      study: {
+        id: study.id,
+        title: study.title,
+        mode: study.mode,
+        research_question: study.research_question,
+        status: study.status,
+        confidentiality_mode: study.confidentiality_mode,
+        created_at: study.created_at,
+        updated_at: study.updated_at,
+      },
+      manuscript: manuscript
+        ? {
+            id: manuscript.id,
+            title: manuscript.title,
+            status: manuscript.status,
+            updated_at: manuscript.updated_at,
+          }
+        : null,
+      links: {
+        sourceStudy: `/methods-workbench/${study.id}`,
+        article: manuscript ? `/my-articles/${manuscript.id}` : null,
+        workspace: manuscript ? `/my-articles/${manuscript.id}/workspace` : null,
+      },
+    };
+  });
 }
 
 export function createArticleFromStudy(

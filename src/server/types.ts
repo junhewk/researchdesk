@@ -1028,6 +1028,8 @@ export interface CardProposalOption {
   session_id: string | null;
   label: string;
   value_suggestion: string | null;
+  fields_suggestion_json: string | null;
+  fields_suggestion: Record<string, string> | null;
   consequence_md: string | null;
   created_at: number;
 }

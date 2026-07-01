@@ -68,6 +68,7 @@ export function buildStudyPrompt(
     const def = ctx.targetCardType
       ? getCardDef(study.mode, ctx.targetCardType)
       : undefined;
+    const requiredFields = def?.requiredFields ?? [];
     return `You help a researcher specify one methodological decision in their study design.
 
 ${CORE_RULES}
@@ -80,13 +81,21 @@ ${cardsDigest(study, ctx.decisions)}
 
 ## Your task
 Propose options for the **${def?.label ?? ctx.targetCardType}** decision: "${def?.help ?? ""}"
+${requiredFields.length > 0
+  ? `
+Required sub-field ids for this card:
+${JSON.stringify(requiredFields.map((f) => ({ id: f.id, label: f.label })), null, 2)}
+`
+  : ""}
 
 1. Search the imported evidence for what prior studies did here:
    \`curl ${curl} '${base}/api/studies/${study.id}/evidence'\`
 2. Decide on 2–4 concrete options. For EACH, POST one structured option so the
    user can pick it with one click — \`value_suggestion\` is the exact text that
-   would go in the card's headline value, \`consequence_md\` is a one-line
-   trade-off (feasibility, bias, missingness, comparability):
+   would go in the card's headline value, \`fields_suggestion\` fills required
+   sub-fields keyed by the exact ids above when evidence supports them, and
+   \`consequence_md\` is a one-line trade-off (feasibility, bias, missingness,
+   comparability):
 
 \`\`\`bash
 curl ${curl} -X POST '${base}/api/studies/${study.id}/cards/${ctx.targetCardType ?? "<card_type>"}/proposals' \\
@@ -94,12 +103,14 @@ ${jsonHeaders}
   --data @- <<'JSON'
 { "label": "30-day all-cause mortality",
   "value_suggestion": "30-day all-cause mortality",
+  "fields_suggestion": { "<field_id>": "Evidence-supported detail for this sub-field." },
   "consequence_md": "Used by 7 prior RCTs; may need death-registry linkage." }
 JSON
 \`\`\`
 
 3. Also explain the options in your reply, citing evidence counts, and note the
-   required sub-fields the user must still fill: ${(def?.requiredFields ?? []).map((f) => f.label).join(", ") || "(none)"}.
+   required sub-fields you filled or could not support from evidence:
+   ${requiredFields.map((f) => f.label).join(", ") || "(none)"}.
 4. STOP. Do not set the value — end by asking the user to choose (they pick via
    "Use this" or by editing the card).`;
   }

@@ -18,7 +18,7 @@ export function CanvasIntro({
 
   return (
     <div className="mt-4 border-y border-[color:var(--color-outline-variant)] py-3">
-      <div className="grid grid-cols-[250px_1fr_290px] gap-6 text-[12px] leading-relaxed">
+      <div className="grid grid-cols-1 gap-4 text-[12px] leading-relaxed xl:grid-cols-[250px_minmax(0,1fr)_290px] xl:gap-6">
         <div>
           <span className="font-mono text-[10px] uppercase tracking-wide text-[color:var(--color-on-surface-variant)]">
             Evidence (left)
@@ -48,7 +48,7 @@ export function CanvasIntro({
           </p>
         </div>
       </div>
-      <div className="mt-2 flex items-baseline justify-between">
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <p className="text-[11px] text-[color:var(--color-on-surface-variant)]">
           The documents at the bottom (protocol, analysis plan, checklist)
           compile automatically from your decisions — nothing is final until
@@ -56,7 +56,7 @@ export function CanvasIntro({
         </p>
         <button
           onClick={onDismiss}
-          className="shrink-0 ml-4 text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
+          className="shrink-0 text-left text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)] sm:ml-4 sm:text-right"
         >
           Got it
         </button>

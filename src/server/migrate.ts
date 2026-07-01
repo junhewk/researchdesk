@@ -39,6 +39,18 @@ export function runMigrations(db: AppDatabase): void {
   if (currentVersion < 23) migrateV23(db);
   if (currentVersion < 24) migrateV24(db);
   if (currentVersion < 25) migrateV25(db);
+  if (currentVersion < 26) migrateV26(db);
+}
+
+function migrateV26(db: AppDatabase): void {
+  // Field-level suggestions for card proposal options. These stay optional so
+  // old proposals remain valid; "Use this" can now prefill required sub-fields.
+  db.exec(`
+    ALTER TABLE card_proposal_options
+      ADD COLUMN fields_suggestion_json TEXT;
+
+    INSERT INTO schema_version (version) VALUES (26);
+  `);
 }
 
 function migrateV25(db: AppDatabase): void {

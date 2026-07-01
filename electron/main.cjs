@@ -1,4 +1,5 @@
 const http = require("node:http");
+const fs = require("node:fs");
 const path = require("node:path");
 const { randomBytes } = require("node:crypto");
 const { spawn } = require("node:child_process");
@@ -10,7 +11,10 @@ let server = null;
 let serverProcess = null;
 
 function appRoot() {
-  return app.isPackaged ? path.join(process.resourcesPath, "app") : path.join(__dirname, "..");
+  if (!app.isPackaged) return path.join(__dirname, "..");
+
+  const asarRoot = path.join(process.resourcesPath, "app.asar");
+  return fs.existsSync(asarRoot) ? asarRoot : path.join(process.resourcesPath, "app");
 }
 
 function ensureDesktopEnv() {

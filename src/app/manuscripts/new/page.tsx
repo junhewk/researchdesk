@@ -17,6 +17,7 @@ import {
   type UploadKindOption,
 } from "@/components/FileUploadList";
 import { InputReadinessPanel } from "@/components/InputReadinessPanel";
+import { WorkbenchArticleImportPanel } from "@/components/WorkbenchArticleImportPanel";
 import { buildReviewSetupInputs } from "@/lib/inputReadiness";
 
 type AssetKind =
@@ -195,16 +196,27 @@ export default function NewManuscriptPage() {
         New article
       </h1>
       <p className="mt-2 mb-8 text-[14px] text-[color:var(--color-on-surface-variant)]">
-        Upload the manuscript plus any commentaries, tables, appendices,
-        figures, or supplementary files. Tag each with its kind — the agent
-        sees the inventory and fetches full text on demand.
+        Start from Methods Workbench when you have planned methods. Direct
+        article upload stays available for legacy manuscripts, but it will not
+        carry source-methods data into readiness checks.
       </p>
+
+      <WorkbenchArticleImportPanel className="mb-10" />
 
       {error && (
         <div className="mb-6 rounded border-l-2 border-[color:var(--color-error)] bg-[color:var(--color-error-container)] pl-4 py-2 text-[13px] text-[color:var(--color-on-error-container)]">
           {error}
         </div>
       )}
+
+      <section id="direct-upload" className="scroll-mt-8">
+        <h2 className="label mb-1">Create directly without Workbench</h2>
+        <p className="mb-6 text-[13px] text-[color:var(--color-on-surface-variant)]">
+          Use this only when the article already exists outside Methods
+          Workbench. The review can still run, but source-method comparisons
+          will be unavailable.
+        </p>
+      </section>
 
       <InputReadinessPanel
         title="Review inputs"

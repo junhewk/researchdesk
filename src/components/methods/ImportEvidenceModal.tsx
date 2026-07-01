@@ -42,14 +42,14 @@ function errorText(j: { error?: unknown; fix?: unknown }, fallback: string): str
 export function ImportEvidenceModal({
   base,
   requiresLocalProvider,
-  localProvider,
+  activeProvider,
   agentHealth,
   onClose,
   onDone,
 }: {
   base: string;
   requiresLocalProvider: boolean;
-  localProvider: string | null;
+  activeProvider: string | null;
   agentHealth: ProviderHealthView | null;
   onClose: () => void;
   onDone: (msg: string) => void;
@@ -62,16 +62,18 @@ export function ImportEvidenceModal({
   const [showHelp, setShowHelp] = useState(false);
 
   const agentBlocked =
-    (requiresLocalProvider && !localProvider) ||
+    !activeProvider ||
     (agentHealth != null && !agentHealth.ok);
   const agentBlockedReason =
-    requiresLocalProvider && !localProvider
+    !activeProvider && requiresLocalProvider
       ? "This study is private, so the AI must run locally — pick Ollama, LM Studio, or llama-server in the header first."
+      : !activeProvider
+        ? "Pick where the AI runs first in the workbench header."
       : agentHealth && !agentHealth.ok
         ? `${agentHealth.detail}${agentHealth.fix ? ` — ${agentHealth.fix}` : ""}`
         : null;
 
-  const providerBody = requiresLocalProvider ? { provider: localProvider } : {};
+  const providerBody = activeProvider ? { provider: activeProvider } : {};
 
   async function runExtraction(snapshotId: string): Promise<void> {
     const ex = await post(`${base}/snapshots/${snapshotId}/extract`, providerBody);

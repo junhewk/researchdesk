@@ -11,11 +11,11 @@ import type { StudyMode } from "../types";
 
 // ===========================================================================
 // Study drafting-prompts compiler. Turns a Methods study's recorded design into
-// ready-to-use prompts for drafting the article's sections — outline,
-// introduction, methodology, results, discussion, and abstract — plus an
-// optional freeform instruction. Lives beside "Create Article Draft" — the
-// point at which study decisions become an article — and is also exposed to CLI
-// agents through the MCP server. Pure + deterministic; self-contained output
+// ready-to-use prompts for drafting the article's sections: outline,
+// introduction, methodology, results, discussion, and abstract. This is the
+// primary point where study decisions become article-review drafting material,
+// and it is also exposed to CLI agents through the MCP server. Pure +
+// deterministic; self-contained output
 // that works in a browser chat or a CLI agent. Drafts from the recorded design
 // (and, for review modes, the screened corpus) only; never invents.
 // ===========================================================================

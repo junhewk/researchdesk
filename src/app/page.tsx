@@ -267,7 +267,7 @@ export default function ResearcherHubPage() {
                 Researcher Hub
               </h1>
               <p className="mt-2 text-[15px] leading-[1.5] text-[color:var(--color-on-surface-variant)]">
-                Manage your active submissions and peer reviews.
+                Manage Workbench studies and downstream article reviews.
               </p>
               <p className="mt-3 font-mono text-[11px] tabular text-[color:var(--color-on-surface-variant)] tracking-[0.04em]">
                 {stats.manuscripts} manuscript{stats.manuscripts === 1 ? "" : "s"}
@@ -280,11 +280,11 @@ export default function ResearcherHubPage() {
             <div className="flex flex-wrap items-start justify-end gap-2">
               <DemoSeedButton />
               <Link
-                href="/my-articles/new"
+                href="/methods-workbench/new"
                 className="inline-flex items-center gap-2 rounded px-4 py-2.5 text-[14px] font-medium bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] transition-colors"
               >
                 <Plus className="h-4 w-4" strokeWidth={2} />
-                New Submission
+                Start Workbench
               </Link>
             </div>
           </header>
@@ -296,16 +296,16 @@ export default function ResearcherHubPage() {
                 className="h-4 w-4 text-[color:var(--color-on-surface-variant)]"
                 strokeWidth={1.75}
               />
-              My Submissions
+              Article Reviews
             </h2>
             {submissions.length === 0 ? (
               <p className="py-8 text-[15px] font-body italic text-[color:var(--color-on-surface-variant)]">
-                No submissions yet.{" "}
+                No article reviews yet.{" "}
                 <Link
-                  href="/my-articles/new"
+                  href="/methods-workbench/new"
                   className="not-italic font-display font-medium text-[color:var(--color-primary)] underline-offset-2 hover:underline"
                 >
-                  Start your first manuscript &rarr;
+                  Start a Workbench study &rarr;
                 </Link>
               </p>
             ) : (

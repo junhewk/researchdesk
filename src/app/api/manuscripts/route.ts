@@ -5,11 +5,9 @@ import {
   createManuscript,
   autoProvisionProjectFolder,
 } from "@/server/manuscripts";
-import { getStudy } from "@/server/studies";
 import type { ManuscriptStatus } from "@/server/types";
 
 const createSchema = z.object({
-  study_id: z.string().optional().nullable(),
   title: z.string().min(1),
   content_md: z.string().min(1),
   original_file: z.string().optional(),
@@ -42,13 +40,19 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
+  if (body && typeof body === "object" && "study_id" in body) {
+    return NextResponse.json(
+      {
+        error:
+          "Linked article reviews must be created from a Methods Workbench study.",
+      },
+      { status: 400 },
+    );
+  }
   const parsed = createSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-  }
-  if (parsed.data.study_id && !getStudy(parsed.data.study_id)) {
-    return NextResponse.json({ error: "study not found" }, { status: 400 });
   }
 
   const manuscript = createManuscript(parsed.data);

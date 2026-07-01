@@ -43,6 +43,9 @@ export const CORE_RULES = [
   "If evidence is insufficient, say what is missing instead of inventing facts.",
 ].join("\n- ");
 
+export const REVIEW_DEPTH_INSTRUCTION =
+  "Depth target: for a protocol-length or full manuscript, aim for 10-18 distinct, non-overlapping findings across critical, major, and minor severity where the text supports them. Return fewer only when you have exhausted concrete grounded issues; never pad with generic comments.";
+
 const ChecklistResultSchema = z.object({
   items: z.array(z.object({
     item_id: z.string().min(1),
@@ -338,10 +341,25 @@ const CardProposalSchema = z.object({
   options: z.array(z.object({
     label: z.string().min(1),
     value_suggestion: z.string().min(1),
+    fields_suggestion: z.record(z.string(), z.string()).default({}),
     consequence_md: z.string().nullable().default(null),
   })).min(1).max(4),
   summary_md: z.string().min(1),
 });
+
+function sanitizeProposalFields(
+  fields: Record<string, string> | null | undefined,
+  allowedIds: string[],
+): Record<string, string> | null {
+  if (!fields || allowedIds.length === 0) return null;
+  const allowed = new Set(allowedIds);
+  const out = Object.fromEntries(
+    Object.entries(fields)
+      .map(([key, value]) => [key.trim(), value.trim()])
+      .filter(([key, value]) => allowed.has(key) && value),
+  );
+  return Object.keys(out).length ? out : null;
+}
 
 /** Generate 2–4 evidence-grounded options for one decision card. Replaces the
  * card's currently shown options with the returned set, so a follow-up reply
@@ -363,6 +381,8 @@ export async function runCardProposalAgent(opts: {
     (item) => allowedKinds.size === 0 || allowedKinds.has(item.kind),
   );
   const currentOptions = listProposalOptions(study.id, opts.cardType);
+  const requiredFields = def?.requiredFields ?? [];
+  const requiredFieldIds = requiredFields.map((field) => field.id);
 
   const cards = decisions.map((decision) => ({
     card_type: decision.card_type,
@@ -383,8 +403,8 @@ export async function runCardProposalAgent(opts: {
       "",
       `Decision to propose options for: ${def?.label ?? opts.cardType}`,
       def?.help ? `What this decision covers: ${def.help}` : null,
-      (def?.requiredFields ?? []).length > 0
-        ? `Sub-fields the researcher must still fill: ${(def?.requiredFields ?? []).map((f) => f.label).join(", ")}`
+      requiredFields.length > 0
+        ? `Required sub-field ids and labels: ${asJson(requiredFields.map((f) => ({ id: f.id, label: f.label })))}`
         : null,
       "",
       "Current decisions on the canvas:",
@@ -394,10 +414,15 @@ export async function runCardProposalAgent(opts: {
       asJson(evidence.map((item) => ({ kind: item.kind, label: item.label, detail: item.detail_md }))),
       "",
       "Options currently shown to the researcher (may be pre-seeded; keep, refine, or replace them):",
-      asJson(currentOptions.map((o) => ({ label: o.label, value_suggestion: o.value_suggestion, consequence_md: o.consequence_md }))),
+      asJson(currentOptions.map((o) => ({
+        label: o.label,
+        value_suggestion: o.value_suggestion,
+        fields_suggestion: o.fields_suggestion,
+        consequence_md: o.consequence_md,
+      }))),
       opts.userReply ? `\nResearcher's follow-up request: ${opts.userReply}` : null,
       "",
-      "Return the full updated set of 2–4 options. `value_suggestion` is the exact text that would go in the card's headline value; `consequence_md` is a one-line trade-off grounded in the evidence above.",
+      "Return the full updated set of 2–4 options. `value_suggestion` is the exact text that would go in the card's headline value. If required sub-fields are listed above, include `fields_suggestion` keyed by those exact ids with concise text the researcher can review/edit before saving. Omit unsupported sub-fields. `consequence_md` is a one-line trade-off grounded in the evidence above.",
     ].filter(Boolean).join("\n"),
   });
 
@@ -410,6 +435,10 @@ export async function runCardProposalAgent(opts: {
       session_id: opts.sessionId ?? null,
       label: option.label,
       value_suggestion: option.value_suggestion,
+      fields_suggestion: sanitizeProposalFields(
+        option.fields_suggestion,
+        requiredFieldIds,
+      ),
       consequence_md: option.consequence_md,
     });
     created += 1;
@@ -525,6 +554,7 @@ export async function reviewManuscriptStructured(opts: {
     ...(opts.grounding ? ["", toolContext] : []),
     "",
     "Create review findings for substantive problems. Each finding must include the problem, why it matters, and a concrete suggested action.",
+    REVIEW_DEPTH_INSTRUCTION,
   ].join("\n");
 
   const result = await runStructured({
@@ -578,6 +608,8 @@ export async function aggregateReviews(opts: {
       asJson(payload),
       "",
       "Return the consolidated review: the union of distinct issues, duplicates merged, exactly one severity per issue.",
+      REVIEW_DEPTH_INSTRUCTION,
+      "Do not over-compress the merged review into a short shortlist; preserve every distinct supported issue from the independent reports.",
     ].join("\n"),
     temperature: opts.temperature,
   });

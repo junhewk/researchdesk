@@ -4,6 +4,7 @@ import {
   AGGREGATOR_SYSTEM,
   ANTI_PERSONA_CLAUSE,
   DEFAULT_ENSEMBLE_FANOUT,
+  REVIEW_DEPTH_INSTRUCTION,
   composeReviewSystemPrompt,
 } from "./workflows";
 
@@ -16,6 +17,11 @@ test("the aggregator is neutral (anti-persona) and union-preserving, not inventi
   assert.match(AGGREGATOR_SYSTEM, /union of all genuinely distinct issues/);
   assert.match(AGGREGATOR_SYSTEM, /never invent an issue that no source raised/);
   assert.match(AGGREGATOR_SYSTEM, /Never drop a real issue/);
+});
+
+test("review depth guidance asks for comprehensive findings without padding", () => {
+  assert.match(REVIEW_DEPTH_INSTRUCTION, /10-18 distinct/);
+  assert.match(REVIEW_DEPTH_INSTRUCTION, /never pad/i);
 });
 
 test("every ensemble reviewer is the grounded integrated reviewer (no persona)", () => {

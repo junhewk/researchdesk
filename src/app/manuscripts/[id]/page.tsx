@@ -145,6 +145,12 @@ export default function ManuscriptDetailPage() {
             {formatDate(manuscript.updated_at)}
           </span>
         </div>
+        {!manuscript.study_id && (
+          <p className="mt-3 max-w-2xl border-l-2 border-[color:var(--color-outline-variant)] pl-3 text-[12px] text-[color:var(--color-sepia)]">
+            No source methods are linked. This direct article can be reviewed,
+            but readiness checks cannot compare it against a Workbench plan.
+          </p>
+        )}
 
         <div className="mt-5 flex items-center gap-2">
           <Link href={`/my-articles/${id}/workspace`} className="px-4 py-1.5 text-[12px] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] transition-colors">
@@ -156,6 +162,14 @@ export default function ManuscriptDetailPage() {
           <Link href={`/my-articles/${id}/editor`} className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors">
             Editor
           </Link>
+          {manuscript.study_id && (
+            <Link
+              href={`/methods-workbench/${manuscript.study_id}`}
+              className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
+            >
+              Source methods
+            </Link>
+          )}
           <button
             onClick={handleDelete}
             disabled={deleting}

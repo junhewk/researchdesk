@@ -182,6 +182,13 @@ function severityForRevision(r: Revision): CommentSeverity {
   return "Minor";
 }
 
+const SEVERITY_ORDER: Record<CommentSeverity, number> = {
+  Critical: 0,
+  Major: 1,
+  Minor: 2,
+  Resolved: 3,
+};
+
 function reviewToComment(r: Review): Comment {
   return {
     id: r.id,
@@ -434,7 +441,11 @@ export default function ManuscriptWorkspacePage() {
       ...reviews.map(reviewToComment),
       ...revisions.map(revisionToComment),
     ];
-    merged.sort((a, b) => b.created_at - a.created_at);
+    merged.sort(
+      (a, b) =>
+        SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] ||
+        b.created_at - a.created_at,
+    );
     return merged;
   }, [reviews, revisions]);
 
@@ -444,6 +455,13 @@ export default function ManuscriptWorkspacePage() {
   const canSend =
     !!session && !sending && !isRunning && composerText.trim().length > 0;
   const canRunReview = !!session && !sending && !isRunning && reviewInputsReady;
+  const reviewActionHint = sessionError
+    ? "Manuscript thread unavailable"
+    : !session
+      ? "Opening manuscript thread..."
+      : reviewInputsReady
+        ? "Run the context-grounded ensemble review"
+        : "Add a review focus in Review Inputs first";
 
   // Basic, one-click entry to the product's context-grounded ensemble review
   // (equivalent to typing /review in the composer). The provider/model used is
@@ -602,7 +620,173 @@ export default function ManuscriptWorkspacePage() {
             )}
           </div>
         </div>
+        {!manuscript.study_id && (
+          <p className="pb-3 text-[12px] text-[color:var(--color-on-surface-variant)]">
+            No source methods are linked. This direct article can be reviewed,
+            but readiness checks cannot compare it against a Workbench plan.
+          </p>
+        )}
       </header>
+
+      <section className="mb-8 rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] shadow-[0_2px_8px_rgba(22,40,57,0.04)]">
+        <div className="flex flex-wrap items-center gap-2 border-b border-[color:var(--color-outline-variant)] px-4 py-3">
+          <MessageSquareText
+            className="h-4 w-4 text-[color:var(--color-on-surface-variant)]"
+            strokeWidth={1.75}
+          />
+          <div className="min-w-0">
+            <h2 className="font-display text-[15px] font-semibold text-[color:var(--color-on-surface)]">
+              Review agent
+            </h2>
+            <p className="text-[11px] text-[color:var(--color-on-surface-variant)]">
+              {sessionError
+                ? `Unavailable: ${sessionError}`
+                : session
+                  ? `${agentRunLabel(session)} · ${sessionStatus}`
+                  : "Opening manuscript thread..."}
+            </p>
+          </div>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void runReview()}
+              disabled={!canRunReview}
+              title={reviewActionHint}
+              className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1.5 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
+            >
+              <MessageSquareText className="h-3.5 w-3.5" strokeWidth={1.75} />
+              {isRunning ? "Reviewing..." : "Run review"}
+            </button>
+            <span className="rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] bg-[color:var(--color-primary-container)] text-[color:var(--color-on-primary)]">
+              {openCount} Open
+            </span>
+          </div>
+        </div>
+
+        {session ? (
+          <details className="group" open={false}>
+            <summary className="flex cursor-pointer items-center gap-2 px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] [&::-webkit-details-marker]:hidden">
+              <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" strokeWidth={2} />
+              <span className="label-sm flex-1 truncate">
+                Agent stream · {sessionStatus}
+              </span>
+            </summary>
+            <div className="max-h-[220px] overflow-y-auto border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] px-4 py-3 text-[12px]">
+              <SessionStream
+                sessionId={session.id}
+                workflow="manuscript"
+                onStatusChange={setSessionStatus}
+                onTurnComplete={onTurnComplete}
+              />
+            </div>
+          </details>
+        ) : (
+          <div className="px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)]">
+            {sessionError
+              ? `Manuscript thread unavailable: ${sessionError}`
+              : "Opening manuscript thread..."}
+          </div>
+        )}
+
+        {settingsOpen && (
+          <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-4 py-3 space-y-3">
+            <p className="label">Advanced</p>
+            <ProviderSelector
+              value={provider}
+              onChange={chooseProvider}
+            />
+            {supportsModelEffort(provider) && (
+              <AgentModelEffortPicker
+                provider={provider}
+                model={model}
+                effort={effort}
+                onModelChange={setModel}
+                onEffortChange={setEffort}
+              />
+            )}
+            <p className="text-[11px] italic text-[color:var(--color-on-surface-variant)]">
+              Applies to new sessions. The current thread keeps its provider
+              until closed.
+            </p>
+            <label className="flex items-center justify-between gap-2 border-t border-[color:var(--color-outline-variant)] pt-3 text-[12px] text-[color:var(--color-on-surface-variant)] select-none cursor-pointer">
+              <span>Revision tracking (inline change markers)</span>
+              <span
+                role="switch"
+                aria-checked={revisionTracking}
+                tabIndex={0}
+                onClick={() => setRevisionTracking((v) => !v)}
+                onKeyDown={(e) => {
+                  if (e.key === " " || e.key === "Enter") {
+                    e.preventDefault();
+                    setRevisionTracking((v) => !v);
+                  }
+                }}
+                className={`inline-flex h-[18px] w-[30px] shrink-0 items-center rounded-full transition-colors ${
+                  revisionTracking
+                    ? "bg-[color:var(--color-primary)]"
+                    : "bg-[color:var(--color-outline-variant)]"
+                }`}
+              >
+                <span
+                  className={`block h-[14px] w-[14px] rounded-full bg-[color:var(--color-on-primary)] transition-transform ${
+                    revisionTracking ? "translate-x-[14px]" : "translate-x-[2px]"
+                  }`}
+                />
+              </span>
+            </label>
+          </div>
+        )}
+
+        {error && (
+          <div className="border-t border-[color:var(--color-error)] bg-[color:var(--color-error-container)] px-4 py-2 text-[12px] text-[color:var(--color-on-error-container)]">
+            {error}
+          </div>
+        )}
+
+        <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] px-3 py-3">
+          <PromptComposer
+            value={composerText}
+            onChange={setComposerText}
+            onSubmit={() => {
+              if (canSend) void sendMessage();
+            }}
+            submitOnEnter
+            disabled={!session || isRunning || sending}
+            placeholder={
+              sessionError
+                ? "Manuscript chat unavailable"
+                : isRunning
+                  ? "Agent is working..."
+                  : "Add a comment · type / for commands"
+            }
+            ariaLabel="Message the manuscript agent"
+            slashCommands={MANUSCRIPT_SLASH_COMMANDS}
+          />
+          <div className="mt-2 flex items-center justify-between gap-2 text-[11px]">
+            <span className="text-[color:var(--color-on-surface-variant)] tabular">
+              {sessionStatus}
+            </span>
+            {isRunning ? (
+              <button
+                type="button"
+                onClick={() => void interrupt()}
+                className="text-[12px] font-medium text-[color:var(--color-error)] hover:underline underline-offset-2"
+              >
+                Halt
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void sendMessage()}
+                disabled={!canSend}
+                className="rounded bg-[color:var(--color-primary)] px-3 py-1 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
+              >
+                Send
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* TWO-COLUMN BODY */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px] gap-8 xl:gap-10">
@@ -634,11 +818,17 @@ export default function ManuscriptWorkspacePage() {
               comments={comments}
               onResolve={resolveComment}
               now={nowRef.current}
+              openCount={openCount}
+              onRunReview={() => void runReview()}
+              canRunReview={canRunReview}
+              reviewInputsReady={reviewInputsReady}
+              isRunning={isRunning}
+              reviewActionHint={reviewActionHint}
             />
           )}
         </main>
 
-        {/* RIGHT — INPUTS + ATTACHMENTS + PEER FEEDBACK PANEL */}
+        {/* RIGHT — INPUTS + ATTACHMENTS */}
         <aside className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-6rem)] flex flex-col gap-4">
           <ReviewInputPanel
             manuscript={manuscript}
@@ -648,188 +838,6 @@ export default function ManuscriptWorkspacePage() {
 
           {/* Attachments panel */}
           <AttachmentsPanel manuscriptId={manuscript.id} />
-
-          <div className="flex flex-col rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] shadow-[0_2px_8px_rgba(22,40,57,0.04)] lg:max-h-[calc(100vh-6rem)]">
-            {/* Header */}
-            <div className="flex items-center gap-2 border-b border-[color:var(--color-outline-variant)] px-5 py-4">
-              <MessageSquareText
-                className="h-4 w-4 text-[color:var(--color-on-surface-variant)]"
-                strokeWidth={1.75}
-              />
-              <h2 className="font-display text-[15px] font-semibold text-[color:var(--color-on-surface)]">
-                Peer Feedback
-              </h2>
-              <div className="ml-auto flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => void runReview()}
-                  disabled={!canRunReview}
-                  title={
-                    reviewInputsReady
-                      ? "Run the context-grounded ensemble review"
-                      : "Add a review focus in Review Inputs first"
-                  }
-                  className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
-                >
-                  <MessageSquareText className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  {isRunning ? "Reviewing…" : "Run review"}
-                </button>
-                <span className="rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] bg-[color:var(--color-primary-container)] text-[color:var(--color-on-primary)]">
-                  {openCount} Open
-                </span>
-              </div>
-            </div>
-
-            {/* Scrollable comment list */}
-            <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3 space-y-3">
-              {comments.length === 0 ? (
-                <p className="px-2 py-6 text-center text-[13px] italic text-[color:var(--color-on-surface-variant)]">
-                  No feedback yet. Press{" "}
-                  <span className="not-italic font-medium">Run review</span> above
-                  (or type <code className="font-mono not-italic">/review</code> in
-                  the composer) to begin.
-                </p>
-              ) : (
-                comments.map((c) => (
-                  <CommentCard
-                    key={`${c.kind}-${c.id}`}
-                    c={c}
-                    onResolve={resolveComment}
-                    now={nowRef.current}
-                  />
-                ))
-              )}
-            </div>
-
-            {/* Agent stream + composer */}
-            <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]">
-              {/* Compact stream window */}
-              {session ? (
-                <details className="group" open={false}>
-                  <summary className="flex cursor-pointer items-center gap-2 px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] [&::-webkit-details-marker]:hidden">
-                    <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" strokeWidth={2} />
-                    <span className="label-sm flex-1 truncate">
-                      Agent · {agentRunLabel(session)} · {sessionStatus}
-                    </span>
-                  </summary>
-                  <div className="max-h-[240px] overflow-y-auto border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-4 py-3 text-[12px]">
-                    <SessionStream
-                      sessionId={session.id}
-                      workflow="manuscript"
-                      onStatusChange={setSessionStatus}
-                      onTurnComplete={onTurnComplete}
-                    />
-                  </div>
-                </details>
-              ) : (
-                <div className="px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)]">
-                  {sessionError
-                    ? `Manuscript thread unavailable: ${sessionError}`
-                    : "Opening manuscript thread..."}
-                </div>
-              )}
-
-              {/* Advanced drawer — provider/model/effort + revision tracking */}
-              {settingsOpen && (
-                <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-4 py-3 space-y-3">
-                  <p className="label">Advanced</p>
-                  <ProviderSelector
-                    value={provider}
-                    onChange={chooseProvider}
-                  />
-                  {supportsModelEffort(provider) && (
-                    <AgentModelEffortPicker
-                      provider={provider}
-                      model={model}
-                      effort={effort}
-                      onModelChange={setModel}
-                      onEffortChange={setEffort}
-                    />
-                  )}
-                  <p className="text-[11px] italic text-[color:var(--color-on-surface-variant)]">
-                    Applies to new sessions. The current thread keeps its
-                    provider until closed.
-                  </p>
-                  <label className="flex items-center justify-between gap-2 border-t border-[color:var(--color-outline-variant)] pt-3 text-[12px] text-[color:var(--color-on-surface-variant)] select-none cursor-pointer">
-                    <span>Revision tracking (inline change markers)</span>
-                    <span
-                      role="switch"
-                      aria-checked={revisionTracking}
-                      tabIndex={0}
-                      onClick={() => setRevisionTracking((v) => !v)}
-                      onKeyDown={(e) => {
-                        if (e.key === " " || e.key === "Enter") {
-                          e.preventDefault();
-                          setRevisionTracking((v) => !v);
-                        }
-                      }}
-                      className={`inline-flex h-[18px] w-[30px] shrink-0 items-center rounded-full transition-colors ${
-                        revisionTracking
-                          ? "bg-[color:var(--color-primary)]"
-                          : "bg-[color:var(--color-outline-variant)]"
-                      }`}
-                    >
-                      <span
-                        className={`block h-[14px] w-[14px] rounded-full bg-[color:var(--color-on-primary)] transition-transform ${
-                          revisionTracking ? "translate-x-[14px]" : "translate-x-[2px]"
-                        }`}
-                      />
-                    </span>
-                  </label>
-                </div>
-              )}
-
-              {/* Error */}
-              {error && (
-                <div className="border-t border-[color:var(--color-error)] bg-[color:var(--color-error-container)] px-4 py-2 text-[12px] text-[color:var(--color-on-error-container)]">
-                  {error}
-                </div>
-              )}
-
-              {/* Composer */}
-              <div className="px-3 py-3 border-t border-[color:var(--color-outline-variant)]">
-                <PromptComposer
-                  value={composerText}
-                  onChange={setComposerText}
-                  onSubmit={() => {
-                    if (canSend) void sendMessage();
-                  }}
-                  submitOnEnter
-                  disabled={!session || isRunning || sending}
-                  placeholder={
-                    sessionError
-                      ? "Manuscript chat unavailable"
-                      : isRunning
-                      ? "Agent is working…"
-                      : "Add a comment · type / for commands"
-                  }
-                  ariaLabel="Message the manuscript agent"
-                  slashCommands={MANUSCRIPT_SLASH_COMMANDS}
-                />
-                <div className="mt-2 flex items-center justify-between gap-2 text-[11px]">
-                  <span className="text-[color:var(--color-on-surface-variant)] tabular">
-                    {sessionStatus}
-                  </span>
-                  {isRunning ? (
-                    <button
-                      onClick={() => void interrupt()}
-                      className="text-[12px] font-medium text-[color:var(--color-error)] hover:underline underline-offset-2"
-                    >
-                      Halt
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => void sendMessage()}
-                      disabled={!canSend}
-                      className="rounded bg-[color:var(--color-primary)] px-3 py-1 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
-                    >
-                      Send
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
         </aside>
       </div>
     </div>
@@ -1082,39 +1090,85 @@ function HistoryPane({
   );
 }
 
-// ─── PeerFeedbackGrid (center pane version of the right sidebar) ──────────
+// ─── PeerFeedbackGrid ─────────────────────────────────────────────────────
 
 function PeerFeedbackGrid({
   comments,
   onResolve,
   now,
+  openCount,
+  onRunReview,
+  canRunReview,
+  reviewInputsReady,
+  isRunning,
+  reviewActionHint,
 }: {
   comments: Comment[];
   onResolve: (c: Comment, next: "applied" | "dismissed") => void;
   now: number;
+  openCount: number;
+  onRunReview: () => void;
+  canRunReview: boolean;
+  reviewInputsReady: boolean;
+  isRunning: boolean;
+  reviewActionHint: string;
 }) {
+  const action = (
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 className="font-display text-[18px] font-semibold text-[color:var(--color-on-surface)]">
+          Peer Feedback
+        </h2>
+        <p className="text-[12px] text-[color:var(--color-on-surface-variant)]">
+          {openCount} open finding{openCount === 1 ? "" : "s"}
+          {!reviewInputsReady ? " · review focus required before running" : ""}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onRunReview}
+        disabled={!canRunReview}
+        title={reviewActionHint}
+        className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1.5 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
+      >
+        <MessageSquareText className="h-3.5 w-3.5" strokeWidth={1.75} />
+        {isRunning ? "Reviewing..." : "Run review"}
+      </button>
+    </div>
+  );
+
   if (comments.length === 0) {
     return (
-      <div className="rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-6 py-12 text-center">
-        <p className="text-[14px] italic text-[color:var(--color-on-surface-variant)]">
-          No findings yet. Type{" "}
-          <code className="font-mono not-italic">/review</code> in the composer
-          to start.
-        </p>
+      <div>
+        {action}
+        <div className="rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-6 py-12 text-center">
+          <p className="text-[14px] italic text-[color:var(--color-on-surface-variant)]">
+            No feedback yet. Run the review here, or use the composer above
+            with <code className="font-mono not-italic">/review</code>.
+          </p>
+          {!reviewInputsReady && (
+            <p className="mt-2 text-[12px] text-[color:var(--color-error)]">
+              Add a review focus in Review Inputs first.
+            </p>
+          )}
+        </div>
       </div>
     );
   }
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {comments.map((c) => (
-        <CommentCard
-          key={`${c.kind}-${c.id}`}
-          c={c}
-          onResolve={onResolve}
-          now={now}
-          expanded
-        />
-      ))}
+    <div>
+      {action}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {comments.map((c) => (
+          <CommentCard
+            key={`${c.kind}-${c.id}`}
+            c={c}
+            onResolve={onResolve}
+            now={now}
+            expanded
+          />
+        ))}
+      </div>
     </div>
   );
 }

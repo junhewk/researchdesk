@@ -26,10 +26,29 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
+  if (
+    body &&
+    typeof body === "object" &&
+    "source_manuscript_id" in body
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Studies must be created from Methods Workbench, not imported from My Articles.",
+      },
+      { status: 400 },
+    );
+  }
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  const study = createStudy(parsed.data);
+
+  const study = createStudy({
+    title: parsed.data.title,
+    mode: parsed.data.mode,
+    research_question: parsed.data.research_question,
+    confidentiality_mode: parsed.data.confidentiality_mode,
+  });
   return NextResponse.json(study, { status: 201 });
 }

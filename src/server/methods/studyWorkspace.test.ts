@@ -49,6 +49,117 @@ test("creating a study seeds the observational card set; preflight is pure", asy
   });
 });
 
+test("study creation rejects attempts to import an existing manuscript", async () => {
+  await withTempDb(async () => {
+    const { createManuscript, getManuscript } = await import("../manuscripts");
+    const { POST } = await import("../../app/api/studies/route");
+    const manuscript = createManuscript({
+      title: "AI education manuscript",
+      content_md: "Draft text about AI education in shared decision medicine.",
+      research_domain: "medical education",
+      research_type: "review",
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/studies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: manuscript.title,
+          mode: "scoping_review",
+          research_question: "How is AI used for education in shared decision medicine?",
+          source_manuscript_id: manuscript.id,
+        }),
+      }) as never,
+    );
+
+    assert.equal(response.status, 400);
+    assert.equal(getManuscript(manuscript.id)?.study_id, null);
+  });
+});
+
+test("article creation from a study is the forward workbench bridge", async () => {
+  await withTempDb(async () => {
+    const { listManuscripts } = await import("../manuscripts");
+    const { createStudy } = await import("../studies");
+    const { createArticleFromStudy } = await import("../studyArticle");
+    const study = createStudy({
+      title: "AI education scoping review",
+      mode: "scoping_review",
+      research_question: "How is AI used for education in shared decision medicine?",
+    });
+
+    const result = createArticleFromStudy(study.id);
+    const linked = listManuscripts({ studyId: study.id, limit: 5 });
+    const reused = createArticleFromStudy(study.id);
+
+    assert.equal(result.created, true);
+    assert.equal(result.manuscript.study_id, study.id);
+    assert.equal(result.links.article, `/my-articles/${result.manuscript.id}`);
+    assert.equal(result.links.workspace, `/my-articles/${result.manuscript.id}/workspace`);
+    assert.equal(result.links.sourceStudy, `/methods-workbench/${study.id}`);
+    assert.equal(linked.length, 1);
+    assert.equal(reused.created, false);
+    assert.equal(reused.manuscript.id, result.manuscript.id);
+  });
+});
+
+test("workbench import options show linked and unlinked article reviews", async () => {
+  await withTempDb(async () => {
+    const { createStudy } = await import("../studies");
+    const {
+      createArticleFromStudy,
+      listStudyArticleImportOptions,
+    } = await import("../studyArticle");
+    const linkedStudy = createStudy({
+      title: "Linked scoping review",
+      mode: "scoping_review",
+    });
+    const unlinkedStudy = createStudy({
+      title: "Unlinked clinical trial",
+      mode: "interventional",
+    });
+    const article = createArticleFromStudy(linkedStudy.id);
+
+    const options = listStudyArticleImportOptions({ limit: 10 });
+    const linked = options.find((option) => option.study.id === linkedStudy.id);
+    const unlinked = options.find((option) => option.study.id === unlinkedStudy.id);
+
+    assert.equal(linked?.manuscript?.id, article.manuscript.id);
+    assert.equal(linked?.links.workspace, `/my-articles/${article.manuscript.id}/workspace`);
+    assert.equal(linked?.links.sourceStudy, `/methods-workbench/${linkedStudy.id}`);
+    assert.equal(unlinked?.manuscript, null);
+    assert.equal(unlinked?.links.workspace, null);
+  });
+});
+
+test("public manuscript creation refuses direct study links", async () => {
+  await withTempDb(async () => {
+    const { listManuscripts } = await import("../manuscripts");
+    const { createStudy } = await import("../studies");
+    const { POST } = await import("../../app/api/manuscripts/route");
+    const study = createStudy({
+      title: "Source Workbench",
+      mode: "systematic_review",
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/manuscripts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          study_id: study.id,
+          title: "Direct link attempt",
+          content_md: "This should not create a linked article review.",
+        }),
+      }) as never,
+    );
+
+    assert.equal(response.status, 400);
+    assert.equal(listManuscripts({ studyId: study.id, limit: 5 }).length, 0);
+  });
+});
+
 test("deterministic extraction materializes evidence from an MDR digest", async () => {
   await withTempDb(async () => {
     const { createStudy, createSnapshot, listEvidenceItems } = await import("../studies");
@@ -70,6 +181,96 @@ test("deterministic extraction materializes evidence from an MDR digest", async 
       outcomes.some((o) => o.label.includes("28-day mortality")),
       "expected 28-day mortality among extracted outcomes",
     );
+  });
+});
+
+test("mapped records CSV seeds decisions from arbitrary category columns", async () => {
+  await withTempDb(async () => {
+    const { createStudy } = await import("../studies");
+    const { importScopingCsvWithMapping, recordStats, listRecords } = await import("./reviewCorpus");
+    const study = createStudy({ title: "Scoping", mode: "scoping_review" });
+    const csv = [
+      "Article ID,Name,Category,Reason,Flag",
+      "1,AI tutor for SDM,Core,Direct education,Y",
+      "2,Clinical decision support,Reserve,Clinician support,N",
+      "3,Off-topic prediction,No,No education,N",
+    ].join("\n");
+
+    importScopingCsvWithMapping(study.id, "records.csv", csv, {
+      fields: {
+        external_id: "Article ID",
+        title: "Name",
+        screen_tier: "Category",
+        screen_reason: "Reason",
+      },
+      decision: {
+        column: "Category",
+        values: {
+          Core: "include",
+          Reserve: "maybe",
+          No: "exclude",
+        },
+        default_decision: "unscreened",
+      },
+      needs_review: { column: "Flag", true_values: ["Y"] },
+      confidence: "high",
+      rationale_md: "test mapping",
+      warnings: [],
+    });
+
+    const stats = recordStats(study.id);
+    assert.equal(stats.include, 1);
+    assert.equal(stats.maybe, 1);
+    assert.equal(stats.exclude, 1);
+    assert.equal(stats.unscreened, 0);
+    assert.equal(stats.needs_review, 1);
+
+    const records = listRecords(study.id, { limit: 10 }).records;
+    assert.equal(records[0].screen_tier, "Core");
+    assert.equal(records[0].decision_reason, "Imported from Category: Core");
+  });
+});
+
+test("mapped records CSV does not overwrite confirmed decisions by default", async () => {
+  await withTempDb(async () => {
+    const { createStudy } = await import("../studies");
+    const { importScopingCsvWithMapping, listRecords, patchRecord, recordStats } = await import("./reviewCorpus");
+    const study = createStudy({ title: "Scoping", mode: "scoping_review" });
+    const mapping = {
+      fields: { external_id: "ID", title: "Title" },
+      decision: {
+        column: "Disposition",
+        values: { Keep: "include" as const, Drop: "exclude" as const },
+        default_decision: "unscreened" as const,
+      },
+      needs_review: { column: null, true_values: ["Y"] },
+      confidence: "high" as const,
+      rationale_md: "",
+      warnings: [],
+    };
+
+    importScopingCsvWithMapping(
+      study.id,
+      "records.csv",
+      ["ID,Title,Disposition", "1,First,Keep", "2,Second,Keep"].join("\n"),
+      mapping,
+    );
+    const first = listRecords(study.id, { limit: 10 }).records[0];
+    patchRecord(first.id, { decision: "maybe", user_confirmed: true });
+
+    importScopingCsvWithMapping(
+      study.id,
+      "records.csv",
+      ["ID,Title,Disposition", "1,First,Drop", "2,Second,Drop"].join("\n"),
+      mapping,
+    );
+
+    const records = listRecords(study.id, { limit: 10 }).records;
+    assert.equal(records.find((r) => r.external_id === "1")?.decision, "maybe");
+    assert.equal(records.find((r) => r.external_id === "2")?.decision, "exclude");
+    const stats = recordStats(study.id);
+    assert.equal(stats.maybe, 1);
+    assert.equal(stats.exclude, 1);
   });
 });
 
@@ -118,6 +319,40 @@ test("proposal seeds are grounded in triage input and imported evidence", async 
       outcome.some((o) => o.value_suggestion === "28-day mortality"),
       "expected imported outcome labels as pickable options",
     );
+  });
+});
+
+test("proposal options persist field-level suggestions", async () => {
+  await withTempDb(async () => {
+    const {
+      createStudy,
+      createProposalOption,
+      listProposalOptions,
+    } = await import("../studies");
+    const study = createStudy({
+      title: "AI education scoping review",
+      mode: "scoping_review",
+    });
+    createProposalOption({
+      study_id: study.id,
+      card_type: "eligibility_criteria",
+      label: "Medical students using generative AI",
+      value_suggestion: "Generative AI use in medical education settings",
+      fields_suggestion: {
+        inclusion: "Studies of generative AI tools used for health-professions education.",
+        exclusion: "Non-educational AI decision-support studies and non-health education settings.",
+        sources: "Peer-reviewed studies, conference papers, and relevant grey literature.",
+      },
+      consequence_md:
+        "Matches the scoping-review question while keeping source types explicit.",
+    });
+
+    const [option] = listProposalOptions(study.id, "eligibility_criteria");
+    assert.deepEqual(option.fields_suggestion, {
+      inclusion: "Studies of generative AI tools used for health-professions education.",
+      exclusion: "Non-educational AI decision-support studies and non-health education settings.",
+      sources: "Peer-reviewed studies, conference papers, and relevant grey literature.",
+    });
   });
 });
 

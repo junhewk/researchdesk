@@ -696,9 +696,21 @@ export function createProposalOption(data: {
   session_id?: string | null;
   label: string;
   value_suggestion?: string | null;
+  fields_suggestion?: Record<string, string> | null;
   consequence_md?: string | null;
 }): CardProposalOption {
   const db = getDb();
+  const fieldsSuggestion = data.fields_suggestion
+    ? Object.fromEntries(
+        Object.entries(data.fields_suggestion)
+          .map(([key, value]) => [key.trim(), value.trim()])
+          .filter(([key, value]) => key && value),
+      )
+    : null;
+  const fieldsSuggestionJson =
+    fieldsSuggestion && Object.keys(fieldsSuggestion).length
+      ? JSON.stringify(fieldsSuggestion)
+      : null;
   const row: CardProposalOption = {
     id: `cpo_${nanoid(16)}`,
     study_id: data.study_id,
@@ -706,13 +718,15 @@ export function createProposalOption(data: {
     session_id: data.session_id ?? null,
     label: data.label,
     value_suggestion: data.value_suggestion ?? null,
+    fields_suggestion_json: fieldsSuggestionJson,
+    fields_suggestion: fieldsSuggestionJson ? fieldsSuggestion : null,
     consequence_md: data.consequence_md ?? null,
     created_at: nowUnix(),
   };
   db.prepare(
     `INSERT INTO card_proposal_options
-       (id, study_id, card_type, session_id, label, value_suggestion, consequence_md, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, study_id, card_type, session_id, label, value_suggestion, fields_suggestion_json, consequence_md, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     row.id,
     row.study_id,
@@ -720,19 +734,43 @@ export function createProposalOption(data: {
     row.session_id,
     row.label,
     row.value_suggestion,
+    row.fields_suggestion_json,
     row.consequence_md,
     row.created_at,
   );
   return row;
 }
 
+function parseProposalFields(json: string | null | undefined): Record<string, string> | null {
+  if (!json) return null;
+  try {
+    const parsed = JSON.parse(json) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    const fields = Object.fromEntries(
+      Object.entries(parsed as Record<string, unknown>)
+        .map(([key, value]) => [
+          key.trim(),
+          typeof value === "string" ? value.trim() : "",
+        ])
+        .filter(([key, value]) => key && value),
+    );
+    return Object.keys(fields).length ? fields : null;
+  } catch {
+    return null;
+  }
+}
+
 export function listProposalOptions(
   studyId: string,
   cardType: string,
 ): CardProposalOption[] {
-  return getDb()
+  const rows = getDb()
     .prepare(
       "SELECT * FROM card_proposal_options WHERE study_id = ? AND card_type = ? ORDER BY created_at",
     )
-    .all(studyId, cardType) as CardProposalOption[];
+    .all(studyId, cardType) as Array<Omit<CardProposalOption, "fields_suggestion">>;
+  return rows.map((row) => ({
+    ...row,
+    fields_suggestion: parseProposalFields(row.fields_suggestion_json),
+  }));
 }
