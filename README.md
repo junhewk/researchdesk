@@ -25,13 +25,29 @@ Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
 ## Status
 
-This is the `v0.1.1` release of a research-assistance app. The distributed
-binary is the Windows x64 portable `.exe` attached to the `v0.1.1` GitHub
+This is the `v0.1.2` release of a research-assistance app. The distributed
+binary is the Windows x64 portable `.exe` attached to the `v0.1.2` GitHub
 release.
 
 Use it as an editorial and methods-checking workspace, not as medical, legal,
 regulatory, or statistical advice. Verify all LLM output, citations,
 calculations, and manuscript changes before relying on them.
+
+## What's new in v0.1.2
+
+- **MCP server aligned with the v0.1.1 app surface.** The `mcp/server.mjs`
+  bridge now exposes the workbench→article workflow to CLI agents (Claude Code /
+  Codex): `promote_study_to_article` (the Create Article Draft step) with
+  `list_promotable_studies`, an approve-before-apply CSV import
+  (`preview_csv_import` → author-approved column mapping → `apply_csv_import`,
+  with the `csv_import_review` prompt), and `set_study_confidentiality` to toggle
+  `local_only`, which pins the study's LLM calls and any promoted article to
+  local providers.
+- **Version no longer drifts.** The MCP server reads its version from
+  `package.json` at startup instead of a hardcoded literal, and the
+  `review_manuscript` / `list_manuscripts` tools note the local-only gating.
+- Refreshed [`docs/MCP.md`](docs/MCP.md) with the new tool tables, prompts, and
+  example workflows.
 
 ## What's new in v0.1.1
 
@@ -246,6 +262,13 @@ For manuscripts it exposes `list_manuscripts`, `review_manuscript` (runs the
 context-grounded ensemble review), and `get_reviews`, plus a `manuscript_review`
 prompt that runs the review and walks the author through the findings. So a CLI
 agent can review a manuscript end to end without the desktop UI.
+
+New in 0.1.1: the MCP server can also promote a finished study into an article
+draft (`promote_study_to_article`, the app's Create Article Draft step),
+preview and apply records-CSV imports with an author-approved column mapping
+(`preview_csv_import` / `apply_csv_import` + the `csv_import_review` prompt), and
+toggle a study's confidentiality mode with `set_study_confidentiality` —
+`local_only` pins all LLM calls to local providers.
 
 Run the app headless first, then point the MCP server at it:
 

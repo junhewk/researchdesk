@@ -3,17 +3,19 @@
 Drive the Reviewer-Agent app from **Claude Code** or **Codex** via the Model
 Context Protocol. The MCP server (`mcp/server.mjs`) is a small stdio process that
 bridges to the app's existing local REST API — so a CLI agent can find or create
-a study, import scoping-review CSVs, inspect the screened corpus + PRISMA flow,
-generate a self-contained drafting brief / `AGENTS.md` for any paper section, and
-run the product's context-grounded **ensemble review** on a manuscript.
+a study, import scoping-review CSVs (one-shot, or with an LLM-proposed,
+author-approved column mapping), inspect the screened corpus + PRISMA flow,
+generate a self-contained drafting brief / `AGENTS.md` for any paper section,
+**promote a finished study into an article draft**, and run the product's
+context-grounded **ensemble review** on a manuscript.
 
 ```
 Claude Code / Codex ──stdio(MCP)──▶ reviewer-agent-mcp ──HTTP(+token)──▶ app (127.0.0.1:3871)
 ```
 
-The MCP server holds no business logic; every tool wraps one `/api/studies/*` or
-`/api/manuscripts/*` route. The app is the single source of truth (SQLite +
-markdown exports).
+The MCP server holds no business logic; every tool wraps one `/api/studies/*`,
+`/api/manuscripts/*`, or `/api/study-article-imports` route. The app is the single
+source of truth (SQLite + markdown exports).
 
 ## 1. Run the app headless (Linux server, no GUI)
 
@@ -95,7 +97,9 @@ REVIEWER_APP_TOKEN = "<same token as the app>"
 | ---------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
 | `list_studies`         | `GET /api/studies`                                 | find an existing study id (`st_…`)                          |
 | `create_study`         | `POST /api/studies`                                | create a study (default mode `scoping_review`)             |
-| `import_review_csv`    | `POST /api/studies/{id}/import`                    | import CSV file(s) by path; auto-detects search vs records |
+| `import_review_csv`    | `POST /api/studies/{id}/import`                    | one-shot import by path; auto-detect heuristics — prefer preview/apply for nonstandard records CSVs |
+| `preview_csv_import`   | `POST …/import/preview`                            | propose a column mapping for the author to approve (LLM for records CSVs; deterministic for search) |
+| `apply_csv_import`     | `POST …/import/apply`                              | apply the author-approved mapping (records CSVs require one; re-import keeps confirmed decisions unless told otherwise) |
 | `corpus_overview`      | `GET …/prisma` + `…/records`                       | PRISMA flow + per-database yields + screening stats        |
 | `export_corpus`        | `GET …/records/export`                             | round-trip records CSV, or characteristics table (csv/md)  |
 | `build_drafting_brief` | `POST …/drafting-prompts`                          | self-contained brief / `AGENTS.md` for any section(s)      |
@@ -119,6 +123,14 @@ freeform `task`. Results/Discussion are grounded in the screened corpus + PRISMA
 counts; every prompt instructs the model to use only the recorded material and
 never invent findings.
 
+**Promotion & confidentiality** (promote a study into an article, control cloud use)
+
+| Tool                       | Wraps                                     | Use                                                              |
+| -------------------------- | ----------------------------------------- | ---------------------------------------------------------------- |
+| `set_study_confidentiality`| `PATCH …/{id}/confidentiality`            | `cloud_default` ↔ `local_only`; local_only → cloud needs the author's explicit `consent` |
+| `list_promotable_studies`  | `GET /api/study-article-imports`          | studies + their linked article draft (or `null` if none yet)     |
+| `promote_study_to_article` | `POST /api/studies/{id}/article`          | create/reuse the article draft from the recorded design; carries `confidentiality_mode` |
+
 **Manuscripts & review** (run the context-grounded ensemble review, read findings)
 
 | Tool                  | Wraps                                          | Use                                                          |
@@ -135,6 +147,13 @@ for a fast single grounded pass. `provider`/`model` override the app's configure
 default. DOI/retraction validation makes external calls (DOI strings only) — this
 is the own-article path, which permits it.
 
+**Confidentiality.** A `local_only` study pins its LLM-backed operations to local
+providers (ollama, lmstudio, llama_server). `preview_csv_import` **rejects** a
+cloud provider for such a study with a 400; reviews of an article promoted from a
+local_only study are **coerced** to a local backend (default ollama) rather than
+ever reaching the cloud. Toggle the mode with `set_study_confidentiality` —
+switching back to `cloud_default` requires the author's explicit `consent=true`.
+
 ## 5a. Prompts (give-and-take playbooks)
 
 The server also exposes MCP **prompts** — reusable playbooks the calling agent
@@ -150,14 +169,21 @@ author *decides*; the agent never fabricates research content.
 - **`screening_review(study_id)`** — walk the author through the records the
   imported AI screening flagged (`list_records` needs_review), ask for each
   decision, and record it with `set_record_decision`.
-- **`manuscript_review(manuscript_id?)`** — pick a manuscript (`list_manuscripts`),
-  run the grounded ensemble review (`review_manuscript`), read the merged findings
+- **`csv_import_review(study_id)`** — preview a records/search CSV
+  (`preview_csv_import`), present the proposed column mapping to the author for
+  approval or correction, apply the approved mapping (`apply_csv_import`), and
+  confirm the result with `corpus_overview`. Encodes the approve-before-apply loop.
+- **`manuscript_review(manuscript_id?)`** — pick a manuscript (`list_manuscripts`;
+  if none exists yet but a study does, offer `promote_study_to_article`), run the
+  grounded ensemble review (`review_manuscript`), read the merged findings
   (`get_reviews`), and walk the author through them by severity — flagging the
   citation-integrity / GRIM / protocol-drift findings the text alone can't reveal.
   Explicitly **not** a persona panel.
 
-This is the intended flow after the author imports their files: import → run
-`methods_intake` to fill gaps and tighten the design through Q&A → `build_drafting_brief`.
+This is the intended flow after the author imports their files: import
+(preview/apply for nonstandard CSVs) → run `methods_intake` to fill gaps and
+tighten the design through Q&A → `build_drafting_brief` → `promote_study_to_article`
+→ `manuscript_review`.
 
 **Cues without the prompt.** The MCP server can't call the agent's
 AskUserQuestion itself, so the intake/screening tools append a `→ NEXT:` cue to
@@ -177,7 +203,17 @@ In Claude Code, with the two CSVs on disk:
 
 The agent will: `create_study` → `import_review_csv([both files])` →
 `corpus_overview` → `build_drafting_brief(sections: ["results","discussion"])`,
-and save the returned `AGENTS.md`.
+and save the returned `AGENTS.md`. If the records CSV comes from another screening
+tool and its columns don't match, the agent uses `preview_csv_import` → shows you
+the proposed mapping → `apply_csv_import` with your approved mapping instead.
+
+To turn a finished study into a reviewable article:
+
+> Use the reviewer-agent MCP to turn my scoping-review study into an article draft
+> and run the grounded review.
+
+The agent will: `list_promotable_studies` (resolve which study) →
+`promote_study_to_article` → `review_manuscript` → `get_reviews`.
 
 To review a manuscript instead:
 

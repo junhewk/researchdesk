@@ -2,11 +2,13 @@
 // ===========================================================================
 // reviewer-agent-mcp — an MCP (stdio) server that lets Claude Code / Codex drive
 // the Reviewer-Agent desktop app. It holds no business logic: every tool is a
-// thin wrapper over an existing /api/studies/* route on the locally-running app
-// (HTTP bridge). Configure with REVIEWER_API_URL (default http://localhost:3871)
-// and REVIEWER_APP_TOKEN (must match the app process). See docs/MCP.md.
+// thin wrapper over an existing /api/* route on the locally-running app (studies,
+// manuscripts, study-article-imports — the HTTP bridge). Configure with
+// REVIEWER_API_URL (default http://localhost:3871) and REVIEWER_APP_TOKEN (must
+// match the app process). See docs/MCP.md.
 // ===========================================================================
 
+import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -14,12 +16,35 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { apiJson, apiText, apiUpload, BASE } from "./client.mjs";
 
+// package.json is the single source of truth for the version (bin-safe:
+// ../package.json ships one level above mcp/server.mjs inside the package).
+let VERSION = "0.0.0";
+try {
+  VERSION = JSON.parse(
+    readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+  ).version ?? VERSION;
+} catch {
+  /* keep fallback; never block startup on a version read */
+}
+
 const STUDY_MODES = [
   "scoping_review",
   "systematic_review",
   "retrospective_observational",
   "interventional",
 ];
+
+// Cloud + local providers the app accepts; the local three also gate local_only
+// studies/articles. Kept in sync with src/server/apiAgent/providers.ts.
+const API_PROVIDERS = [
+  "openai",
+  "gemini",
+  "deepseek",
+  "ollama",
+  "lmstudio",
+  "llama_server",
+];
+const SCREEN_DECISIONS = ["include", "exclude", "maybe", "unscreened"];
 
 const DRAFT_SECTIONS = [
   "outline",
@@ -32,7 +57,7 @@ const DRAFT_SECTIONS = [
 
 const server = new McpServer({
   name: "reviewer-agent",
-  version: "0.1.0",
+  version: VERSION,
 });
 
 /** Wrap a handler so thrown errors become MCP error results, not crashes. */
@@ -111,6 +136,36 @@ tool(
   },
 );
 
+tool(
+  "set_study_confidentiality",
+  {
+    title: "Set study confidentiality mode",
+    description:
+      "Set whether a study's LLM-backed operations may use cloud providers. 'local_only' pins the study's CSV-mapping preview (preview_csv_import) and any article promoted from it to local providers (ollama, lmstudio, llama_server); 'cloud_default' allows cloud providers. Switching local_only → cloud_default requires the AUTHOR'S explicit consent — ask them first and pass consent=true only after they agree; never assume consent.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      mode: z.enum(["cloud_default", "local_only"]),
+      consent: z
+        .boolean()
+        .optional()
+        .describe(
+          "required (true) when switching local_only → cloud_default; pass only after the author explicitly consents",
+        ),
+    },
+  },
+  async ({ study_id, mode, consent }) => {
+    const updated = await apiJson(`/api/studies/${study_id}/confidentiality`, {
+      method: "PATCH",
+      body: { mode, ...(consent !== undefined ? { consent } : {}) },
+    });
+    const cue =
+      mode === "local_only"
+        ? "This study — and any article promoted from it — now refuses cloud providers. Use a local provider (ollama, lmstudio, llama_server) for preview_csv_import and review_manuscript."
+        : "Cloud providers are allowed again for this study and future promotions.";
+    return jsonCue(updated, cue);
+  },
+);
+
 // ---------------------------------------------------------------------------
 // Corpus: import, overview, export
 // ---------------------------------------------------------------------------
@@ -120,7 +175,7 @@ tool(
   {
     title: "Import review CSV(s)",
     description:
-      "Import one or more local CSV files into a study's corpus. The shape of each file is auto-detected: a search-process CSV (RQ/PCC + per-database queries and yields) fills the design cards and PRISMA identification count; a records CSV (record_id,title,…,decision) loads the screened records. Pass both at once to set up a scoping review end-to-end.",
+      "Import one or more local CSV files into a study's corpus. The shape of each file is auto-detected: a search-process CSV (RQ/PCC + per-database queries and yields) fills the design cards and PRISMA identification count; a records CSV (record_id,title,…,decision) loads the screened records. Pass both at once to set up a scoping review end-to-end. For records CSVs whose columns don't match the documented format (e.g. exports from other screening tools), prefer preview_csv_import → author approval → apply_csv_import: the app proposes a column mapping the author approves instead of relying on auto-detect heuristics.",
     inputSchema: {
       study_id: z.string().describe("target study id (st_…)"),
       paths: z
@@ -146,6 +201,133 @@ tool(
       kind ? { kind } : {},
     );
     return json(result);
+  },
+);
+
+// Mirrors CsvImportMappingSchema in src/server/methods/csvImportMapping.ts, with
+// every field optional — the app route fills defaults and remains the validator
+// of record. Giving the calling LLM the shape (not a bare record) keeps the
+// author-corrected mapping well-formed on the round-trip.
+const csvImportMappingSchema = z.object({
+  fields: z
+    .record(z.string(), z.string().nullable())
+    .optional()
+    .describe(
+      'record field → CSV column name (e.g. {"title": "Article Title"}); null/omitted = no column',
+    ),
+  decision: z
+    .object({
+      column: z.string().nullable().optional(),
+      values: z
+        .record(z.string(), z.enum(SCREEN_DECISIONS))
+        .optional()
+        .describe("CSV cell value → screening decision"),
+      default_decision: z.enum(SCREEN_DECISIONS).optional(),
+    })
+    .optional(),
+  needs_review: z
+    .object({
+      column: z.string().nullable().optional(),
+      true_values: z.array(z.string()).optional(),
+    })
+    .optional(),
+  confidence: z.enum(["high", "medium", "low"]).optional(),
+  rationale_md: z.string().optional(),
+  warnings: z.array(z.string()).optional(),
+});
+
+tool(
+  "preview_csv_import",
+  {
+    title: "Preview CSV import (propose column mapping)",
+    description:
+      "Preview a CSV import without writing anything. Search-process CSVs get a deterministic preview; records CSVs get an LLM-proposed column mapping (record fields, decision column + value map, needs_review column) with confidence, rationale_md, and warnings — this runs an LLM call and can take a minute or two per file. The mapping is a PROPOSAL: show it to the author for approval or corrections before calling apply_csv_import — never apply an unapproved mapping. For a local_only study you must use a local provider (ollama, lmstudio, llama_server).",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      paths: z
+        .array(z.string())
+        .min(1)
+        .describe("absolute or relative paths to the CSV file(s) on disk"),
+      provider: z
+        .enum(API_PROVIDERS)
+        .optional()
+        .describe(
+          "LLM provider for records-CSV mapping; omit for the app default. local_only studies require a local provider (ollama, lmstudio, llama_server)",
+        ),
+      model: z.string().optional().describe("override the model for the chosen provider"),
+    },
+  },
+  async ({ study_id, paths, provider, model }) => {
+    const files = await Promise.all(
+      paths.map(async (p) => ({
+        name: path.basename(p),
+        data: await readFile(p),
+      })),
+    );
+    const result = await apiUpload(`/api/studies/${study_id}/import/preview`, files, {
+      ...(provider ? { provider } : {}),
+      ...(model ? { model } : {}),
+    });
+    return jsonCue(
+      result,
+      "Present each proposed mapping to the author — the mapped fields, the decision column and its value map, the needs_review column, confidence, and every warning — and ask them to approve or correct it (use AskUserQuestion if available). Do not decide for them. Then call apply_csv_import with the SAME file paths and the approved (author-corrected) mapping.",
+    );
+  },
+);
+
+tool(
+  "apply_csv_import",
+  {
+    title: "Apply CSV import (author-approved mapping)",
+    description:
+      "Apply a CSV import using the mapping the AUTHOR approved from preview_csv_import (echo it back, edited per their corrections). Records CSVs require an approved mapping — the app rejects them otherwise; search-process CSVs import directly with no mapping. Re-imports match records by external id and never overwrite decisions the author already confirmed unless overwrite_confirmed=true — set that only when the author explicitly says to. Returns per-file results (kind, counts).",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      files: z
+        .array(
+          z.object({
+            path: z
+              .string()
+              .describe("path to the CSV on disk (the same file that was previewed)"),
+            mapping: csvImportMappingSchema
+              .optional()
+              .describe(
+                "the author-approved mapping from preview_csv_import; required for records CSVs",
+              ),
+            overwrite_confirmed: z
+              .boolean()
+              .optional()
+              .describe(
+                "true only if the author explicitly wants this re-import to overwrite decisions they already confirmed",
+              ),
+          }),
+        )
+        .min(1),
+    },
+  },
+  async ({ study_id, files }) => {
+    const uploads = await Promise.all(
+      files.map(async (f) => ({
+        name: path.basename(f.path),
+        data: await readFile(f.path),
+      })),
+    );
+    const mappings = JSON.stringify({
+      files: files.map((f) => ({
+        filename: path.basename(f.path),
+        ...(f.mapping ? { mapping: f.mapping } : {}),
+        ...(f.overwrite_confirmed !== undefined
+          ? { overwrite_confirmed: f.overwrite_confirmed }
+          : {}),
+      })),
+    });
+    const result = await apiUpload(`/api/studies/${study_id}/import/apply`, uploads, {
+      mappings,
+    });
+    return jsonCue(
+      result,
+      "Import applied. Run corpus_overview to confirm the PRISMA flow and screening stats, and report the inserted/updated/duplicate counts to the author.",
+    );
   },
 );
 
@@ -459,7 +641,7 @@ tool(
       "List records in the corpus with their internal id (rc_…), decision, imported screen tier/reason/confidence and abstract. Filter to drive the screening review (e.g. needs_review=true, or decision='unscreened'). Use the returned `id` with set_record_decision.",
     inputSchema: {
       study_id: z.string().describe("study id (st_…)"),
-      decision: z.enum(["include", "exclude", "maybe", "unscreened"]).optional(),
+      decision: z.enum(SCREEN_DECISIONS).optional(),
       tier: z.string().optional(),
       confidence: z.string().optional(),
       needs_review: z.boolean().optional(),
@@ -508,7 +690,7 @@ tool(
     inputSchema: {
       study_id: z.string().describe("study id (st_…)"),
       record_id: z.string().describe("internal record id (rc_…) from list_records"),
-      decision: z.enum(["include", "exclude", "maybe", "unscreened"]),
+      decision: z.enum(SCREEN_DECISIONS),
       decision_reason: z.string().nullable().optional(),
       user_confirmed: z.boolean().optional(),
     },
@@ -521,6 +703,66 @@ tool(
     return jsonCue(
       updated,
       `Recorded "${updated.decision}". Fetch the next records with list_records (needs_review=true), or check progress with corpus_overview.`,
+    );
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Study → article promotion — the app's "Create Article Draft" step. The draft
+// is compiled ONLY from the study's recorded design decisions (no invention),
+// and the study's confidentiality_mode is carried onto the manuscript.
+// ---------------------------------------------------------------------------
+
+tool(
+  "list_promotable_studies",
+  {
+    title: "List studies promotable to an article",
+    description:
+      "List Methods Workbench studies together with their linked article draft, if any. Use this to see which studies can be promoted to an article and which already have one (manuscript is null when none exists). Each option includes the study summary (id, title, mode, status, confidentiality_mode) and app links.",
+    inputSchema: {
+      limit: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe("max studies to return (default 100)"),
+    },
+  },
+  async ({ limit }) => {
+    const data = await apiJson(
+      `/api/study-article-imports${limit ? `?limit=${limit}` : ""}`,
+    );
+    return jsonCue(
+      data?.options ?? [],
+      "Ask the author which study to promote, then call promote_study_to_article with its study_id. If a manuscript already exists, promoting with reuse_existing=true refreshes an unedited generated draft instead of creating a duplicate.",
+    );
+  },
+);
+
+tool(
+  "promote_study_to_article",
+  {
+    title: "Promote study → article draft",
+    description:
+      "Create (or reuse) an article-draft manuscript from a Methods Workbench study — the app's 'Create Article Draft' step. The draft is compiled ONLY from the study's recorded design decisions; nothing is invented. The study's confidentiality mode is carried onto the manuscript, so a local_only study yields a local_only article whose reviews stay on local providers. With reuse_existing=true (default) an existing linked manuscript is reused and its unedited generated content refreshed; reuse_existing=false forces a new manuscript. Returns {manuscript, created, links}.",
+    inputSchema: {
+      study_id: z.string().describe("study id (st_…)"),
+      reuse_existing: z
+        .boolean()
+        .optional()
+        .describe(
+          "default true: reuse the study's linked manuscript (refreshing unedited generated content) instead of creating a duplicate",
+        ),
+    },
+  },
+  async ({ study_id, reuse_existing }) => {
+    const result = await apiJson(`/api/studies/${study_id}/article`, {
+      method: "POST",
+      body: reuse_existing === undefined ? {} : { reuse_existing },
+    });
+    return jsonCue(
+      result,
+      `${result?.created ? "Created" : "Reused"} manuscript ${result?.manuscript?.id}. The draft reflects only the recorded design — have the author review it (links.workspace in the app) before treating it as a manuscript. Next: review_manuscript to run the grounded ensemble review.`,
     );
   },
 );
@@ -561,7 +803,9 @@ tool(
     }));
     return jsonCue(
       slim,
-      "Pick a manuscript id, then call review_manuscript to run the context-grounded ensemble review.",
+      slim.length
+        ? "Pick a manuscript id, then call review_manuscript to run the context-grounded ensemble review."
+        : "No manuscripts. If the author has a Methods Workbench study, offer to create the article draft with promote_study_to_article (see list_promotable_studies).",
     );
   },
 );
@@ -571,7 +815,7 @@ tool(
   {
     title: "Review manuscript (context-grounded ensemble)",
     description:
-      "Run the product's context-grounded ensemble review on a manuscript and persist the findings. Runs N grounded reviewers (default 3) + a neutral merge, grounded in prior-review retrieval, scholarly search, and a deterministic pack (GRIM impossible means, DOI/retraction checks, protocol drift). Returns {created, summary_md}. This is the product's recommended review — not a persona panel.",
+      "Run the product's context-grounded ensemble review on a manuscript and persist the findings. Runs N grounded reviewers (default 3) + a neutral merge, grounded in prior-review retrieval, scholarly search, and a deterministic pack (GRIM impossible means, DOI/retraction checks, protocol drift). Returns {created, summary_md}. This is the product's recommended review — not a persona panel. local_only articles (promoted from a local_only study) are pinned to local providers: a cloud provider request is coerced to a local backend (default ollama) rather than ever reaching the cloud.",
     inputSchema: {
       manuscript_id: z.string().describe("manuscript id (from list_manuscripts)"),
       ensemble_count: z
@@ -582,7 +826,7 @@ tool(
         .optional()
         .describe("reviewers before the merge; omit for the default (3), 1 = single grounded pass"),
       provider: z
-        .enum(["openai", "gemini", "deepseek", "ollama", "lmstudio", "llama_server"])
+        .enum(API_PROVIDERS)
         .optional()
         .describe("override the app's default provider; omit to use the app's configured provider"),
       model: z.string().optional().describe("override the model for the chosen provider"),
@@ -659,7 +903,7 @@ server.registerPrompt(
             "2. Summarise for the author: what is recorded, what is missing / underspecified / conflicting / stale, and which guideline items are not yet covered. Lead with `analyze_gaps.nextBestAction` and any blocking findings.",
             "3. For each gap, ask the author a focused question — use your own AskUserQuestion tool when available, otherwise ask in plain text. Offer options framed as questions, drawn only from what they already provided or standard methodological choices; do not assert an answer. You may point out inconsistencies in content they already wrote and propose a normalisation for their confirmation.",
             "4. Record their answer with `update_card` (value/fields/state/open_question_md/reason_md) or `update_study` (research_question). Set `state` to reflect reality. Park anything to revisit with `open_question_md` or `record_gap`.",
-            "5. Re-run `analyze_gaps` and repeat. Finish with a short status: readyPct, remaining open questions, and uncovered guideline items.",
+            "5. Re-run `analyze_gaps` and repeat. Finish with a short status: readyPct, remaining open questions, and uncovered guideline items — then offer the author the next steps: `build_drafting_brief`, or `promote_study_to_article` to create the article draft.",
           ].join("\n"),
         },
       },
@@ -696,6 +940,35 @@ server.registerPrompt(
 );
 
 server.registerPrompt(
+  "csv_import_review",
+  {
+    title: "CSV import review (approve column mapping)",
+    description:
+      "Import a records/search CSV into a study by previewing the proposed column mapping, having the author approve or correct it, then applying it.",
+    argsSchema: { study_id: z.string().describe("study id (st_…)") },
+  },
+  ({ study_id }) => ({
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `Import CSV file(s) into Reviewer-Agent study ${study_id} using the reviewer-agent MCP tools. You facilitate; the author decides how their columns map. ${NO_INVENT}`,
+            "",
+            "1. Confirm the CSV file path(s) with the author.",
+            "2. Call `preview_csv_import` with those paths. If the study is local_only, choose a local provider (ollama, lmstudio, llama_server); otherwise omit `provider` to use the app default. A records CSV runs an LLM to propose a mapping — this can take a minute or two per file.",
+            "3. Present each file's preview to the author: kind, row_count, headers, and — for records files — the proposed mapping (mapped fields, the decision column and its value map, the needs_review column), plus confidence, warnings, and rationale_md. Ask them to approve or correct the mapping (use AskUserQuestion if available). The mapping is a proposal; the author decides — do not invent a mapping they did not confirm.",
+            "4. Call `apply_csv_import` with the SAME paths and the approved (author-corrected) mapping. Set `overwrite_confirmed=true` only if the author explicitly wants the re-import to overwrite decisions they already confirmed.",
+            "5. Call `corpus_overview` and report the resulting PRISMA flow and screening stats to the author.",
+          ].join("\n"),
+        },
+      },
+    ],
+  }),
+);
+
+server.registerPrompt(
   "manuscript_review",
   {
     title: "Manuscript review (context-grounded ensemble)",
@@ -714,7 +987,7 @@ server.registerPrompt(
             "",
             manuscript_id
               ? `1. The manuscript is ${manuscript_id}. Confirm it exists with list_manuscripts if unsure.`
-              : "1. Call `list_manuscripts` and ask the author which manuscript to review (by title).",
+              : "1. Call `list_manuscripts` and ask the author which manuscript to review (by title). If the article doesn't exist yet but a Methods Workbench study does, offer to create it with `promote_study_to_article` (see `list_promotable_studies`) — only with the author's approval.",
             "2. Call `review_manuscript` (omit ensemble_count for the default 3-reviewer ensemble; pass 1 only if the author wants a fast single pass).",
             "3. Call `get_reviews` to read the merged findings.",
             "4. Summarise for the author grouped by severity (critical → minor), each with its section_ref and the concrete suggested action. Flag any citation-integrity (unresolved/retracted DOI), GRIM, or protocol-drift findings prominently — those are facts the manuscript text alone cannot reveal. Let the author decide what to act on; do not invent findings the review did not produce.",
