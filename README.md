@@ -25,13 +25,30 @@ Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
 ## Status
 
-This is the `v0.1.0` release of a research-assistance app. The distributed
-binary is the Windows x64 portable `.exe` attached to the `v0.1.0` GitHub
+This is the `v0.1.1` release of a research-assistance app. The distributed
+binary is the Windows x64 portable `.exe` attached to the `v0.1.1` GitHub
 release.
 
 Use it as an editorial and methods-checking workspace, not as medical, legal,
 regulatory, or statistical advice. Verify all LLM output, citations,
 calculations, and manuscript changes before relying on them.
+
+## What's new in v0.1.1
+
+- **Workbench → article review alignment.** Promote a Methods study into a
+  linked article, and import screening-record CSVs with an LLM-assisted column
+  mapping shown as an approve-before-apply preview. Review-input readiness
+  (review focus, target journal, research domain/type) now surfaces directly in
+  the article workspace so a review run starts from complete inputs.
+- **Local-only articles stay local.** An article promoted from a `local_only`
+  study carries that confidentiality intent: its review and revision sessions
+  are pinned to a local provider and cloud backends are refused for it,
+  enforced on the server and reflected in the workspace provider picker.
+- **CSV re-import correctness.** Re-importing a corpus CSV no longer overwrites
+  previously-screened decisions or clobbers human-confirmed records, and
+  approved column mappings and needs-review flags are honored exactly.
+- Internal cleanup: a shared provider roster, deduplicated import/proposal
+  helpers, and fewer redundant database queries.
 
 ## Privacy Model
 
