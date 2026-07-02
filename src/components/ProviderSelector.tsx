@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { PROVIDER_OPTIONS } from "@/lib/providers";
 import type { Provider } from "@/server/types";
 
 interface ProviderSelectorProps {
@@ -9,15 +10,6 @@ interface ProviderSelectorProps {
   excluded?: Provider[];
   excludedReason?: string;
 }
-
-const providers: { key: Provider; label: string }[] = [
-  { key: "openai", label: "OpenAI" },
-  { key: "gemini", label: "Gemini" },
-  { key: "deepseek", label: "DeepSeek" },
-  { key: "ollama", label: "Ollama" },
-  { key: "lmstudio", label: "LM Studio" },
-  { key: "llama_server", label: "llama-server" },
-];
 
 export function ProviderSelector({
   value,
@@ -30,7 +22,7 @@ export function ProviderSelector({
     <div>
       <div className="label mb-2">Provider</div>
       <div className="flex gap-1">
-        {providers.map(({ key, label }) => {
+        {PROVIDER_OPTIONS.map(({ value: key, label }) => {
           const isExcluded = excludedSet.has(key);
           return (
             <button

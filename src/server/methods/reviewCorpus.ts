@@ -5,6 +5,7 @@ import { parseCsvRows, toCsv } from "../csv";
 import { getStudy, getDecision, patchDecision, updateStudy, touchStudy } from "../studies";
 import {
   detectCsvImportKind,
+  normalizeHeader,
   sanitizeCsvImportMapping,
   type CsvImportMapping,
   type CsvRecordField,
@@ -465,7 +466,7 @@ function importRecords(
   opts: { overwriteConfirmed?: boolean } = {},
 ): ImportResult {
   const head = header(rows[0]);
-  const headers = (rows[0] ?? []).map((h) => h.replace(/^\ufeff/, "").trim());
+  const headers = (rows[0] ?? []).map(normalizeHeader);
   const safeMapping = mapping ? sanitizeCsvImportMapping(mapping, headers) : null;
   const get = (row: string[], ...names: string[]): string => {
     for (const n of names) {
@@ -479,22 +480,19 @@ function importRecords(
   };
   const mapped = (row: string[], field: CsvRecordField, ...fallbacks: string[]): string => {
     const column = safeMapping?.fields[field];
-    if (column) {
-      const v = get(row, column);
-      if (v) return v;
-    }
+    if (column) return get(row, column);
     return get(row, ...fallbacks);
   };
+  const needsReviewTruthy = new Set(
+    (safeMapping?.needs_review.true_values ?? ["Y", "Yes", "true", "1"])
+      .map((v) => normalizeKey(v)),
+  );
   const mappedNeedsReview = (row: string[]): number => {
     const raw = safeMapping?.needs_review.column
       ? get(row, safeMapping.needs_review.column)
       : get(row, "needs_review");
     if (!raw) return 0;
-    const truthy = new Set(
-      (safeMapping?.needs_review.true_values ?? ["Y", "Yes", "true", "1"])
-        .map((v) => normalizeKey(v)),
-    );
-    return truthy.has(normalizeKey(raw)) || /^y(es)?$/i.test(raw) ? 1 : 0;
+    return needsReviewTruthy.has(normalizeKey(raw)) ? 1 : 0;
   };
   const mappedDecision = (
     row: string[],
@@ -502,15 +500,16 @@ function importRecords(
     const column = safeMapping?.decision.column;
     if (column) {
       const raw = get(row, column);
-      const exact = raw ? safeMapping.decision.values[raw] : undefined;
-      const folded = raw
-        ? Object.entries(safeMapping.decision.values).find(
-            ([key]) => normalizeKey(key) === normalizeKey(raw),
-          )?.[1]
-        : undefined;
+      if (!raw) {
+        return { decision: safeMapping.decision.default_decision, reason: null, hasDecision: false };
+      }
+      const exact = safeMapping.decision.values[raw];
+      const folded = Object.entries(safeMapping.decision.values).find(
+        ([key]) => normalizeKey(key) === normalizeKey(raw),
+      )?.[1];
       return {
         decision: exact ?? folded ?? safeMapping.decision.default_decision,
-        reason: raw ? `Imported from ${column}: ${raw}` : `Imported from ${column}`,
+        reason: `Imported from ${column}: ${raw}`,
         hasDecision: true,
       };
     }
@@ -549,7 +548,7 @@ function importRecords(
         doi=?, pmid=?, other_ids_json=?, abstract=?, keywords=?, language=?,
         url=?, source_databases=?, screen_stage=?, screen_tier=?,
         screen_reason=?, screen_confidence=?, needs_review=?, ai_final=?,
-        ai_final_reason=?, decision=?, decision_reason=?, dedupe_key=?,
+        ai_final_reason=?, decision=?, decision_reason=?, user_confirmed=?, dedupe_key=?,
         updated_at=?
       WHERE id=?`,
   );
@@ -630,6 +629,7 @@ function importRecords(
           data.ai_final, data.ai_final_reason,
           updateDecision ? importedDecision.decision : existingRow.decision,
           updateDecision ? importedDecision.reason : existingRow.decision_reason,
+          updateDecision ? 0 : existingRow.user_confirmed,
           data.dedupe_key, data.updated_at, existingRow.id,
         );
         updated++;

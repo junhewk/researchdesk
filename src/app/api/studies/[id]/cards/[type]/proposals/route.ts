@@ -6,6 +6,7 @@ import {
   createProposalOption,
 } from "@/server/studies";
 import { getCardDef } from "@/server/methods/cardSchema";
+import { sanitizeProposalFields } from "@/server/methods/proposals";
 
 export async function GET(
   _request: NextRequest,
@@ -25,20 +26,6 @@ const optionSchema = z.object({
   consequence_md: z.string().optional(),
   session_id: z.string().optional(),
 });
-
-function sanitizeFields(
-  fields: Record<string, string> | undefined,
-  allowedIds: string[],
-): Record<string, string> | null {
-  if (!fields) return null;
-  const allowed = new Set(allowedIds);
-  const out = Object.fromEntries(
-    Object.entries(fields)
-      .map(([key, value]) => [key.trim(), value.trim()])
-      .filter(([key, value]) => allowed.has(key) && value),
-  );
-  return Object.keys(out).length ? out : null;
-}
 
 // Posted by the card_proposal agent pass (curl callback), one row per option.
 export async function POST(
@@ -61,7 +48,7 @@ export async function POST(
     session_id: parsed.data.session_id ?? null,
     label: parsed.data.label,
     value_suggestion: parsed.data.value_suggestion,
-    fields_suggestion: sanitizeFields(
+    fields_suggestion: sanitizeProposalFields(
       parsed.data.fields_suggestion,
       (def?.requiredFields ?? []).map((field) => field.id),
     ),

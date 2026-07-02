@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getOrCreateManuscriptSession } from "@/server/sessionQueries";
+import { getManuscript } from "@/server/manuscripts";
 import {
   apiProviderSchema,
   providerFieldWasProvided,
-  resolveApiProvider,
+  resolveManuscriptProvider,
 } from "@/server/apiAgent/providers";
 
 const postSchema = z.object({
@@ -27,11 +28,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
+  const manuscript = getManuscript(parsed.data.manuscript_id);
+  if (!manuscript) {
+    return NextResponse.json({ error: "manuscript not found" }, { status: 404 });
+  }
+
   try {
     const session = await getOrCreateManuscriptSession(parsed.data.manuscript_id, {
-      provider: resolveApiProvider(
+      provider: resolveManuscriptProvider(
         parsed.data.provider,
         providerFieldWasProvided(body),
+        manuscript.confidentiality_mode === "local_only",
       ),
       model: parsed.data.model?.trim() || null,
       effort: parsed.data.effort ?? null,

@@ -1,6 +1,7 @@
 import {
   autoProvisionProjectFolder,
   createManuscript,
+  listLatestManuscriptsByStudyIds,
   listManuscripts,
   replaceUneditedGeneratedContent,
 } from "@/server/manuscripts";
@@ -305,8 +306,10 @@ function attachArtifacts(study: Study, manuscriptId: string, decisions: DesignDe
 export function listStudyArticleImportOptions(opts?: {
   limit?: number;
 }): StudyArticleImportOption[] {
-  return listStudies({ limit: opts?.limit ?? 100 }).map((study) => {
-    const manuscript = listManuscripts({ studyId: study.id, limit: 1 })[0] ?? null;
+  const studies = listStudies({ limit: opts?.limit ?? 100 });
+  const manuscriptsByStudy = listLatestManuscriptsByStudyIds(studies.map((study) => study.id));
+  return studies.map((study) => {
+    const manuscript = manuscriptsByStudy.get(study.id) ?? null;
     return {
       study: {
         id: study.id,
@@ -378,6 +381,9 @@ export function createArticleFromStudy(
     file_format: "markdown",
     research_domain: MODE_DOMAIN[study.mode],
     research_type: MODE_RESEARCH_TYPE[study.mode],
+    // Carry the study's confidentiality intent onto the article so a
+    // local_only study's promoted review stays off cloud providers.
+    confidentiality_mode: study.confidentiality_mode,
     review_request:
       `Draft generated from Methods Workbench study ${study.id}. ` +
       "Expand the manuscript while preserving the pre-specified design decisions.",

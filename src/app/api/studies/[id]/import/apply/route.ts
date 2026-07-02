@@ -6,7 +6,6 @@ import {
   CsvImportMappingSchema,
   detectCsvImportKind,
   parseCsvForImport,
-  sanitizeCsvImportMapping,
 } from "@/server/methods/csvImportMapping";
 
 const applySchema = z.object({
@@ -62,13 +61,12 @@ export async function POST(
       if (!entry?.mapping) {
         throw new Error(`${file.name}: approved column mapping required`);
       }
-      const headers = (rows[0] ?? []).map((h) => h.replace(/^\ufeff/, "").trim());
       results.push(
         importScopingCsvWithMapping(
           id,
           file.name,
           text,
-          sanitizeCsvImportMapping(entry.mapping, headers),
+          entry.mapping,
           { overwriteConfirmed: entry.overwrite_confirmed ?? false },
         ),
       );

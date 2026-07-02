@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  if (body && typeof body === "object" && "study_id" in body) {
+  if (body && typeof body === "object" && "study_id" in body && body.study_id) {
     return NextResponse.json(
       {
         error:

@@ -25,6 +25,7 @@ import {
 } from "@/server/studies";
 import { getCardDef, getCardStage } from "@/server/methods/cardSchema";
 import { parseValue } from "@/server/methods/preflight";
+import { sanitizeProposalFields } from "@/server/methods/proposals";
 import { searchCommentaries, searchReviews } from "@/server/search";
 import { buildGroundingPack } from "@/server/reviewGrounding";
 import type { EvidenceItemKind, ReviewCategory, Severity } from "@/server/types";
@@ -346,20 +347,6 @@ const CardProposalSchema = z.object({
   })).min(1).max(4),
   summary_md: z.string().min(1),
 });
-
-function sanitizeProposalFields(
-  fields: Record<string, string> | null | undefined,
-  allowedIds: string[],
-): Record<string, string> | null {
-  if (!fields || allowedIds.length === 0) return null;
-  const allowed = new Set(allowedIds);
-  const out = Object.fromEntries(
-    Object.entries(fields)
-      .map(([key, value]) => [key.trim(), value.trim()])
-      .filter(([key, value]) => allowed.has(key) && value),
-  );
-  return Object.keys(out).length ? out : null;
-}
 
 /** Generate 2–4 evidence-grounded options for one decision card. Replaces the
  * card's currently shown options with the returned set, so a follow-up reply

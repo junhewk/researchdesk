@@ -35,9 +35,14 @@ import {
   PREFLIGHT_SEVERITY_STYLES,
   EVIDENCE_KIND_LABEL,
 } from "@/lib/styles";
+import {
+  LOCAL_PROVIDER_OPTIONS,
+  PROVIDER_OPTIONS,
+  isLocalProvider,
+  isProvider,
+} from "@/lib/providers";
 import type { Provider, Study } from "@/server/types";
 
-type LocalProvider = Extract<Provider, "ollama" | "lmstudio" | "llama_server">;
 type PendingProposal = {
   cardType: string;
   value: string;
@@ -46,27 +51,6 @@ type PendingProposal = {
 
 const WORKBENCH_PROVIDER_STORAGE_KEY = "reviewer.methods.provider";
 const LOCAL_PROVIDER_STORAGE_KEY = "reviewer.methods.localProvider";
-const PROVIDER_OPTIONS: { value: Provider; label: string }[] = [
-  { value: "openai", label: "OpenAI" },
-  { value: "gemini", label: "Gemini" },
-  { value: "deepseek", label: "DeepSeek" },
-  { value: "ollama", label: "Ollama" },
-  { value: "lmstudio", label: "LM Studio" },
-  { value: "llama_server", label: "llama-server" },
-];
-const LOCAL_PROVIDER_OPTIONS: { value: LocalProvider; label: string }[] = [
-  { value: "ollama", label: "Ollama" },
-  { value: "lmstudio", label: "LM Studio" },
-  { value: "llama_server", label: "llama-server" },
-];
-
-function isProvider(value: string | null): value is Provider {
-  return PROVIDER_OPTIONS.some((option) => option.value === value);
-}
-
-function isLocalProvider(value: string | null): value is LocalProvider {
-  return LOCAL_PROVIDER_OPTIONS.some((option) => option.value === value);
-}
 
 function normalizeWorkbenchProvider(
   provider: Provider | null,
@@ -92,6 +76,17 @@ function storedWorkbenchProvider(requiresLocalProvider: boolean): Provider | nul
     /* ignore */
   }
   return requiresLocalProvider ? "ollama" : null;
+}
+
+function persistWorkbenchProvider(next: Provider): void {
+  try {
+    window.localStorage.setItem(WORKBENCH_PROVIDER_STORAGE_KEY, next);
+    if (isLocalProvider(next)) {
+      window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, next);
+    }
+  } catch {
+    /* ignore */
+  }
 }
 
 interface StreamTarget {
@@ -279,16 +274,7 @@ export function StudyWorkspace({
   const chooseProvider = useCallback((provider: Provider) => {
     const next = normalizeWorkbenchProvider(provider, requiresLocalProvider);
     setSelectedProvider(next);
-    try {
-      if (next) {
-        window.localStorage.setItem(WORKBENCH_PROVIDER_STORAGE_KEY, next);
-        if (isLocalProvider(next)) {
-          window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, next);
-        }
-      }
-    } catch {
-      /* ignore */
-    }
+    if (next) persistWorkbenchProvider(next);
   }, [requiresLocalProvider]);
 
   useEffect(() => {
@@ -301,14 +287,7 @@ export function StudyWorkspace({
         const next = normalizeWorkbenchProvider(data?.defaultProvider ?? null, requiresLocalProvider);
         if (!next) return;
         setSelectedProvider(next);
-        try {
-          window.localStorage.setItem(WORKBENCH_PROVIDER_STORAGE_KEY, next);
-          if (isLocalProvider(next)) {
-            window.localStorage.setItem(LOCAL_PROVIDER_STORAGE_KEY, next);
-          }
-        } catch {
-          /* ignore */
-        }
+        persistWorkbenchProvider(next);
       })
       .catch(() => {
         if (active && requiresLocalProvider) setSelectedProvider("ollama");

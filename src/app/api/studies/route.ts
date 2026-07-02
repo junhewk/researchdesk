@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
   if (
     body &&
     typeof body === "object" &&
-    "source_manuscript_id" in body
+    "source_manuscript_id" in body &&
+    body.source_manuscript_id
   ) {
     return NextResponse.json(
       {

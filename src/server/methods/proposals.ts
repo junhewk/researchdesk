@@ -9,6 +9,24 @@ export interface ProposalSeed {
   consequence_md: string;
 }
 
+/** Trim keys/values and drop any not in `allowedIds` or left empty. Shared by
+ * the agent pass (runCardProposalAgent) and the curl-callback route so
+ * proposal fields_suggestion payloads sanitize identically regardless of
+ * source. */
+export function sanitizeProposalFields(
+  fields: Record<string, string> | null | undefined,
+  allowedIds: string[],
+): Record<string, string> | null {
+  if (!fields || allowedIds.length === 0) return null;
+  const allowed = new Set(allowedIds);
+  const out = Object.fromEntries(
+    Object.entries(fields)
+      .map(([key, value]) => [key.trim(), value.trim()])
+      .filter(([key, value]) => allowed.has(key) && value),
+  );
+  return Object.keys(out).length ? out : null;
+}
+
 function compact(values: Array<string | null | undefined>): string[] {
   return values
     .map((v) => (typeof v === "string" ? v.trim() : ""))

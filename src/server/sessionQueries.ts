@@ -1,5 +1,7 @@
 import { getDb } from "./db";
 import { getSupervisor } from "./supervisor";
+import { getManuscript } from "./manuscripts";
+import { isLocalApiProvider, localApiProviders } from "./apiAgent/providers";
 import type { Provider, Session, SessionMode, Workflow } from "./types";
 
 export function getActiveSession(
@@ -35,6 +37,19 @@ export async function getOrCreateManuscriptSession(
 ): Promise<Session> {
   const existing = getActiveSession(manuscriptId, "manuscript");
   if (existing) return existing;
+
+  // Confidentiality guard (defense in depth): a local_only article may only
+  // open a session on a local backend. Callers already coerce cloud → local,
+  // so this should never fire — but it fails safe if a cloud provider slips in.
+  const manuscript = getManuscript(manuscriptId);
+  if (
+    manuscript?.confidentiality_mode === "local_only" &&
+    !isLocalApiProvider(opts.provider)
+  ) {
+    throw new Error(
+      `manuscript ${manuscriptId} is local_only — use ${localApiProviders.join(", ")}`,
+    );
+  }
 
   return getSupervisor().createSession({
     manuscriptId,

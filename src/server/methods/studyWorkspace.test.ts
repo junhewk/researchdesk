@@ -450,3 +450,61 @@ test("a local_only study refuses a cloud provider for agent passes", async () =>
     );
   });
 });
+
+test("resolveManuscriptProvider keeps a local_only article on a local backend", async () => {
+  await withTempDb(async () => {
+    const { resolveManuscriptProvider, isLocalApiProvider, DEFAULT_LOCAL_API_PROVIDER } =
+      await import("../apiAgent/providers");
+
+    // local_only: an explicit cloud provider is coerced to a local backend.
+    assert.equal(resolveManuscriptProvider("openai", true, true), DEFAULT_LOCAL_API_PROVIDER);
+    // local_only with no provider supplied still lands on a local backend.
+    assert.ok(isLocalApiProvider(resolveManuscriptProvider(undefined, false, true)));
+    // local_only: an explicit local provider is preserved.
+    assert.equal(resolveManuscriptProvider("lmstudio", true, true), "lmstudio");
+    // cloud_default: an explicit cloud provider is left untouched.
+    assert.equal(resolveManuscriptProvider("openai", true, false), "openai");
+  });
+});
+
+test("promoting a local_only study yields a local_only article that refuses cloud sessions", async () => {
+  await withTempDb(async () => {
+    const { createStudy } = await import("../studies");
+    const { createArticleFromStudy } = await import("../studyArticle");
+    const { getManuscript } = await import("../manuscripts");
+    const { getOrCreateManuscriptSession } = await import("../sessionQueries");
+
+    const study = createStudy({
+      title: "Local scoping",
+      mode: "scoping_review",
+      confidentiality_mode: "local_only",
+    });
+    const { manuscript } = createArticleFromStudy(study.id);
+
+    // The promoted article carries the study's confidentiality intent.
+    assert.equal(manuscript.confidentiality_mode, "local_only");
+    assert.equal(getManuscript(manuscript.id)?.confidentiality_mode, "local_only");
+
+    // A cloud provider is refused for the promoted article's session...
+    await assert.rejects(
+      () => getOrCreateManuscriptSession(manuscript.id, { provider: "openai" }),
+      /local_only/,
+    );
+    // ...while a local provider opens a session.
+    const session = await getOrCreateManuscriptSession(manuscript.id, { provider: "ollama" });
+    assert.equal(session.provider, "ollama");
+  });
+});
+
+test("a cloud_default article accepts a cloud session provider", async () => {
+  await withTempDb(async () => {
+    const { createManuscript } = await import("../manuscripts");
+    const { getOrCreateManuscriptSession } = await import("../sessionQueries");
+
+    const manuscript = createManuscript({ title: "Own article", content_md: "# Draft" });
+    assert.equal(manuscript.confidentiality_mode, "cloud_default");
+
+    const session = await getOrCreateManuscriptSession(manuscript.id, { provider: "openai" });
+    assert.equal(session.provider, "openai");
+  });
+});

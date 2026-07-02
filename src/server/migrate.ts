@@ -40,6 +40,20 @@ export function runMigrations(db: AppDatabase): void {
   if (currentVersion < 24) migrateV24(db);
   if (currentVersion < 25) migrateV25(db);
   if (currentVersion < 26) migrateV26(db);
+  if (currentVersion < 27) migrateV27(db);
+}
+
+function migrateV27(db: AppDatabase): void {
+  // Own-article confidentiality: carry a promoted study's local_only intent
+  // onto its manuscript so the review/revision flow can't silently route the
+  // article to a cloud provider. Existing manuscripts default to cloud_default.
+  db.exec(`
+    ALTER TABLE manuscripts
+      ADD COLUMN confidentiality_mode TEXT NOT NULL DEFAULT 'cloud_default'
+        CHECK (confidentiality_mode IN ('cloud_default','local_only'));
+
+    INSERT INTO schema_version (version) VALUES (27);
+  `);
 }
 
 function migrateV26(db: AppDatabase): void {

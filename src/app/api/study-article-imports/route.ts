@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const limit = limitRaw ? Number(limitRaw) : undefined;
   return NextResponse.json({
     options: listStudyArticleImportOptions({
-      limit: Number.isFinite(limit) ? limit : undefined,
+      limit: limit !== undefined && Number.isFinite(limit) && limit > 0 ? limit : undefined,
     }),
   });
 }

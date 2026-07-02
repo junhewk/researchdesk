@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   apiAgentRequestSchema,
   providerFieldWasProvided,
-  resolveApiProvider,
+  resolveManuscriptProvider,
 } from "@/server/apiAgent/providers";
 import { runReviewAgent } from "@/server/apiAgent/workflows";
 import { getManuscript } from "@/server/manuscripts";
@@ -12,7 +12,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  if (!getManuscript(id)) {
+  const manuscript = getManuscript(id);
+  if (!manuscript) {
     return NextResponse.json({ error: "manuscript not found" }, { status: 404 });
   }
   const body = await request.json().catch(() => ({}));
@@ -25,9 +26,10 @@ export async function POST(
     const result = await runReviewAgent({
       manuscriptId: id,
       config: {
-        provider: resolveApiProvider(
+        provider: resolveManuscriptProvider(
           parsed.data.provider,
           providerFieldWasProvided(body),
+          manuscript.confidentiality_mode === "local_only",
         ),
         model: parsed.data.model,
         apiKey: parsed.data.api_key,

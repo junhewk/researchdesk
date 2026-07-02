@@ -46,6 +46,24 @@ export function resolveApiProvider(
   return providerWasProvided && provider ? provider : getDefaultApiProvider();
 }
 
+export const DEFAULT_LOCAL_API_PROVIDER: LocalApiProvider = "ollama";
+
+/** Resolve the provider for a manuscript's own-article session, keeping a
+ * local_only manuscript on a local backend. Unlike the study routes (which
+ * reject a missing/cloud provider), the own-article flow submits no provider
+ * by default, so we coerce cloud → a local backend rather than 400 — the
+ * article stays reviewable without ever silently reaching a cloud provider. */
+export function resolveManuscriptProvider(
+  provider: ApiProvider | undefined,
+  providerWasProvided: boolean,
+  localOnly: boolean,
+): ApiProvider {
+  const resolved = resolveApiProvider(provider, providerWasProvided);
+  return localOnly && !isLocalApiProvider(resolved)
+    ? DEFAULT_LOCAL_API_PROVIDER
+    : resolved;
+}
+
 export function requireLocalApiProvider(
   provider: ApiProvider | undefined,
   providerWasProvided: boolean,

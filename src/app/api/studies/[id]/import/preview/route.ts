@@ -62,27 +62,32 @@ export async function POST(
     );
   }
 
-  const previews: CsvImportPreviewFile[] = [];
+  const envTimeout = Number(process.env.API_AGENT_TIMEOUT_MS);
+  const timeoutMs = Number.isFinite(envTimeout) && envTimeout > 0 ? envTimeout : 180_000;
+  const resolvedProvider = provider.provider;
+  const resolvedModel = provider.model;
+
+  let previews: CsvImportPreviewFile[];
   try {
-    for (const file of files) {
-      const text = await file.text();
-      const rows = parseCsvForImport(text);
-      if (rows.length === 0) throw new Error(`${file.name}: empty CSV`);
-      const kind = detectCsvImportKind(rows);
-      previews.push(
-        kind === "records"
-          ? await interpretRecordCsvMapping({
+    previews = await Promise.all(
+      files.map(async (file) => {
+        const text = await file.text();
+        const rows = parseCsvForImport(text);
+        if (rows.length === 0) throw new Error(`${file.name}: empty CSV`);
+        const kind = detectCsvImportKind(rows);
+        return kind === "records"
+          ? interpretRecordCsvMapping({
               filename: file.name,
               rows,
               config: {
-                provider: provider.provider,
-                model: provider.model,
-                timeoutMs: Number(process.env.API_AGENT_TIMEOUT_MS || 180_000),
+                provider: resolvedProvider,
+                model: resolvedModel,
+                timeoutMs,
               },
             })
-          : previewSearchCsv(file.name, rows),
-      );
-    }
+          : previewSearchCsv(file.name, rows);
+      }),
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Import preview failed";
     return NextResponse.json({ error: message }, { status: 400 });

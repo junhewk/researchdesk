@@ -82,18 +82,24 @@ export interface CsvImportPreview {
   files: CsvImportPreviewFile[];
 }
 
+// Search-process CSVs are row-typed and always lead with a tag cell
+// (RQ / P / C / Context / search per the documented format); a records CSV
+// has a header row of arbitrary column names that the user maps afterward, so
+// anything not leading with a search tag is treated as records.
+const SEARCH_ROW_TAGS = new Set([
+  "rq", "p", "population", "c", "concept", "context", "co", "search",
+]);
+
 export function detectCsvImportKind(rows: string[][]): "search" | "records" {
-  const first = (rows[0]?.[0] ?? "").trim().toLowerCase().replace(/^\ufeff/, "");
-  return new Set(["rq", "p", "population", "c", "concept", "context", "co", "search"]).has(first)
-    ? "search"
-    : "records";
+  const first = normalizeHeader(rows[0]?.[0] ?? "").toLowerCase();
+  return SEARCH_ROW_TAGS.has(first) ? "search" : "records";
 }
 
 export function parseCsvForImport(text: string): string[][] {
   return parseCsvRows(text);
 }
 
-function normalizeHeader(value: string): string {
+export function normalizeHeader(value: string): string {
   return value.trim().replace(/^\ufeff/, "");
 }
 

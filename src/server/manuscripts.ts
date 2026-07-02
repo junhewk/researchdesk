@@ -7,7 +7,7 @@ import { getDb, buildAssignments } from "./db";
 import { nowUnix } from "@/lib/utils";
 import { exportManuscript, deleteManuscriptExport } from "./markdownExport";
 import { insertInitialVersion } from "./manuscriptVersions";
-import type { Manuscript, ManuscriptStatus } from "./types";
+import type { Manuscript, ManuscriptStatus, ProtocolConfidentialityMode } from "./types";
 
 interface ManuscriptRow {
   id: string;
@@ -24,6 +24,7 @@ interface ManuscriptRow {
   project_root: string | null;
   primary_file: string | null;
   is_git: number;
+  confidentiality_mode: ProtocolConfidentialityMode;
   status: ManuscriptStatus;
   created_at: number;
   updated_at: number;
@@ -70,6 +71,26 @@ export function listManuscripts(opts?: {
   return rows.map(rowToManuscript);
 }
 
+/** Latest manuscript per study id, in one query (avoids an N+1 lookup when
+ * resolving many studies' linked articles at once). */
+export function listLatestManuscriptsByStudyIds(studyIds: string[]): Map<string, Manuscript> {
+  const result = new Map<string, Manuscript>();
+  if (studyIds.length === 0) return result;
+  const db = getDb();
+  const placeholders = studyIds.map(() => "?").join(",");
+  const rows = db
+    .prepare(
+      `SELECT * FROM manuscripts WHERE study_id IN (${placeholders}) ORDER BY updated_at DESC`,
+    )
+    .all(...studyIds) as ManuscriptRow[];
+  for (const row of rows) {
+    if (row.study_id && !result.has(row.study_id)) {
+      result.set(row.study_id, rowToManuscript(row));
+    }
+  }
+  return result;
+}
+
 export function getManuscript(id: string): Manuscript | undefined {
   const db = getDb();
   const row = db.prepare("SELECT * FROM manuscripts WHERE id = ?").get(id) as ManuscriptRow | undefined;
@@ -86,6 +107,7 @@ export function createManuscript(data: {
   research_domain?: string;
   research_type?: string;
   review_request?: string;
+  confidentiality_mode?: ProtocolConfidentialityMode;
 }): Manuscript {
   const db = getDb();
   const now = nowUnix();
@@ -106,6 +128,7 @@ export function createManuscript(data: {
     project_root: null,
     primary_file: null,
     is_git: false,
+    confidentiality_mode: data.confidentiality_mode ?? "cloud_default",
     status: "draft",
     created_at: now,
     updated_at: now,
@@ -115,8 +138,8 @@ export function createManuscript(data: {
     `INSERT INTO manuscripts
        (id, study_id, title, content_md, original_content_md, original_file,
         file_format, journal_type, research_domain, research_type,
-        review_request, status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        review_request, confidentiality_mode, status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     m.id,
     m.study_id,
@@ -129,6 +152,7 @@ export function createManuscript(data: {
     m.research_domain,
     m.research_type,
     m.review_request,
+    m.confidentiality_mode,
     m.status,
     m.created_at,
     m.updated_at,

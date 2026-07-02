@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ProviderSelector } from "@/components/ProviderSelector";
+import { CLOUD_PROVIDER_VALUES } from "@/lib/providers";
 import { cn } from "@/lib/utils";
 import {
   SCREENING_DECISION_STYLES,
@@ -12,6 +13,10 @@ import {
 } from "@/lib/styles";
 import type { ReviewRecord, ScreeningDecision, Study } from "@/server/types";
 import type { Provider } from "@/server/types";
+import type {
+  CsvImportMapping,
+  CsvImportPreviewFile,
+} from "@/server/methods/csvImportMapping";
 
 interface Stats {
   total: number;
@@ -46,33 +51,6 @@ interface Filters {
 }
 
 const EMPTY_FILTERS: Filters = { decision: "", tier: "", confidence: "", needs_review: "", q: "" };
-
-interface CsvImportMapping {
-  fields: Record<string, string | null | undefined>;
-  decision: {
-    column: string | null;
-    values: Record<string, ScreeningDecision>;
-    default_decision: ScreeningDecision;
-  };
-  needs_review: {
-    column: string | null;
-    true_values: string[];
-  };
-  confidence: "high" | "medium" | "low";
-  rationale_md: string;
-  warnings: string[];
-}
-
-interface CsvImportPreviewFile {
-  filename: string;
-  kind: "search" | "records";
-  row_count: number;
-  headers: string[];
-  sample_rows: Record<string, string>[];
-  value_profile: Record<string, string[]>;
-  mapping?: CsvImportMapping;
-  warning?: string | null;
-}
 
 function Chip({ label, className }: { label: string; className: string }) {
   return (
@@ -428,7 +406,7 @@ function ImportAgentControls({
       <ProviderSelector
         value={provider}
         onChange={onProvider}
-        excluded={localOnly ? ["openai", "gemini", "deepseek"] : undefined}
+        excluded={localOnly ? CLOUD_PROVIDER_VALUES : undefined}
         excludedReason={localOnly ? "This study is local-only." : undefined}
       />
       <label className="block">
@@ -543,8 +521,7 @@ function RecordMappingEditor({
   mapping: CsvImportMapping;
   onChange: (mapping: CsvImportMapping) => void;
 }) {
-  const fileWithMapping = { ...file, mapping };
-  const values = decisionValues(fileWithMapping);
+  const values = decisionValues(file);
   const mappedFields = Object.entries(mapping.fields)
     .filter(([, column]) => column)
     .slice(0, 8);

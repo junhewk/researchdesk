@@ -30,6 +30,7 @@ import {
   type SlashCommand,
 } from "@/components/PromptComposer";
 import { ProviderSelector } from "@/components/ProviderSelector";
+import { CLOUD_PROVIDER_VALUES } from "@/lib/providers";
 import { AgentModelEffortPicker } from "@/components/AgentModelEffortPicker";
 import { MarkdownText } from "@/components/MarkdownText";
 import { ManuscriptDiff } from "@/components/ManuscriptDiff";
@@ -694,6 +695,16 @@ export default function ManuscriptWorkspacePage() {
             <ProviderSelector
               value={provider}
               onChange={chooseProvider}
+              excluded={
+                manuscript?.confidentiality_mode === "local_only"
+                  ? CLOUD_PROVIDER_VALUES
+                  : undefined
+              }
+              excludedReason={
+                manuscript?.confidentiality_mode === "local_only"
+                  ? "Promoted from a local-only study — cloud providers are disabled for this article."
+                  : undefined
+              }
             />
             {supportsModelEffort(provider) && (
               <AgentModelEffortPicker

@@ -203,6 +203,10 @@ export interface Manuscript {
   project_root: string | null;
   primary_file: string | null;
   is_git: boolean;
+  /** Carried over when an article is promoted from a Methods Workbench study.
+   * `local_only` keeps the article's review/revision sessions on a local
+   * provider — cloud backends are refused for it. */
+  confidentiality_mode: ProtocolConfidentialityMode;
   status: ManuscriptStatus;
   created_at: number;
   updated_at: number;
