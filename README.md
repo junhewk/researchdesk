@@ -33,6 +33,11 @@ Use it as an editorial and methods-checking workspace, not as medical, legal,
 regulatory, or statistical advice. Verify all LLM output, citations,
 calculations, and manuscript changes before relying on them.
 
+So far the app has been tested primarily against **scoping- and
+systematic-review** research. The other study modes (retrospective
+observational and interventional/trial) are supported but not yet fully
+validated — expect updates and validation for those workflows soon.
+
 ## What's new in v0.1.2
 
 - **MCP server aligned with the v0.1.1 app surface.** The `mcp/server.mjs`
