@@ -1,8 +1,8 @@
-# reviewer-agent 사용 가이드
+# ResearchDesk 사용 가이드
 
-`reviewer-agent`는 논문 작성 전 연구 방법을 먼저 설계하고, 그 설계에서
-원고 초안을 만든 뒤, 리뷰/수정/응답까지 이어 가는 로컬 우선 데스크톱
-워크스페이스입니다.
+`ResearchDesk`는 학술 논문 작업을 위한 로컬 우선 AI 프롬프트 하네스입니다.
+논문 작성 전 연구 방법을 먼저 설계하고, 그 설계에서 원고 초안과 drafting
+prompt를 만든 뒤, 리뷰/수정/응답까지 이어 가는 데스크톱 워크스페이스입니다.
 
 영문 README: [`../../README.md`](../../README.md)
 
@@ -169,8 +169,8 @@ npm run seed:demo
 
 ## 데이터 저장 위치
 
-SQLite 데이터와 markdown export는 `REVIEWER_DATA_DIR` 아래에 저장됩니다.
-기본값은 `./data`입니다.
+SQLite 데이터와 markdown export는 `RESEARCHDESK_DATA_DIR` 아래에 저장됩니다.
+기본값은 `./data`입니다. 기존 `REVIEWER_DATA_DIR` 이름도 계속 지원됩니다.
 
 ## 보안
 

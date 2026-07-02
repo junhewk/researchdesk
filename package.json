@@ -1,19 +1,21 @@
 {
-  "name": "reviewer-agent-desktop",
-  "version": "0.1.2",
-  "description": "Desktop academic peer-review and readiness workspace.",
-  "author": "Reviewer Agent contributors",
+  "name": "researchdesk",
+  "version": "0.1.3",
+  "description": "Local-first AI prompt harnesses for scholarly article work.",
+  "author": "ResearchDesk contributors",
   "license": "MIT",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/junhewk/reviewer-agent-desktop.git"
+    "url": "https://github.com/junhewk/researchdesk.git"
   },
   "bugs": {
-    "url": "https://github.com/junhewk/reviewer-agent-desktop/issues"
+    "url": "https://github.com/junhewk/researchdesk/issues"
   },
   "main": "electron/main.cjs",
   "bin": {
+    "researchdesk": "lib/cli.mjs",
+    "researchdesk-mcp": "mcp/server.mjs",
     "reviewer-agent-mcp": "mcp/server.mjs"
   },
   "type": "module",
@@ -30,6 +32,7 @@
     "start": "NODE_ENV=production PORT=${PORT:-3871} next start --port ${PORT:-3871}",
     "start:server": "NODE_ENV=production next start -H 127.0.0.1 -p ${PORT:-3871}",
     "mcp": "node mcp/server.mjs",
+    "headless:bundle": "node scripts/build-headless-bundle.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test \"src/**/*.test.ts\"",
@@ -90,8 +93,8 @@
     "wait-on": "^8.0.3"
   },
   "build": {
-    "appId": "com.revieweragent.desktop",
-    "productName": "Reviewer Agent",
+    "appId": "com.researchdesk.desktop",
+    "productName": "ResearchDesk",
     "asar": true,
     "files": [
       ".next/**",
@@ -114,7 +117,7 @@
           ]
         }
       ],
-      "artifactName": "Reviewer-Agent-${version}-windows-${arch}.${ext}"
+      "artifactName": "ResearchDesk-${version}-windows-${arch}.${ext}"
     }
   }
 }

@@ -16,6 +16,7 @@ import {
   requireLocalApiProvider,
   resolveApiProvider,
 } from "@/server/apiAgent/providers";
+import { getApiBaseUrl } from "@/lib/localApiAuth";
 
 const bodySchema = z.object({
   provider: apiProviderSchema.optional(),
@@ -80,7 +81,7 @@ export async function POST(
         consequence_md: option.consequence_md,
       });
     }
-    const apiBaseUrl = process.env.REVIEWER_API_URL || request.nextUrl.origin;
+    const apiBaseUrl = getApiBaseUrl(request.nextUrl.origin);
     await sup.startPass(session.id, { apiBaseUrl, targetCardType: type });
     return NextResponse.json(
       { session_id: session.id, seeded_options: seeded.length },

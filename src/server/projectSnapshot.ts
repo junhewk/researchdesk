@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { resolveDataDir } from "@/lib/dataDir";
 
 const IGNORE_NAMES = new Set([
   "node_modules",
@@ -14,10 +15,7 @@ const IGNORE_NAMES = new Set([
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 function dataDir(): string {
-  if (process.env.REVIEWER_DATA_DIR) {
-    return path.resolve(process.env.REVIEWER_DATA_DIR);
-  }
-  return path.resolve(path.join(/* turbopackIgnore: true */ process.cwd(), "data"));
+  return resolveDataDir();
 }
 
 export function snapshotDirFor(sessionId: string): string {

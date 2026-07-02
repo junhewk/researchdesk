@@ -5,6 +5,7 @@ import os from "node:os";
 import { spawnSync } from "node:child_process";
 import { getDb, buildAssignments } from "./db";
 import { nowUnix } from "@/lib/utils";
+import { resolveDataDir } from "@/lib/dataDir";
 import { exportManuscript, deleteManuscriptExport } from "./markdownExport";
 import { insertInitialVersion } from "./manuscriptVersions";
 import type { Manuscript, ManuscriptStatus, ProtocolConfidentialityMode } from "./types";
@@ -248,10 +249,7 @@ export function touchManuscript(manuscriptId: string): void {
 // ---------------------------------------------------------------------------
 
 function dataDir(): string {
-  if (process.env.REVIEWER_DATA_DIR) {
-    return path.resolve(process.env.REVIEWER_DATA_DIR);
-  }
-  return path.resolve(path.join(/* turbopackIgnore: true */ process.cwd(), "data"));
+  return resolveDataDir();
 }
 
 export function autoProvisionedRoot(manuscriptId: string): string {

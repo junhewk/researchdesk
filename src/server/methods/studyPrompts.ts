@@ -1,6 +1,6 @@
 import { getModeSchema, getCardDef } from "./cardSchema";
 import { parseValue } from "./preflight";
-import { curlAuthArgs, curlJsonHeaders } from "../../lib/localApiAuth";
+import { curlAuthArgs, curlJsonHeaders, getApiBaseUrl } from "../../lib/localApiAuth";
 import type { Study, DesignDecision, EvidenceSnapshot } from "../types";
 
 // Forked methods prompts for the StudyDesignState workspace. Distinct from the
@@ -17,11 +17,7 @@ const CORE_RULES = `## Core rules
 export type StudyPass = "card_proposal" | "evidence_extraction" | "preflight_risk";
 
 function apiBase(explicitBase?: string): string {
-  return (
-    explicitBase ||
-    process.env.REVIEWER_API_URL ||
-    `http://localhost:${process.env.PORT || "3871"}`
-  );
+  return getApiBaseUrl(explicitBase);
 }
 
 function studyHeader(study: Study): string {

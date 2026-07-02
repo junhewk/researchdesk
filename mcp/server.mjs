@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // ===========================================================================
-// reviewer-agent-mcp — an MCP (stdio) server that lets Claude Code / Codex drive
-// the Reviewer-Agent desktop app. It holds no business logic: every tool is a
+// researchdesk-mcp — an MCP (stdio) server that lets Claude Code / Codex drive
+// the ResearchDesk app. It holds no business logic: every tool is a
 // thin wrapper over an existing /api/* route on the locally-running app (studies,
 // manuscripts, study-article-imports — the HTTP bridge). Configure with
-// REVIEWER_API_URL (default http://localhost:3871) and REVIEWER_APP_TOKEN (must
-// match the app process). See docs/MCP.md.
+// RESEARCHDESK_API_URL (default http://localhost:3871) and RESEARCHDESK_APP_TOKEN
+// (must match the app process). Legacy REVIEWER_* env vars still work. See
+// docs/MCP.md.
 // ===========================================================================
 
 import { readFileSync } from "node:fs";
@@ -56,7 +57,7 @@ const DRAFT_SECTIONS = [
 ];
 
 const server = new McpServer({
-  name: "reviewer-agent",
+  name: "researchdesk",
   version: VERSION,
 });
 
@@ -896,7 +897,7 @@ server.registerPrompt(
         content: {
           type: "text",
           text: [
-            `Run a methods-intake review for Reviewer-Agent study ${study_id} using the reviewer-agent MCP tools. You facilitate; the author decides. ${NO_INVENT}`,
+            `Run a methods-intake review for ResearchDesk study ${study_id} using the researchdesk MCP tools. You facilitate; the author decides. ${NO_INVENT}`,
             "",
             "Loop until the design is as complete as the author can make it:",
             "1. Read state: call `get_design` and `analyze_gaps` (and `checklist_coverage` for reporting-guideline items).",
@@ -926,7 +927,7 @@ server.registerPrompt(
         content: {
           type: "text",
           text: [
-            `Help the author finalise screening for Reviewer-Agent study ${study_id} using the reviewer-agent MCP tools. ${NO_INVENT} The imported screening decisions are the author's own AI-assisted output; your job is to help them confirm or change each, not to re-screen.`,
+            `Help the author finalise screening for ResearchDesk study ${study_id} using the researchdesk MCP tools. ${NO_INVENT} The imported screening decisions are the author's own AI-assisted output; your job is to help them confirm or change each, not to re-screen.`,
             "",
             "1. Call `corpus_overview` to report totals (included/excluded/maybe/unscreened, confirmed, needs-review) and the PRISMA flow.",
             "2. Call `list_records` with needs_review=true (then decision='unscreened') to fetch the records that need the author's attention. Present each with its title, abstract, and the imported screen reason.",
@@ -954,7 +955,7 @@ server.registerPrompt(
         content: {
           type: "text",
           text: [
-            `Import CSV file(s) into Reviewer-Agent study ${study_id} using the reviewer-agent MCP tools. You facilitate; the author decides how their columns map. ${NO_INVENT}`,
+            `Import CSV file(s) into ResearchDesk study ${study_id} using the researchdesk MCP tools. You facilitate; the author decides how their columns map. ${NO_INVENT}`,
             "",
             "1. Confirm the CSV file path(s) with the author.",
             "2. Call `preview_csv_import` with those paths. If the study is local_only, choose a local provider (ollama, lmstudio, llama_server); otherwise omit `provider` to use the app default. A records CSV runs an LLM to propose a mapping — this can take a minute or two per file.",
@@ -983,7 +984,7 @@ server.registerPrompt(
         content: {
           type: "text",
           text: [
-            `Review a manuscript with the reviewer-agent MCP tools. This is a context-grounded ensemble review (grounded reviewers + a neutral merge, with deterministic GRIM / DOI-retraction / protocol-drift grounding) — NOT a persona panel. Do not role-play "the statistician" etc.; the value is the grounding, not a costume.`,
+            `Review a manuscript with the researchdesk MCP tools. This is a context-grounded ensemble review (grounded reviewers + a neutral merge, with deterministic GRIM / DOI-retraction / protocol-drift grounding) — NOT a persona panel. Do not role-play "the statistician" etc.; the value is the grounding, not a costume.`,
             "",
             manuscript_id
               ? `1. The manuscript is ${manuscript_id}. Confirm it exists with list_manuscripts if unsure.`
@@ -1004,10 +1005,10 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   // stderr is safe for diagnostics; stdout is the MCP channel.
-  console.error(`reviewer-agent-mcp connected → ${BASE}`);
+  console.error(`researchdesk-mcp connected → ${BASE}`);
 }
 
 main().catch((err) => {
-  console.error("reviewer-agent-mcp failed to start:", err);
+  console.error("researchdesk-mcp failed to start:", err);
   process.exit(1);
 });

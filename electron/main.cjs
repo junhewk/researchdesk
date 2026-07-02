@@ -5,7 +5,8 @@ const { randomBytes } = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { app, BrowserWindow, shell } = require("electron");
 
-const LOCAL_API_TOKEN_HEADER = "x-reviewer-app-token";
+const LOCAL_API_TOKEN_HEADER = "x-researchdesk-token";
+const LEGACY_LOCAL_API_TOKEN_HEADER = "x-reviewer-app-token";
 
 let server = null;
 let serverProcess = null;
@@ -17,12 +18,30 @@ function appRoot() {
   return fs.existsSync(asarRoot) ? asarRoot : path.join(process.resourcesPath, "app");
 }
 
+function getLocalApiToken() {
+  return process.env.RESEARCHDESK_APP_TOKEN || process.env.REVIEWER_APP_TOKEN;
+}
+
+function chooseDesktopDataDir() {
+  const configured =
+    process.env.RESEARCHDESK_DATA_DIR || process.env.REVIEWER_DATA_DIR;
+  if (configured) return configured;
+
+  const appData = app.getPath("appData");
+  const current = path.join(appData, "ResearchDesk", "data");
+  const legacy = path.join(appData, "Reviewer Agent", "data");
+  if (fs.existsSync(legacy) && !fs.existsSync(current)) return legacy;
+  return current;
+}
+
 function ensureDesktopEnv() {
   process.env.NODE_ENV = process.env.NODE_ENV || "production";
-  process.env.REVIEWER_DATA_DIR =
-    process.env.REVIEWER_DATA_DIR || path.join(app.getPath("userData"), "data");
-  process.env.REVIEWER_APP_TOKEN =
-    process.env.REVIEWER_APP_TOKEN || randomBytes(32).toString("hex");
+  const dataDir = chooseDesktopDataDir();
+  process.env.RESEARCHDESK_DATA_DIR = process.env.RESEARCHDESK_DATA_DIR || dataDir;
+  process.env.REVIEWER_DATA_DIR = process.env.REVIEWER_DATA_DIR || dataDir;
+  const token = getLocalApiToken() || randomBytes(32).toString("hex");
+  process.env.RESEARCHDESK_APP_TOKEN = process.env.RESEARCHDESK_APP_TOKEN || token;
+  process.env.REVIEWER_APP_TOKEN = process.env.REVIEWER_APP_TOKEN || token;
 }
 
 function isApiRequest(req) {
@@ -36,11 +55,13 @@ function isApiRequest(req) {
 
 function rejectUnauthorizedApiRequest(req, res) {
   if (!isApiRequest(req) || req.method === "OPTIONS") return false;
-  const token = process.env.REVIEWER_APP_TOKEN;
+  const token = getLocalApiToken();
   if (!token) return false;
-  const provided = req.headers[LOCAL_API_TOKEN_HEADER];
-  const headerValue = Array.isArray(provided) ? provided[0] : provided;
-  if (headerValue === token) return false;
+  for (const header of [LOCAL_API_TOKEN_HEADER, LEGACY_LOCAL_API_TOKEN_HEADER]) {
+    const provided = req.headers[header];
+    const headerValue = Array.isArray(provided) ? provided[0] : provided;
+    if (headerValue === token) return false;
+  }
 
   res.writeHead(401, {
     "Content-Type": "application/json",
@@ -66,7 +87,7 @@ function openExternalIfSafe(target) {
 }
 
 function installLocalApiHeader(win, appUrl) {
-  const token = process.env.REVIEWER_APP_TOKEN;
+  const token = getLocalApiToken();
   if (!token) return;
 
   let origin;
@@ -83,6 +104,7 @@ function installLocalApiHeader(win, appUrl) {
         requestHeaders: {
           ...details.requestHeaders,
           [LOCAL_API_TOKEN_HEADER]: token,
+          [LEGACY_LOCAL_API_TOKEN_HEADER]: token,
         },
       });
     },
@@ -171,7 +193,7 @@ function createWindow(url) {
     height: 860,
     minWidth: 1024,
     minHeight: 720,
-    title: "Reviewer Agent",
+    title: "ResearchDesk",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

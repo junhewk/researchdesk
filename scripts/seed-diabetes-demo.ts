@@ -6,7 +6,10 @@
 import { seedDiabetesDemo } from "@/server/demoSeed";
 
 const result = seedDiabetesDemo();
-const base = process.env.REVIEWER_API_URL || `http://localhost:${process.env.PORT || 3871}`;
+const base =
+  process.env.RESEARCHDESK_API_URL ||
+  process.env.REVIEWER_API_URL ||
+  `http://localhost:${process.env.PORT || 3871}`;
 
 console.log(
   `\nSeeded diabetes demo fixture (${result.lettersSeeded} reviewer letters).`,

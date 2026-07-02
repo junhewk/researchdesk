@@ -1,6 +1,6 @@
-# Reviewer-Agent MCP server
+# ResearchDesk MCP server
 
-Drive the Reviewer-Agent app from **Claude Code** or **Codex** via the Model
+Drive the ResearchDesk app from **Claude Code** or **Codex** via the Model
 Context Protocol. The MCP server (`mcp/server.mjs`) is a small stdio process that
 bridges to the app's existing local REST API — so a CLI agent can find or create
 a study, import scoping-review CSVs (one-shot, or with an LLM-proposed,
@@ -10,86 +10,103 @@ generate a self-contained drafting brief / `AGENTS.md` for any paper section,
 context-grounded **ensemble review** on a manuscript.
 
 ```
-Claude Code / Codex ──stdio(MCP)──▶ reviewer-agent-mcp ──HTTP(+token)──▶ app (127.0.0.1:3871)
+Claude Code / Codex ──stdio(MCP)──▶ researchdesk-mcp ──HTTP(+token)──▶ app (127.0.0.1:3871)
 ```
 
 The MCP server holds no business logic; every tool wraps one `/api/studies/*`,
 `/api/manuscripts/*`, or `/api/study-article-imports` route. The app is the single
 source of truth (SQLite + markdown exports).
 
-## 1. Run the app headless (Linux server, no GUI)
+## 1. Run the bundled headless app
 
-The app runs as a plain Next.js server — **no Electron, no display required**, and
-the database is Node's built-in `node:sqlite` (no native build).
+The headless release bundle runs the app as a plain Next.js server — **no
+Electron, no display required**. It includes Node 26 and production
+dependencies, so users do not need `nvm`, `npx`, global Node, or a checkout path.
 
 ```bash
-nvm use                       # Node 26.x
+./bin/researchdesk init
+./bin/researchdesk server
+```
+
+The server binds to `127.0.0.1` and uses a generated app token stored in the
+ResearchDesk config file. To run MCP without keeping a separate server process
+alive, register `researchdesk mcp --with-server`; it starts a private loopback
+server for that MCP session and stops it when the client exits.
+
+Verify a running server:
+
+```bash
+./bin/researchdesk doctor
+```
+
+## 2. Source checkout fallback
+
+If you are developing from source, run the app headless first, then run the MCP
+stdio server:
+
+```bash
+nvm use
 npm install --include=dev
 npm run build
 
-export REVIEWER_DATA_DIR=/srv/reviewer/data         # where reviewer.db lives
-export REVIEWER_APP_TOKEN=$(openssl rand -hex 32)    # enables /api auth (recommended)
-PORT=3871 npm run start:server                       # binds 127.0.0.1
+export RESEARCHDESK_DATA_DIR=/srv/researchdesk/data
+export RESEARCHDESK_APP_TOKEN=$(openssl rand -hex 32)
+PORT=3871 npm run start:server
+npm run mcp
 ```
 
-- `npm run start:server` binds to `127.0.0.1` (the plain `npm run start` lets Next
-  listen on all interfaces). Keep it on loopback unless you intend remote access.
-- If `REVIEWER_APP_TOKEN` is **unset**, `/api/*` is left **unauthenticated** — fine
-  on a single-user loopback box, but set the token if anything else can reach the
-  port. The same token must be given to the MCP server (below).
-- Keep the server alive with your process manager of choice (`systemd`, `pm2`, a
-  `tmux`/`nohup` session, …); the MCP tools need it running.
+Legacy `REVIEWER_DATA_DIR`, `REVIEWER_APP_TOKEN`, and `REVIEWER_API_URL` are
+still accepted for existing deployments.
 
-Verify:
+## 3. Configuration
 
-```bash
-curl -s localhost:3871/api/studies                                   # 401 if token set
-curl -s -H "x-reviewer-app-token: $REVIEWER_APP_TOKEN" localhost:3871/api/studies   # 200
-```
-
-## 2. Configuration
-
-The MCP server reads two environment variables:
+The MCP server reads these environment variables:
 
 | Variable              | Default                  | Purpose                                  |
 | --------------------- | ------------------------ | ---------------------------------------- |
-| `REVIEWER_API_URL`    | `http://localhost:3871`  | base URL of the running app              |
-| `REVIEWER_APP_TOKEN`  | _(none)_                 | must match the app's token (sent as `x-reviewer-app-token`) |
+| `RESEARCHDESK_API_URL` | `http://localhost:3871` | base URL of the running app              |
+| `RESEARCHDESK_APP_TOKEN` | _(none)_              | must match the app's token (sent as `x-researchdesk-token`) |
 
-## 3. Register with Claude Code
+The legacy `REVIEWER_*` names and `x-reviewer-app-token` header remain accepted.
 
-Add to your project `.mcp.json` (or run `claude mcp add`):
+## 4. Register with Claude Code
+
+From the extracted headless bundle, generate a `.mcp.json` snippet:
+
+```bash
+./bin/researchdesk config claude
+```
+
+It prints:
 
 ```json
 {
   "mcpServers": {
-    "reviewer-agent": {
-      "command": "node",
-      "args": ["/home/jk/programming/reviewer-agent-desktop/mcp/server.mjs"],
-      "env": {
-        "REVIEWER_API_URL": "http://localhost:3871",
-        "REVIEWER_APP_TOKEN": "<same token as the app>"
-      }
+    "researchdesk": {
+      "command": "/path/to/ResearchDesk-Headless/bin/researchdesk",
+      "args": ["mcp", "--with-server"]
     }
   }
 }
 ```
 
-## 4. Register with Codex
+## 5. Register with Codex
 
-In `~/.codex/config.toml`:
+From the extracted headless bundle, generate the TOML snippet:
 
-```toml
-[mcp_servers.reviewer-agent]
-command = "node"
-args = ["/home/jk/programming/reviewer-agent-desktop/mcp/server.mjs"]
-
-[mcp_servers.reviewer-agent.env]
-REVIEWER_API_URL = "http://localhost:3871"
-REVIEWER_APP_TOKEN = "<same token as the app>"
+```bash
+./bin/researchdesk config codex
 ```
 
-## 5. Tools
+It prints:
+
+```toml
+[mcp_servers.researchdesk]
+command = "/path/to/ResearchDesk-Headless/bin/researchdesk"
+args = ["mcp", "--with-server"]
+```
+
+## 6. Tools
 
 **Corpus & drafting**
 
@@ -154,10 +171,10 @@ local_only study are **coerced** to a local backend (default ollama) rather than
 ever reaching the cloud. Toggle the mode with `set_study_confidentiality` —
 switching back to `cloud_default` requires the author's explicit `consent=true`.
 
-## 5a. Prompts (give-and-take playbooks)
+## 6a. Prompts (give-and-take playbooks)
 
 The server also exposes MCP **prompts** — reusable playbooks the calling agent
-loads (Claude Code shows them as `/mcp__reviewer-agent__<name>`). They encode the
+loads (Claude Code shows them as `/mcp__researchdesk__<name>`). They encode the
 back-and-forth loop and the hard **no-invent rule**: the agent *facilitates*, the
 author *decides*; the agent never fabricates research content.
 
@@ -193,11 +210,11 @@ prompt — they nudge the agent into the ask-then-record loop. They're advisory,
 not enforced; a server-enforced ask needs MCP *elicitation* (client support
 required), which this version does not use.
 
-## 6. Example workflow
+## 7. Example workflow
 
 In Claude Code, with the two CSVs on disk:
 
-> Use the reviewer-agent MCP to create a scoping review from
+> Use the researchdesk MCP to create a scoping review from
 > `sdm_edu_scoping_process_260618.csv` and `sdm_edu_included_260618_user_confirm.csv`,
 > then build an `AGENTS.md` for writing the Results and Discussion.
 
@@ -209,7 +226,7 @@ the proposed mapping → `apply_csv_import` with your approved mapping instead.
 
 To turn a finished study into a reviewable article:
 
-> Use the reviewer-agent MCP to turn my scoping-review study into an article draft
+> Use the researchdesk MCP to turn my scoping-review study into an article draft
 > and run the grounded review.
 
 The agent will: `list_promotable_studies` (resolve which study) →
@@ -217,18 +234,19 @@ The agent will: `list_promotable_studies` (resolve which study) →
 
 To review a manuscript instead:
 
-> Use the reviewer-agent MCP to review my manuscript "Effect of …" and give me the
+> Use the researchdesk MCP to review my manuscript "Effect of …" and give me the
 > findings grouped by severity.
 
 The agent will: `list_manuscripts` (resolve the title → id) → `review_manuscript`
 (grounded 3-reviewer ensemble + merge) → `get_reviews`, then relay the findings —
 surfacing any unresolved/retracted DOI, GRIM, or protocol-drift items first.
 
-## 7. Local smoke test (no agent)
+## 8. Local smoke test (no agent)
 
 ```bash
-npx @modelcontextprotocol/inspector node mcp/server.mjs
+./bin/researchdesk doctor
 ```
 
-Set `REVIEWER_API_URL` / `REVIEWER_APP_TOKEN` in the Inspector's env, then call
-the tools interactively against your running app.
+For low-level MCP inspection from a source checkout, you can still run
+`npx @modelcontextprotocol/inspector node mcp/server.mjs` and set
+`RESEARCHDESK_API_URL` / `RESEARCHDESK_APP_TOKEN` in the Inspector environment.

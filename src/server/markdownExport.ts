@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { Manuscript, Commentary, Revision, Review } from "./types";
 import { getDb } from "./db";
+import { resolveDataDir } from "../lib/dataDir";
 
 // Reuse db.ts path resolution by getting the db path and deriving data dir
 function getDataDir(): string {
@@ -10,10 +11,7 @@ function getDataDir(): string {
   if (dbPath[0]?.file) {
     return path.dirname(dbPath[0].file);
   }
-  return path.resolve(
-    process.env.REVIEWER_DATA_DIR ||
-      path.join(/* turbopackIgnore: true */ process.cwd(), "data"),
-  );
+  return resolveDataDir();
 }
 
 let _dataDir: string | null = null;

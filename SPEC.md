@@ -1,6 +1,9 @@
-# reviewer-agent
+# ResearchDesk
 
-A journal article reviewer agent, not "hypothetical reviewer persona"-based review, but based on previous commentaries, decisions, actual revisions.
+A prompt harness for scholarly article work: methods decisions, article-drafting
+prompts, readiness checks, and context-grounded review. Reviews are not
+"hypothetical reviewer persona"-based; they are grounded in previous
+commentaries, decisions, actual revisions, and deterministic checks.
 
 ## backend
 

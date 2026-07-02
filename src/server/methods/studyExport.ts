@@ -5,6 +5,7 @@ import { getCardDef } from "./cardSchema";
 import { parseValue } from "./preflight";
 import { renderArtifactMarkdown, type CompiledArtifact } from "./artifacts";
 import type { Study, DesignDecision, DecisionLogEntry } from "../types";
+import { resolveDataDir } from "@/lib/dataDir";
 
 // Markdown dual-write for studies — mirrors src/server/markdownExport.ts so the
 // design state, decision log, and compiled artifacts live as files under
@@ -14,10 +15,7 @@ function dataDir(): string {
   const db = getDb();
   const list = db.pragma("database_list") as Array<{ file: string }>;
   if (list[0]?.file) return path.dirname(list[0].file);
-  return path.resolve(
-    process.env.REVIEWER_DATA_DIR ||
-      path.join(/* turbopackIgnore: true */ process.cwd(), "data"),
-  );
+  return resolveDataDir();
 }
 
 function studyDir(studyId: string): string {

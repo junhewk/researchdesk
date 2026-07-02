@@ -16,8 +16,8 @@ import type { WorkspaceIcon } from "@/workspaces/types";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "reviewer-agent",
-  description: "Academic peer-review and revision workspace.",
+  title: "ResearchDesk",
+  description: "AI prompt harnesses for scholarly articles.",
 };
 
 export const dynamic = "force-dynamic";
@@ -33,7 +33,7 @@ const SHELL_COPY: Record<AppLanguage, {
     ariaMain: "Main",
     ariaAccount: "Account",
     ariaPrimary: "Primary navigation",
-    tagline: "Academic Revision",
+    tagline: "AI prompt harnesses",
     nav: {
       dashboard: "Dashboard",
       methodsWorkbench: "Methods Workbench",
@@ -47,7 +47,7 @@ const SHELL_COPY: Record<AppLanguage, {
     ariaMain: "주요 메뉴",
     ariaAccount: "계정 메뉴",
     ariaPrimary: "기본 탐색",
-    tagline: "학술 원고 수정",
+    tagline: "AI 프롬프트 하네스",
     nav: {
       dashboard: "대시보드",
       methodsWorkbench: "Methods Workbench",
@@ -74,12 +74,12 @@ function BrandBlock({ language }: { language: AppLanguage }) {
         <span
           className="font-display text-[15px] font-bold"
         >
-          RA
+          RD
         </span>
       </div>
       <div className="min-w-0">
         <div className="font-display text-[15px] font-semibold leading-tight text-[color:var(--color-on-surface)]">
-          reviewer-agent
+          ResearchDesk
         </div>
         <div className="label-sm mt-0.5 text-[color:var(--color-on-surface-variant)]">
           {copy.tagline}
@@ -186,10 +186,10 @@ export default function RootLayout({
                   aria-hidden
                   className="grid h-7 w-7 shrink-0 place-items-center rounded bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] font-display text-[11px] font-bold"
                 >
-                  RA
+                  RD
                 </span>
                 <span className="font-display text-[14px] font-semibold text-[color:var(--color-on-surface)] truncate">
-                  reviewer-agent
+                  ResearchDesk
                 </span>
               </Link>
               <MobileNavDrawer>

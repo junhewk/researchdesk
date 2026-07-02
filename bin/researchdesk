@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -eu
+
+BIN_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT_DIR=$(CDPATH= cd -- "$BIN_DIR/.." && pwd)
+
+NODE="$ROOT_DIR/runtime/node/bin/node"
+if [ ! -x "$NODE" ]; then
+  NODE="$ROOT_DIR/runtime/node/node"
+fi
+
+exec "$NODE" "$ROOT_DIR/lib/cli.mjs" "$@"

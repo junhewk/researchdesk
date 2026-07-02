@@ -1,19 +1,26 @@
-// Thin HTTP client for the Reviewer-Agent local app. Every MCP tool is a wrapper
+// Thin HTTP client for the ResearchDesk local app. Every MCP tool is a wrapper
 // over an existing /api/* route, so this module is the only place that knows the
-// base URL and the short-lived app token (header `x-reviewer-app-token`, matching
-// src/lib/localApiAuth.ts). When REVIEWER_APP_TOKEN is unset the app leaves /api
+// base URL and the short-lived app token (header `x-researchdesk-token`, matching
+// src/lib/localApiAuth.ts). When no app token is set the app leaves /api
 // unauthenticated (src/proxy.ts) and we simply send no token.
 
-const TOKEN_HEADER = "x-reviewer-app-token";
+const TOKEN_HEADER = "x-researchdesk-token";
+const LEGACY_TOKEN_HEADER = "x-reviewer-app-token";
 
 export const BASE =
+  process.env.RESEARCHDESK_API_URL?.replace(/\/$/, "") ||
   process.env.REVIEWER_API_URL?.replace(/\/$/, "") ||
   `http://localhost:${process.env.PORT || "3871"}`;
 
-const TOKEN = process.env.REVIEWER_APP_TOKEN?.trim() || null;
+const TOKEN =
+  process.env.RESEARCHDESK_APP_TOKEN?.trim() ||
+  process.env.REVIEWER_APP_TOKEN?.trim() ||
+  null;
 
 function authHeaders(extra = {}) {
-  return TOKEN ? { [TOKEN_HEADER]: TOKEN, ...extra } : { ...extra };
+  return TOKEN
+    ? { [TOKEN_HEADER]: TOKEN, [LEGACY_TOKEN_HEADER]: TOKEN, ...extra }
+    : { ...extra };
 }
 
 async function readBody(res, path, method) {

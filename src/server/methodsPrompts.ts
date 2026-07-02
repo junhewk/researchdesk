@@ -1,5 +1,5 @@
 import type { Manuscript, SessionMode } from "./types";
-import { curlAuthArgs, curlJsonHeaders } from "../lib/localApiAuth";
+import { curlAuthArgs, curlJsonHeaders, getApiBaseUrl } from "../lib/localApiAuth";
 
 // Manuscript-stage methods prompts: reporting-checklist mapping, manuscript
 // readiness, and reviewer-response drafting. The document-centric protocol
@@ -7,11 +7,7 @@ import { curlAuthArgs, curlJsonHeaders } from "../lib/localApiAuth";
 // was retired in favor of the StudyDesignState workspace (src/server/methods/).
 
 function apiBase(explicitBase?: string): string {
-  return (
-    explicitBase ||
-    process.env.REVIEWER_API_URL ||
-    `http://localhost:${process.env.PORT || "3871"}`
-  );
+  return getApiBaseUrl(explicitBase);
 }
 
 const CORE_RULES = `## Core rules

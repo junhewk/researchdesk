@@ -1,7 +1,7 @@
-# reviewer-agent
+# ResearchDesk
 
-A local-first desktop-ready workspace for academic manuscript revision and
-methods work.
+A local-first desktop-ready prompt harness for scholarly article work, methods
+checks, and review response workflows.
 
 This is a pre-0.1.0 closed-beta research-assistance app. The only distributed
 binary for this prerelease is the Windows x64 portable `.exe` attached to the
@@ -54,5 +54,5 @@ npm test
 
 ## Data
 
-SQLite data and markdown exports are stored under `REVIEWER_DATA_DIR`, defaulting
-to `./data`.
+SQLite data and markdown exports are stored under `RESEARCHDESK_DATA_DIR`,
+defaulting to `./data`. The legacy `REVIEWER_DATA_DIR` name is still accepted.

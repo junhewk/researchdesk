@@ -2,7 +2,7 @@ import {
   buildMethodsSystemPrompt,
   type MethodsPromptContext,
 } from "./methodsPrompts";
-import { curlAuthArgs, curlJsonHeaders } from "../lib/localApiAuth";
+import { curlAuthArgs, curlJsonHeaders, getApiBaseUrl } from "../lib/localApiAuth";
 import type { Manuscript, SessionMode } from "./types";
 
 export interface ToolDefinition {
@@ -48,7 +48,7 @@ export function getMethodsTools(_mode?: SessionMode | string | null): ToolDefini
 }
 
 function apiBase(explicitBase?: string): string {
-  return explicitBase || process.env.REVIEWER_API_URL || `http://localhost:${process.env.PORT || "3871"}`;
+  return getApiBaseUrl(explicitBase);
 }
 
 function revisionOverlayInstructions(

@@ -1,20 +1,21 @@
-# reviewer-agent
+# ResearchDesk
 
-Reviewer Agent is a local-first desktop workspace for researchers who want to
-keep study design, manuscript drafting, peer-review response, and readiness
-checks in one traceable place. It is built around a simple direction of work:
-start upstream in Methods Workbench, make the study decisions explicit, compile
-the protocol/SAP/checklist artifacts, create a linked article draft, then
-continue in My Articles for manuscript review, readiness checks, revisions, and
-reviewer-response drafting.
+ResearchDesk is a local-first prompt harness for scholarly article work. It
+keeps study design, article-drafting prompts, peer-review response, and
+readiness checks in one traceable place. It is built around a simple direction
+of work: start upstream in Methods Workbench, make the study decisions explicit,
+compile the protocol/SAP/checklist artifacts, create a linked article draft,
+then continue in My Articles for manuscript review, readiness checks, revisions,
+and reviewer-response drafting.
 
-The app is meant to be an editorial and methods workbench, not an autonomous
-paper writer. It helps organize decisions, surface inconsistencies, draft
-structured text, and run LLM-assisted checks against the materials you provide.
-Novel claims, study design choices, statistical judgments, citations, and final
-manuscript edits remain the user's responsibility.
+The app is not a word processor and not an autonomous paper writer. Its main
+job is to turn recorded methods, uploaded article material, and resolved review
+findings into controlled prompts and harnesses that help you use an AI system
+without inventing research content. Novel claims, study design choices,
+statistical judgments, citations, and final manuscript edits remain the user's
+responsibility.
 
-Reviewer Agent can run against cloud or local API providers, including
+ResearchDesk can run against cloud or local API providers, including
 OpenAI-compatible endpoints, Ollama, LM Studio, and llama-server. Local
 llama-server / LM Studio endpoints are driven with grammar-constrained
 (JSON-schema) decoding, so small local models such as Qwen3 return reliable
@@ -25,9 +26,10 @@ Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
 ## Status
 
-This is the `v0.1.2` release of a research-assistance app. The distributed
-binary is the Windows x64 portable `.exe` attached to the `v0.1.2` GitHub
-release.
+This is the `v0.1.3` release of a research-assistance app. The distributed
+desktop binary is the Windows x64 portable `.exe` attached to the `v0.1.3`
+GitHub release. Headless MCP bundles are published separately as
+`ResearchDesk-Headless-*` artifacts.
 
 Use it as an editorial and methods-checking workspace, not as medical, legal,
 regulatory, or statistical advice. Verify all LLM output, citations,
@@ -37,6 +39,23 @@ So far the app has been tested primarily against **scoping- and
 systematic-review** research. The other study modes (retrospective
 observational and interventional/trial) are supported but not yet fully
 validated — expect updates and validation for those workflows soon.
+
+## What's new in v0.1.3
+
+- **Renamed and repositioned as ResearchDesk.** The app now foregrounds its main
+  role as a local-first AI prompt harness for scholarly article work, while
+  preserving the Methods Workbench → article → review/response flow.
+- **New canonical repository.** Future releases are published from
+  [`junhewk/researchdesk`](https://github.com/junhewk/researchdesk) after the
+  GitHub repository rename.
+- **Bundled headless + MCP runtime.** Release builds now include separate
+  headless artifacts with the app server, MCP bridge, wrapper CLI, and embedded
+  Node runtime so users can run MCP without `nvm`, `npx`, global Node, or raw
+  checkout paths.
+- **Compatibility preserved.** Existing `REVIEWER_*` environment variables, the
+  old `x-reviewer-app-token` header, the `reviewer-agent-mcp` bin alias, and old
+  desktop data locations remain supported while new `RESEARCHDESK_*` names are
+  preferred.
 
 ## What's new in v0.1.2
 
@@ -80,10 +99,11 @@ review material to a cloud provider unless you have the right to do so.
 
 The Electron desktop app binds its server to `127.0.0.1` and protects local
 `/api/*` requests with a short-lived app token injected by the Electron main
-process. `npm run start:server` runs the same app headless on loopback; set
-`REVIEWER_APP_TOKEN` to authenticate `/api/*` (required when an MCP client or
-anything else can reach the port). Direct `npm run dev` / `npm run start` is
-developer browser mode; do not expose any of these to a network.
+process. The headless CLI runs the same app on loopback; set
+`RESEARCHDESK_APP_TOKEN` to authenticate `/api/*` when running from source. The
+legacy `REVIEWER_APP_TOKEN` name is still accepted. Direct `npm run dev` /
+`npm run start` is developer browser mode; do not expose any of these to a
+network.
 
 ## Workspaces
 
@@ -251,7 +271,7 @@ Methods Workbench -> Create Article Draft -> My Articles -> Readiness / Review /
 
 ## MCP server (Claude Code / Codex)
 
-Reviewer Agent ships an MCP server (`mcp/server.mjs`) that lets a CLI agent such
+ResearchDesk ships an MCP server (`mcp/server.mjs`) that lets a CLI agent such
 as Claude Code or Codex drive the app. It is a stdio bridge to the app's local
 REST API — no business logic of its own — and exposes tools to find/create a
 study, import the scoping-review CSVs by path, inspect the corpus and PRISMA
@@ -275,17 +295,31 @@ preview and apply records-CSV imports with an author-approved column mapping
 toggle a study's confidentiality mode with `set_study_confidentiality` —
 `local_only` pins all LLM calls to local providers.
 
-Run the app headless first, then point the MCP server at it:
+The preferred release path is the bundled headless artifact. It includes its
+own Node runtime and wrapper CLI, so users do not need `nvm`, `npx`, a global
+Node install, or a checkout path:
+
+```bash
+./bin/researchdesk init
+./bin/researchdesk server
+./bin/researchdesk config codex
+```
+
+For MCP clients, `researchdesk mcp --with-server` starts a private loopback app
+server for the MCP session and shuts it down when the client exits.
+
+When developing from source, run the app headless first, then point the MCP
+server at it:
 
 ```bash
 npm run build
-export REVIEWER_APP_TOKEN=$(openssl rand -hex 32)   # authenticates /api/*
+export RESEARCHDESK_APP_TOKEN=$(openssl rand -hex 32) # authenticates /api/*
 npm run start:server                                 # binds 127.0.0.1
 ```
 
 See [`docs/MCP.md`](docs/MCP.md) for the headless runbook and the Claude Code /
 Codex registration snippets. The headless server is local-only; keep it on
-loopback and set `REVIEWER_APP_TOKEN` so `/api/*` is authenticated.
+loopback and set `RESEARCHDESK_APP_TOKEN` so `/api/*` is authenticated.
 
 ## Quick Start
 
@@ -304,6 +338,7 @@ npm run dev
 npm run build
 npm run start:server   # headless production server bound to 127.0.0.1
 npm run mcp            # MCP stdio server (bridges to a running app)
+npm run headless:bundle
 npm run typecheck
 npm run lint
 npm test
@@ -312,8 +347,9 @@ npm run desktop:dist:win
 
 ## Data
 
-SQLite data and markdown exports are stored under `REVIEWER_DATA_DIR`, defaulting
-to `./data`.
+SQLite data and markdown exports are stored under `RESEARCHDESK_DATA_DIR`,
+defaulting to `./data` from source. The legacy `REVIEWER_DATA_DIR` name is still
+accepted.
 
 ## Security
 

@@ -30,7 +30,7 @@ export const settingsSections: SettingsSection[] = [
     fields: [
       {
         label: "Data directory",
-        placeholder: "Set REVIEWER_DATA_DIR (default ./data)",
+        placeholder: "Set RESEARCHDESK_DATA_DIR (default ./data)",
       },
     ],
   },

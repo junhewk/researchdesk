@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
   getLocalApiToken,
-  LOCAL_API_TOKEN_HEADER,
+  LOCAL_API_TOKEN_HEADERS,
 } from "@/lib/localApiAuth";
 
 export function proxy(request: NextRequest) {
@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (request.headers.get(LOCAL_API_TOKEN_HEADER) === token) {
+  if (LOCAL_API_TOKEN_HEADERS.some((header) => request.headers.get(header) === token)) {
     return NextResponse.next();
   }
 

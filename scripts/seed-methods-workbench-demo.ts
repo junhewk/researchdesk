@@ -7,7 +7,9 @@ import { seedMethodsWorkbenchDemo } from "@/server/methodsDemoSeed";
 
 const result = seedMethodsWorkbenchDemo();
 const base =
-  process.env.REVIEWER_API_URL || `http://localhost:${process.env.PORT || 3871}`;
+  process.env.RESEARCHDESK_API_URL ||
+  process.env.REVIEWER_API_URL ||
+  `http://localhost:${process.env.PORT || 3871}`;
 
 console.log(
   `\n${result.created ? "Seeded" : "Reused"} Methods Workbench demo fixture.`,

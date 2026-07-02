@@ -122,7 +122,7 @@ async function searchOpenAlex(
   if (yearTo) filters.push(`to_publication_date:${yearTo}-12-31`);
   if (filters.length) params.set("filter", filters.join(","));
 
-  const mailto = process.env.OPENALEX_EMAIL || "reviewer-agent@localhost";
+  const mailto = process.env.OPENALEX_EMAIL || "researchdesk@localhost";
   params.set("mailto", mailto);
 
   try {
@@ -196,7 +196,7 @@ async function fetchCrossrefWork(doi: string): Promise<ArticleValidationResult |
     const res = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "User-Agent": "reviewer-agent/1.0",
+        "User-Agent": "researchdesk/1.0",
       },
     });
     if (res.status === 404) {
@@ -241,7 +241,7 @@ async function fetchCrossrefWork(doi: string): Promise<ArticleValidationResult |
 }
 
 async function fetchOpenAlexWorkByDoi(doi: string): Promise<ArticleValidationResult | null> {
-  const mailto = process.env.OPENALEX_EMAIL || "reviewer-agent@localhost";
+  const mailto = process.env.OPENALEX_EMAIL || "researchdesk@localhost";
   const url = `https://api.openalex.org/works/doi:${encodeURIComponent(doi)}?mailto=${encodeURIComponent(mailto)}`;
   try {
     const res = await fetch(url, { headers: { Accept: "application/json" } });

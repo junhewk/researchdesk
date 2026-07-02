@@ -19,7 +19,7 @@ npm run lint         # ESLint
 
 Note: `npm run dev` uses webpack on purpose. In this repo, Next.js 16.2.4 + Turbopack dev intermittently fails to register nested App Router API routes like `/api/manuscripts/[id]/commentaries`, which surfaces as false 404s.
 
-Default port is **3871** (chosen to avoid collisions with common 3000/3001). Override with `PORT=xxxx npm run dev`. The agent calls back into the app via `REVIEWER_API_URL`, which defaults to `http://localhost:$PORT`.
+Default port is **3871** (chosen to avoid collisions with common 3000/3001). Override with `PORT=xxxx npm run dev`. The agent calls back into the app via `RESEARCHDESK_API_URL`, which defaults to `http://localhost:$PORT`; legacy `REVIEWER_API_URL` still works.
 
 Note: npm is configured with `omit=dev` — always use `--include=dev` when installing.
 
@@ -53,7 +53,7 @@ local server to `127.0.0.1` and protects `/api/*` with a short-lived app token.
 - FTS5 virtual tables for agent-side full-text search
 - Relations table for basic knowledge graph (entity links)
 - Markdown exports in `data/exports/`
-- Data dir env var: `REVIEWER_DATA_DIR` (not `DATA_DIR`, to avoid conflicts with other projects)
+- Data dir env var: `RESEARCHDESK_DATA_DIR` (legacy `REVIEWER_DATA_DIR` still works; do not use generic `DATA_DIR`, to avoid conflicts with other projects)
 
 **Editor**: CodeMirror 6 with `<!-- deleted / inserted -->` change marker visual decorations — red ink for deletions, green ink for insertions, Fraunces italic arrow as separator
 

@@ -2,16 +2,7 @@ import path from "path";
 import fs from "fs";
 import { runMigrations } from "./migrate";
 import { AppDatabase } from "./sqlite";
-
-function resolveDataDir(): string {
-  if (process.env.REVIEWER_DATA_DIR) {
-    return path.resolve(process.env.REVIEWER_DATA_DIR);
-  }
-
-  return path.resolve(
-    path.join(/* turbopackIgnore: true */ process.cwd(), "data"),
-  );
-}
+import { resolveDataDir } from "../lib/dataDir";
 
 const globalKey = "__REVIEWER_AGENT_DB__" as const;
 const g = globalThis as unknown as Record<string, AppDatabase | undefined>;
