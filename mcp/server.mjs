@@ -398,12 +398,26 @@ tool(
         .string()
         .optional()
         .describe("a freeform drafting instruction to wrap with the grounding"),
+      provider: z
+        .enum(API_PROVIDERS)
+        .optional()
+        .describe("AI provider to generate the harness; required for local_only studies"),
+      model: z.string().optional().describe("optional provider model override"),
+      api_key: z.string().optional().describe("optional API key override"),
+      base_url: z.string().optional().describe("optional provider base URL override"),
+      timeout_ms: z
+        .number()
+        .int()
+        .positive()
+        .max(600000)
+        .optional()
+        .describe("optional generation timeout in milliseconds"),
     },
   },
-  async ({ study_id, sections, task }) => {
+  async ({ study_id, sections, task, provider, model, api_key, base_url, timeout_ms }) => {
     const data = await apiJson(`/api/studies/${study_id}/drafting-prompts`, {
       method: "POST",
-      body: { sections, task },
+      body: { sections, task, provider, model, api_key, base_url, timeout_ms },
     });
     // Lead with the ready-to-use file/prompt; include the structured forms after.
     const primary = data.freeformPrompt || data.agentsMd;

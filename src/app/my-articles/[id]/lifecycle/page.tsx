@@ -273,6 +273,7 @@ export default async function LifecyclePage({
   const journey = buildJourney(manuscript, commentaries, revisions);
   const versions = buildVersions(manuscript, revisionTables);
   const completed = manuscript.status === "completed";
+  const projectId = manuscript.study_id ?? id;
 
   return (
     <div className="reveal">
@@ -280,10 +281,10 @@ export default async function LifecyclePage({
       <header className="mb-8 border-b border-[color:var(--color-outline-variant)] pb-6">
         <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
           <Link
-            href={`/my-articles/${id}/workspace`}
+            href={`/projects/${projectId}/article`}
             className="text-[12px] text-[color:var(--color-on-surface-variant)] underline-offset-4 hover:text-[color:var(--color-on-surface)] hover:underline"
           >
-            &larr; Workspace
+            &larr; Article stage
           </Link>
           <h1
             className="font-display text-[28px] font-bold tracking-tight text-[color:var(--color-on-surface)]"
@@ -295,7 +296,7 @@ export default async function LifecyclePage({
             {manuscript.title}
           </p>
           <Link
-            href={`/my-articles/${id}/upload-revision`}
+            href={`/projects/${projectId}/upload-revision`}
             className="ml-auto inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] text-[color:var(--color-on-surface)] hover:border-[color:var(--color-outline)] transition-colors"
           >
             Upload revision &rarr;

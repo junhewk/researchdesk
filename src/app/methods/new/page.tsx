@@ -115,8 +115,8 @@ export default function NewStudyPage() {
       const study = body as { id: string };
       router.push(
         mode === "scoping_review"
-          ? `/methods-workbench/${study.id}/corpus`
-          : `/methods-workbench/${study.id}`,
+          ? `/projects/${study.id}/corpus`
+          : `/projects/${study.id}/setup`,
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "error");
@@ -130,11 +130,11 @@ export default function NewStudyPage() {
         className="font-display text-[36px] leading-none tracking-tight mb-2"
         style={{ fontVariationSettings: "'opsz' 72, 'wght' 400" }}
       >
-        Start a study design
+        Start research setup
       </h1>
       <p className="mb-10 text-[14px] text-[color:var(--color-on-surface-variant)]">
-        A few questions to set up the right decision canvas. You can refine
-        everything later — nothing here is locked in.
+        A few questions set up the right decision canvas for this research
+        project. You can refine everything later.
       </p>
 
       <InputReadinessPanel
@@ -213,7 +213,7 @@ export default function NewStudyPage() {
         onClick={create}
         className="px-5 py-2 text-[13px] font-mono uppercase tracking-wide border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-surface)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
-        {busy ? "Creating…" : "Build the canvas →"}
+        {busy ? "Creating…" : "Build setup canvas →"}
       </button>
     </div>
   );

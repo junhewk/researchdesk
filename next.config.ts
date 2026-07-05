@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingExcludes: {
+    "/*": [
+      "./dist/**/*",
+      "./.release/**/*",
+      "./.git/**/*",
+      "./.next/cache/**/*",
+    ],
+  },
   async redirects() {
     return [
       {

@@ -11,6 +11,6 @@ export default async function StudyPage({
 }) {
   const { id } = await params;
   const study = getStudy(id);
-  if (!study) redirect("/methods-workbench/studies");
+  if (!study) redirect("/projects");
   return <StudyWorkspace studyId={id} initialStudy={study} />;
 }

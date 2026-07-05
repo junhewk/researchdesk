@@ -72,8 +72,8 @@ export function WorkbenchArticleImportPanel({
           typeof body.links?.workspace === "string"
             ? body.links.workspace
             : typeof body.manuscript?.id === "string"
-              ? `/my-articles/${body.manuscript.id}/workspace`
-              : "/my-articles";
+              ? `/projects/${studyId}/article`
+              : "/projects";
         router.push(workspace);
       } catch (err) {
         setError(err instanceof Error ? err.message : "import failed");
@@ -89,18 +89,18 @@ export function WorkbenchArticleImportPanel({
     >
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="label mb-1">Import from Workbench</h2>
+          <h2 className="label mb-1">Continue from setup</h2>
           <p className="max-w-2xl text-[13px] text-[color:var(--color-on-surface-variant)]">
-            Recommended: create article review from a Methods Workbench study so
-            readiness checks and reviewer response drafting keep the planned
-            methods as source data.
+            Create the article stage from an existing research setup so
+            readiness checks and response drafting keep planned methods as
+            source data.
           </p>
         </div>
         <Link
-          href="/methods-workbench/new"
+          href="/projects/new/setup"
           className="self-start text-[12px] font-mono uppercase text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] sm:self-auto"
         >
-          New Workbench
+          New setup
         </Link>
       </div>
 
@@ -112,16 +112,16 @@ export function WorkbenchArticleImportPanel({
 
       {loading ? (
         <p className="text-[12px] italic text-[color:var(--color-on-surface-variant)]">
-          Loading workbenches...
+          Loading research setups...
         </p>
       ) : options.length === 0 ? (
         <div className="py-5 text-[13px] text-[color:var(--color-on-surface-variant)]">
-          No Workbench studies yet.{" "}
+          No research setups yet.{" "}
           <Link
-            href="/methods-workbench/new"
+            href="/projects/new/setup"
             className="font-medium text-[color:var(--color-primary)] underline-offset-2 hover:underline"
           >
-            Start one first
+            Start setup first
           </Link>
           .
         </div>
@@ -156,7 +156,7 @@ export function WorkbenchArticleImportPanel({
                     {option.manuscript && (
                       <span className="inline-flex items-center gap-1">
                         <FileText className="h-3 w-3" strokeWidth={1.75} />
-                        article review exists
+                        article stage exists
                       </span>
                     )}
                   </div>
@@ -167,7 +167,7 @@ export function WorkbenchArticleImportPanel({
                     href={option.links.workspace}
                     className="inline-flex shrink-0 items-center gap-1.5 self-start rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[12px] font-medium hover:border-[color:var(--color-outline)] transition-colors"
                   >
-                    Open article review
+                    Open article stage
                     <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                   </Link>
                 ) : (
@@ -177,7 +177,7 @@ export function WorkbenchArticleImportPanel({
                     disabled={busy}
                     className="inline-flex shrink-0 items-center gap-1.5 self-start rounded bg-[color:var(--color-primary)] px-3 py-1.5 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
                   >
-                    {busyStudyId === option.study.id ? "Importing..." : "Import to article review"}
+                    {busyStudyId === option.study.id ? "Creating..." : "Create article stage"}
                     <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                   </button>
                 )}

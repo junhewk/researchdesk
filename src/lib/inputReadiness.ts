@@ -230,7 +230,7 @@ export function buildWorkbenchInputs({
         status: searchCount > 0 ? "present" : "missing",
         stage: "corpus",
         actionLabel: "Open corpus",
-        href: `/methods-workbench/${studyId}/corpus`,
+        href: `/projects/${studyId}/corpus`,
       },
       {
         id: "records-csv",
@@ -243,7 +243,7 @@ export function buildWorkbenchInputs({
         status: recordCount > 0 ? "present" : "missing",
         stage: "corpus",
         actionLabel: "Open corpus",
-        href: `/methods-workbench/${studyId}/corpus`,
+        href: `/projects/${studyId}/corpus`,
       },
       {
         id: "screening-confirmation",
@@ -263,7 +263,7 @@ export function buildWorkbenchInputs({
               : "present",
         stage: "corpus",
         actionLabel: "Review screening",
-        href: `/methods-workbench/${studyId}/corpus`,
+        href: `/projects/${studyId}/corpus`,
       },
     );
   }
@@ -413,6 +413,7 @@ export function buildReviewInputs(args: {
   const hasAnyAsset = assets.length > 0;
   const hasMethods = Boolean(manuscript.study_id);
   const hasPriorReviewMaterial = commentaries.length > 0;
+  const projectId = manuscript.study_id ?? manuscript.id;
 
   return [
     {
@@ -477,7 +478,7 @@ export function buildReviewInputs(args: {
       status: hasAnyAsset ? "present" : "missing",
       stage: "context",
       actionLabel: "Upload revision",
-      href: `/my-articles/${manuscript.id}/upload-revision`,
+      href: `/projects/${projectId}/upload-revision`,
     },
     {
       id: "mentioned-assets",
@@ -492,7 +493,7 @@ export function buildReviewInputs(args: {
       actionLabel: missingMentioned.length > 0 ? "Upload files" : undefined,
       href:
         missingMentioned.length > 0
-          ? `/my-articles/${manuscript.id}/upload-revision`
+          ? `/projects/${projectId}/upload-revision`
           : undefined,
     },
     {
@@ -505,7 +506,7 @@ export function buildReviewInputs(args: {
       status: hasPriorReviewMaterial ? "present" : "missing",
       stage: "context",
       actionLabel: "Upload material",
-      href: `/my-articles/${manuscript.id}/upload-revision`,
+      href: `/projects/${projectId}/upload-revision`,
     },
   ];
 }

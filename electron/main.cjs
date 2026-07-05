@@ -1,6 +1,7 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 const { randomBytes } = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { app, BrowserWindow, shell } = require("electron");
@@ -22,16 +23,60 @@ function getLocalApiToken() {
   return process.env.RESEARCHDESK_APP_TOKEN || process.env.REVIEWER_APP_TOKEN;
 }
 
+function dataDirHasUserData(dir) {
+  const dbPath = path.join(dir, "reviewer.db");
+  if (!fs.existsSync(dbPath)) return false;
+
+  let db = null;
+  try {
+    const sqlite = process.getBuiltinModule?.("node:sqlite");
+    if (!sqlite?.DatabaseSync) {
+      return fs.statSync(dbPath).size > 32 * 1024;
+    }
+
+    db = new sqlite.DatabaseSync(dbPath, { readOnly: true });
+    const hasTable = (table) => {
+      const row = db
+        .prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name = ?")
+        .get(table);
+      return Number(row?.count ?? 0) > 0;
+    };
+    const countRows = (table) => {
+      if (!hasTable(table)) return 0;
+      const row = db.prepare(`SELECT COUNT(*) AS count FROM ${table}`).get();
+      return Number(row?.count ?? 0);
+    };
+
+    return countRows("studies") + countRows("manuscripts") > 0;
+  } catch {
+    try {
+      return fs.statSync(dbPath).size > 32 * 1024;
+    } catch {
+      return false;
+    }
+  } finally {
+    db?.close();
+  }
+}
+
 function chooseDesktopDataDir() {
   const configured =
     process.env.RESEARCHDESK_DATA_DIR || process.env.REVIEWER_DATA_DIR;
   if (configured) return configured;
 
   const appData = app.getPath("appData");
-  const current = path.join(appData, "ResearchDesk", "data");
-  const legacy = path.join(appData, "Reviewer Agent", "data");
-  if (fs.existsSync(legacy) && !fs.existsSync(current)) return legacy;
-  return current;
+  const candidates = [
+    path.join(appData, "ResearchDesk", "data"),
+    path.join(appData, "reviewer-agent-desktop", "data"),
+    path.join(appData, "researchdesk", "data"),
+    path.join(appData, "Reviewer Agent", "data"),
+  ];
+
+  for (const candidate of candidates) {
+    if (dataDirHasUserData(candidate)) return candidate;
+  }
+
+  return candidates[0];
 }
 
 function ensureDesktopEnv() {
@@ -113,6 +158,11 @@ function installLocalApiHeader(win, appUrl) {
 
 async function startNextServer() {
   const root = appRoot();
+  const standaloneServer = path.join(root, "server.js");
+  if (fs.existsSync(standaloneServer)) {
+    return startStandaloneNextServer(root, standaloneServer);
+  }
+
   const next = require("next");
   const nextApp = next({ dev: false, dir: root, hostname: "127.0.0.1" });
   const handler = nextApp.getRequestHandler();
@@ -131,6 +181,139 @@ async function startNextServer() {
     throw new Error("could not bind local Next server");
   }
   return `http://127.0.0.1:${address.port}`;
+}
+
+function listenOnRandomPort(hostname = "127.0.0.1") {
+  return new Promise((resolve, reject) => {
+    const probe = http.createServer();
+    probe.once("error", reject);
+    probe.listen(0, hostname, () => {
+      const address = probe.address();
+      probe.close(() => {
+        if (!address || typeof address === "string") {
+          reject(new Error("could not allocate local port"));
+          return;
+        }
+        resolve(address.port);
+      });
+    });
+  });
+}
+
+function waitForHttp(url, timeoutMs = 30_000) {
+  const started = Date.now();
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      const req = http.get(url, (res) => {
+        res.resume();
+        resolve();
+      });
+      req.on("error", (err) => {
+        if (Date.now() - started > timeoutMs) {
+          reject(err);
+          return;
+        }
+        setTimeout(check, 250);
+      });
+      req.setTimeout(2_000, () => {
+        req.destroy(new Error("timeout waiting for standalone server"));
+      });
+    };
+    check();
+  });
+}
+
+function proxyToStandalone(innerPort) {
+  server = http.createServer((req, res) => {
+    if (rejectUnauthorizedApiRequest(req, res)) return;
+    const proxyReq = http.request(
+      {
+        hostname: "127.0.0.1",
+        port: innerPort,
+        path: req.url || "/",
+        method: req.method,
+        headers: {
+          ...req.headers,
+          host: `127.0.0.1:${innerPort}`,
+        },
+      },
+      (proxyRes) => {
+        res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
+        proxyRes.pipe(res);
+      },
+    );
+    proxyReq.on("error", (err) => {
+      res.writeHead(502, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end(err.message);
+    });
+    req.pipe(proxyReq);
+  });
+  return new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("could not bind local proxy"));
+        return;
+      }
+      resolve(`http://127.0.0.1:${address.port}`);
+    });
+  });
+}
+
+async function startStandaloneNextServer(root, serverScript) {
+  const innerPort = await listenOnRandomPort();
+  const serverEntry = pathToFileURL(serverScript).href;
+  const childCwd = root.includes(".asar") ? path.dirname(root) : root;
+  const childBootstrap = `
+const originalChdir = process.chdir.bind(process);
+process.chdir = (dir) => {
+  if (typeof dir === "string" && /(^|[\\\\/])[^\\\\/]+\\.asar([\\\\/]|$)/.test(dir)) return;
+  return originalChdir(dir);
+};
+try {
+  await import(${JSON.stringify(serverEntry)});
+} finally {
+  process.chdir = originalChdir;
+}
+`;
+  const child = spawn(process.execPath, [
+    "--input-type=module",
+    "-e",
+    childBootstrap,
+  ], {
+    cwd: childCwd,
+    env: {
+      ...process.env,
+      ELECTRON_RUN_AS_NODE: "1",
+      NODE_ENV: "production",
+      PORT: String(innerPort),
+      HOSTNAME: "127.0.0.1",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  serverProcess = child;
+  child.stdout.setEncoding("utf8");
+  child.stdout.on("data", (chunk) => process.stdout.write(chunk));
+  child.stderr.setEncoding("utf8");
+  child.stderr.on("data", (chunk) => process.stderr.write(chunk));
+  child.once("exit", (code, signal) => {
+    if (serverProcess === child) serverProcess = null;
+    if (server) {
+      server.close();
+      server = null;
+    }
+    if (code !== 0 || signal) {
+      console.error(`Standalone Next server exited (${signal || code})`);
+    }
+  });
+  child.once("error", (err) => {
+    if (serverProcess === child) serverProcess = null;
+    console.error(err);
+  });
+
+  await waitForHttp(`http://127.0.0.1:${innerPort}/`);
+  return proxyToStandalone(innerPort);
 }
 
 function startNodeNextServer() {

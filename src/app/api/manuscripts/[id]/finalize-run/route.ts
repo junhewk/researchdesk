@@ -12,8 +12,8 @@ Run the final-submission pass for this revision round. Inspect every editor/revi
  * Kick off the agent's finalize pass for a manuscript.
  *
  * Single click from the lifecycle Finalize button: get-or-create the
- * continuing manuscript session, send a /finalize message, and return
- * the session id so the caller can redirect into the workspace to watch.
+ * continuing manuscript session, send the internal finalize instruction,
+ * and return the session id for status tracking.
  */
 export async function POST(
   request: NextRequest,
@@ -41,15 +41,13 @@ export async function POST(
     );
   }
 
-  // Dispatch the /finalize message in the background; the supervisor will
-  // boot the agent process if it isn't running. The caller redirects to
-  // the workspace before the agent has actually finished — that's by design.
+  // Dispatch in the background; the supervisor will boot the agent process
+  // if it isn't running.
   const apiBaseUrl = request.nextUrl.origin;
   void getSupervisor()
     .sendMessage(session.id, FINALIZE_PROMPT, { apiBaseUrl })
     .catch(() => {
-      // Errors flow back through the supervisor's event stream; nothing
-      // to do here. The workspace SessionStream surfaces them.
+      // Status is available from the internal session record.
     });
 
   return NextResponse.json({ session_id: session.id });

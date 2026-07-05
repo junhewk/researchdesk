@@ -1,1 +1,5 @@
-export { default } from "../manuscripts/page";
+import { redirect } from "next/navigation";
+
+export default function OldMyArticlesPage() {
+  redirect("/projects");
+}

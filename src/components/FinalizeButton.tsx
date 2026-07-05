@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 interface FinalizeButtonProps {
@@ -13,14 +12,14 @@ interface FinalizeButtonProps {
  * Single button that:
  *  1. Asks the user to confirm (inline expand, no modal library)
  *  2. POSTs to /api/manuscripts/[id]/finalize-run to dispatch the
- *     agent's /finalize pass on the continuing manuscript thread
- *  3. Redirects to the workspace so the user can watch the agent work
+ *     final submission pass
+ *  3. Reports dispatch status in place
  */
 export function FinalizeButton({ manuscriptId, enabled }: FinalizeButtonProps) {
-  const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (!confirming) return;
@@ -34,6 +33,7 @@ export function FinalizeButton({ manuscriptId, enabled }: FinalizeButtonProps) {
   const run = useCallback(async () => {
     setRunning(true);
     setError(null);
+    setNotice(null);
     try {
       const res = await fetch(
         `/api/manuscripts/${manuscriptId}/finalize-run`,
@@ -43,15 +43,17 @@ export function FinalizeButton({ manuscriptId, enabled }: FinalizeButtonProps) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `HTTP ${res.status}`);
       }
-      const data = (await res.json()) as { session_id: string };
-      router.push(
-        `/my-articles/${manuscriptId}/workspace?session=${data.session_id}`,
+      await res.json().catch(() => ({}));
+      setConfirming(false);
+      setNotice(
+        "Finalize pass started. Refresh this page to see final files after it finishes.",
       );
+      setRunning(false);
     } catch (err) {
       setRunning(false);
       setError(err instanceof Error ? err.message : "Failed to start finalize");
     }
-  }, [manuscriptId, router]);
+  }, [manuscriptId]);
 
   if (confirming) {
     return (
@@ -108,7 +110,10 @@ export function FinalizeButton({ manuscriptId, enabled }: FinalizeButtonProps) {
     <>
       <button
         type="button"
-        onClick={() => setConfirming(true)}
+        onClick={() => {
+          setNotice(null);
+          setConfirming(true);
+        }}
         disabled={!enabled}
         className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded px-4 py-2.5 text-[14px] font-semibold transition-colors ${
           enabled
@@ -122,6 +127,11 @@ export function FinalizeButton({ manuscriptId, enabled }: FinalizeButtonProps) {
       {error && (
         <p className="mt-2 text-[11px] text-[color:var(--color-on-primary)]">
           {error}
+        </p>
+      )}
+      {notice && (
+        <p className="mt-2 text-[11px] text-[color:var(--color-on-primary)]">
+          {notice}
         </p>
       )}
     </>

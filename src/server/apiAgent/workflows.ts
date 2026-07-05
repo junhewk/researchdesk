@@ -28,6 +28,13 @@ import { parseValue } from "@/server/methods/preflight";
 import { sanitizeProposalFields } from "@/server/methods/proposals";
 import { searchCommentaries, searchReviews } from "@/server/search";
 import { buildGroundingPack } from "@/server/reviewGrounding";
+import {
+  compileStudyDraftingPrompts,
+  defaultSections,
+  renderGroundingPack as renderStudyDraftGroundingPack,
+  type ArticleHarnessOutput,
+  type DraftTask,
+} from "@/server/methods/studyDraftingPrompts";
 import type { EvidenceItemKind, ReviewCategory, Severity } from "@/server/types";
 import { runStructured, truncateForPrompt } from "./structuredRunner";
 import type { ApiAgentConfig } from "./providers";
@@ -294,6 +301,138 @@ const EvidenceExtractionSchema = z.object({
   })).default([]),
   summary_md: z.string().min(1),
 });
+
+const ArticleHarnessSchema = z.object({
+  summary_md: z.string().min(1),
+  methodology: z.string().min(1).default("Guideline + IMRaD + agent workflow"),
+  combined_prompt_md: z.string().min(1),
+  section_prompts: z.object({
+    outline: z.string().optional().nullable().default(null),
+    introduction: z.string().optional().nullable().default(null),
+    methodology: z.string().optional().nullable().default(null),
+    results: z.string().optional().nullable().default(null),
+    discussion: z.string().optional().nullable().default(null),
+    abstract: z.string().optional().nullable().default(null),
+  }).default({
+    outline: null,
+    introduction: null,
+    methodology: null,
+    results: null,
+    discussion: null,
+    abstract: null,
+  }),
+  freeform_prompt_md: z.string().optional().nullable().default(null),
+  quality_warnings: z.array(z.string().min(1)).default([]),
+  unresolved_questions: z.array(z.string().min(1)).default([]),
+});
+
+function validateArticleHarness(
+  harness: z.infer<typeof ArticleHarnessSchema>,
+  sections: DraftTask[],
+  needsFreeform: boolean,
+): void {
+  const missing = sections.filter((section) => {
+    const value = harness.section_prompts?.[section];
+    return typeof value !== "string" || value.trim().length === 0;
+  });
+  if (missing.length > 0) {
+    throw new Error(`article harness missing section prompts: ${missing.join(", ")}`);
+  }
+  if (
+    needsFreeform &&
+    (typeof harness.freeform_prompt_md !== "string" ||
+      harness.freeform_prompt_md.trim().length === 0)
+  ) {
+    throw new Error("article harness missing freeform prompt");
+  }
+}
+
+function toArticleHarnessOutput(
+  harness: z.infer<typeof ArticleHarnessSchema>,
+  sections: DraftTask[],
+): ArticleHarnessOutput {
+  const taskPrompts: Partial<Record<DraftTask, string>> = {};
+  for (const section of sections) {
+    const value = harness.section_prompts?.[section];
+    if (typeof value === "string" && value.trim()) {
+      taskPrompts[section] = value.trim();
+    }
+  }
+  return {
+    summaryMd: harness.summary_md.trim(),
+    methodology: harness.methodology.trim(),
+    combinedPrompt: harness.combined_prompt_md.trim(),
+    taskPrompts,
+    freeformPrompt: harness.freeform_prompt_md?.trim() || null,
+    qualityWarnings: harness.quality_warnings.map((w) => w.trim()).filter(Boolean),
+    unresolvedQuestions: harness.unresolved_questions.map((q) => q.trim()).filter(Boolean),
+  };
+}
+
+export async function runArticleHarnessAgent(opts: {
+  studyId: string;
+  sections?: DraftTask[];
+  task?: string | null;
+  config: ApiAgentConfig;
+}): Promise<ArticleHarnessOutput & {
+  sections: DraftTask[];
+  hasDesign: boolean;
+  hasCorpus: boolean;
+}> {
+  const content = compileStudyDraftingPrompts(opts.studyId);
+  const sections =
+    opts.sections && opts.sections.length > 0 ? opts.sections : defaultSections(content.mode);
+  const freeform = opts.task?.trim() || null;
+  const groundingPack = renderStudyDraftGroundingPack(content);
+
+  const result = await runStructured({
+    config: opts.config,
+    schema: ArticleHarnessSchema,
+    schemaName: "ArticleWritingHarness",
+    temperature: 0.2,
+    systemPrompt: [
+      "You create article-writing harnesses for scholarly manuscripts.",
+      "",
+      `- ${CORE_RULES}`,
+      "- You do not write the manuscript prose.",
+      "- You create prompts, section contracts, drafting workflow, quality gates, and author questions.",
+      "- Use a Guideline + IMRaD + agent workflow spine.",
+      "- The app provides the facts. Do not add citations, numbers, claims, outcomes, or interpretations that are not in the grounding pack.",
+      "- Results and discussion prompts must distinguish recorded findings from author interpretations.",
+      "- Prompts must tell the downstream writer to trace claims to the supplied material and ask the author when support is missing.",
+    ].join("\n"),
+    userPrompt: [
+      "Create a tailored article-writing harness from this deterministic grounding pack.",
+      "",
+      `Requested sections: ${sections.join(", ")}`,
+      freeform ? `Freeform task to wrap: ${freeform}` : null,
+      "",
+      "Required output:",
+      "- `combined_prompt_md`: one complete reusable prompt for the requested sections.",
+      "- `section_prompts`: one focused prompt for every requested section.",
+      freeform ? "- `freeform_prompt_md`: one prompt that wraps the freeform task." : null,
+      "- `quality_warnings`: concrete risks in the available material, not generic advice.",
+      "- `unresolved_questions`: author decisions or missing facts required before drafting.",
+      "",
+      "The harness must include:",
+      "- an explicit scan-plan-draft-check workflow",
+      "- IMRaD section contracts adapted to the study mode",
+      "- reporting-guideline/checklist obligations when present",
+      "- claim/evidence trace checks",
+      "- no-invention and author-decision gates",
+      "",
+      truncateForPrompt(groundingPack),
+    ].filter(Boolean).join("\n"),
+  });
+
+  validateArticleHarness(result.parsed, sections, freeform != null);
+  return {
+    ...toArticleHarnessOutput(result.parsed, sections),
+    sections,
+    hasDesign: content.recordedDesign != null,
+    hasCorpus: content.corpusSummary != null,
+  };
+}
 
 /** Mine a free-form evidence snapshot (pasted notes, MDR/RW report without a
  * digest) into structured evidence items. Synchronous structured pass — the

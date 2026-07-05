@@ -171,7 +171,7 @@ export default function NewManuscriptPage() {
       }
       await Promise.all(tasks);
 
-      router.push(`/my-articles/${manuscript.id}`);
+      router.push(`/projects/${manuscript.id}/article`);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to create manuscript",
@@ -183,22 +183,21 @@ export default function NewManuscriptPage() {
   return (
     <div className="reveal mx-auto max-w-2xl">
       <Link
-        href="/my-articles"
+        href="/projects"
         className="text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
       >
-        &larr; My articles
+        &larr; Research Projects
       </Link>
 
       <h1
         className="mt-3 font-display text-[36px] font-bold tracking-tight leading-tight"
         style={{ letterSpacing: "-0.02em" }}
       >
-        New article
+        New article-only project
       </h1>
       <p className="mt-2 mb-8 text-[14px] text-[color:var(--color-on-surface-variant)]">
-        Start from Methods Workbench when you have planned methods. Direct
-        article upload stays available for legacy manuscripts, but it will not
-        carry source-methods data into readiness checks.
+        Upload a written article and review context directly. Use research
+        setup first when you want harness generation and source-methods checks.
       </p>
 
       <WorkbenchArticleImportPanel className="mb-10" />
@@ -210,11 +209,10 @@ export default function NewManuscriptPage() {
       )}
 
       <section id="direct-upload" className="scroll-mt-8">
-        <h2 className="label mb-1">Create directly without Workbench</h2>
+        <h2 className="label mb-1">Article text</h2>
         <p className="mb-6 text-[13px] text-[color:var(--color-on-surface-variant)]">
-          Use this only when the article already exists outside Methods
-          Workbench. The review can still run, but source-method comparisons
-          will be unavailable.
+          Add the written manuscript and any review material. Setup and harness
+          stages stay unavailable for article-only projects.
         </p>
       </section>
 
@@ -328,7 +326,7 @@ export default function NewManuscriptPage() {
           disabled={!canSubmit}
           className="inline-flex items-center justify-center rounded bg-[color:var(--color-primary)] px-5 py-2.5 text-[14px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
         >
-          {submitting ? "Creating…" : "Create manuscript"}
+          {submitting ? "Creating…" : "Create project"}
         </button>
       </form>
     </div>

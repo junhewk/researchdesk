@@ -61,6 +61,16 @@ export interface StudyDraftContent {
   existingDraft: string | null;
 }
 
+export interface ArticleHarnessOutput {
+  summaryMd: string;
+  combinedPrompt: string;
+  taskPrompts: Partial<Record<DraftTask, string>>;
+  freeformPrompt: string | null;
+  qualityWarnings: string[];
+  unresolvedQuestions: string[];
+  methodology: string;
+}
+
 /** Assemble the screened-corpus grounding (PRISMA flow + characteristics +
  * one-line counts) for review modes, or null when the study has no records. */
 function compileCorpusSummary(studyId: string): string | null {
@@ -141,6 +151,19 @@ function groundingBody(c: StudyDraftContent): string {
     );
   }
   return parts.filter((p) => p !== "").join("\n");
+}
+
+/** Deterministic grounding pack for the article-writing harness agent. This is
+ * facts and constraints only; user-facing prompt text must come from the
+ * structured agent pass, not from this aggregate context. */
+export function renderGroundingPack(c: StudyDraftContent): string {
+  return [
+    `# Article-writing grounding pack — ${c.studyTitle}`,
+    "",
+    "This pack is deterministic. Use it as source material only.",
+    "",
+    groundingBody(c),
+  ].join("\n");
 }
 
 const TASK_BLOCKS: Record<DraftTask, string> = {
@@ -250,4 +273,48 @@ export function renderAgentsMd(
 
 export function renderDraftMd(c: StudyDraftContent): string {
   return renderCombined(c);
+}
+
+export function renderGeneratedAgentsMd(
+  c: StudyDraftContent,
+  harness: ArticleHarnessOutput,
+): string {
+  return [
+    "<!-- AGENTS.md — agent-generated article-writing harness.",
+    "The deterministic app layer supplied the grounding pack and validated this",
+    "structured output. Draft from the supplied material only. -->",
+    "",
+    `# Article-writing harness — ${c.studyTitle}`,
+    "",
+    `Methodology: ${harness.methodology}`,
+    "",
+    harness.combinedPrompt.trim(),
+    harness.qualityWarnings.length > 0 ? "\n## Quality warnings\n" : "",
+    ...harness.qualityWarnings.map((w) => `- ${w}`),
+    harness.unresolvedQuestions.length > 0 ? "\n## Questions for the author\n" : "",
+    ...harness.unresolvedQuestions.map((q) => `- ${q}`),
+    "",
+  ].filter((part) => part !== "").join("\n");
+}
+
+export function renderGeneratedDraftMd(
+  c: StudyDraftContent,
+  harness: ArticleHarnessOutput,
+): string {
+  const sectionPrompts = ALL_TASKS
+    .filter((task) => harness.taskPrompts[task])
+    .map((task) => [`## ${TASK_SUMMARY[task]}`, "", harness.taskPrompts[task]!.trim()].join("\n"))
+    .join("\n\n---\n\n");
+  return [
+    `# Article-writing harness — ${c.studyTitle}`,
+    "",
+    harness.summaryMd.trim(),
+    "",
+    "## Full prompt",
+    "",
+    harness.combinedPrompt.trim(),
+    sectionPrompts ? "\n---\n\n# Per-section prompts\n" : "",
+    sectionPrompts,
+    "",
+  ].filter((part) => part !== "").join("\n");
 }

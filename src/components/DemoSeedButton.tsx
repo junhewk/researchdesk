@@ -86,7 +86,7 @@ export function DemoSeedButton() {
       const destination =
         data?.links?.manuscriptWorkspace ??
         (data?.manuscriptId
-          ? `/my-articles/${data.manuscriptId}/workspace?center=peer`
+          ? `/projects/${data.studyId ?? data.manuscriptId}/review?center=peer`
           : "/");
 
       router.push(destination);

@@ -27,9 +27,10 @@ Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 ## Status
 
 This is the `v0.1.3` release of a research-assistance app. The distributed
-desktop binary is the Windows x64 portable `.exe` attached to the `v0.1.3`
-GitHub release. Headless MCP bundles are published separately as
-`ResearchDesk-Headless-*` artifacts.
+desktop artifacts are the Windows x64 portable `.exe` from GitHub Actions and
+the local macOS arm64 build in `dist/mac-arm64/ResearchDesk.app`. Headless MCP
+bundles are published separately as `ResearchDesk-Headless-*` artifacts for
+Linux x64, Windows x64, and macOS arm64.
 
 Use it as an editorial and methods-checking workspace, not as medical, legal,
 regulatory, or statistical advice. Verify all LLM output, citations,
@@ -52,6 +53,17 @@ validated — expect updates and validation for those workflows soon.
   headless artifacts with the app server, MCP bridge, wrapper CLI, and embedded
   Node runtime so users can run MCP without `nvm`, `npx`, global Node, or raw
   checkout paths.
+- **Button-driven article agent UX.** Manuscript review, version creation,
+  readiness, reviewer response, and finalization are launched from explicit
+  workflow buttons instead of a visible chat/composer surface.
+- **Desktop packaging is smaller and runnable.** The macOS arm64 package now
+  stages the Next/Turbopack server runtimes it needs at startup while keeping
+  the packaged app payload near 51 MB.
+- **Research Projects shell.** Bench/setup and article/review records now live
+  under a unified Projects view with Archives and Support routes, preserving
+  existing app-support data paths so previous records continue to appear.
+- **Release workflow no longer targets Intel macOS.** v0.1.3 publishes
+  headless bundles for Linux x64, Windows x64, and macOS arm64 only.
 - **Compatibility preserved.** Existing `REVIEWER_*` environment variables, the
   old `x-reviewer-app-token` header, the `reviewer-agent-mcp` bin alias, and old
   desktop data locations remain supported while new `RESEARCHDESK_*` names are
@@ -156,7 +168,7 @@ Open `Settings` -> `API Providers`.
 
 Set the default provider, model, API key, and base URL. These settings power
 real LLM-backed actions such as manuscript review, readiness checks, reviewer
-responses, and manuscript chat.
+responses, version creation, and finalization.
 
 The Settings page and the Methods Workbench setup panel show a live status for
 every provider — what is reachable, what is missing an API key, and the exact
@@ -221,7 +233,8 @@ The article includes:
 - a structured manuscript draft
 - a `Source methods` link back to the originating Methods study
 - attached Methods artifacts
-- the manuscript chat/workspace for LLM-driven review and editing
+- a review workspace with explicit buttons for review, versioning, readiness,
+  reviewer response, and finalization
 
 ### 6. Run readiness
 
@@ -248,8 +261,8 @@ Upload a decision letter or reviewer reports in the article flow.
 Then use:
 
 - `Reviewer response` to draft point-by-point replies.
-- manuscript chat commands to revise, review, explain, finalize, and continue
-  the draft.
+- `Create new version`, `Run review`, `Readiness`, and `Finalize` buttons to
+  continue the draft through revision and final submission checks.
 
 ### 8. Use the app-level demo
 
@@ -342,6 +355,7 @@ npm run headless:bundle
 npm run typecheck
 npm run lint
 npm test
+npm run desktop:dist      # local macOS arm64 package
 npm run desktop:dist:win
 ```
 

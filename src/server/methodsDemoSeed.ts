@@ -366,12 +366,12 @@ function seedStudy(): Study {
 
 function links(studyId: string): MethodsWorkbenchDemoSeedResult["links"] {
   return {
-    workbenchOverview: `/methods-workbench/${studyId}`,
-    protocolDetail: `/methods-workbench/${studyId}/artifact/protocol`,
-    sapDetail: `/methods-workbench/${studyId}/artifact/sap`,
-    dataDictionary: `/methods-workbench/${studyId}/artifact/data_dictionary`,
-    reportingChecklist: `/methods-workbench/${studyId}/artifact/checklist_map`,
-    prosperoFields: `/methods-workbench/${studyId}/artifact/prospero_fields`,
+    workbenchOverview: `/projects/${studyId}/setup`,
+    protocolDetail: `/projects/${studyId}/artifact/protocol`,
+    sapDetail: `/projects/${studyId}/artifact/sap`,
+    dataDictionary: `/projects/${studyId}/artifact/data_dictionary`,
+    reportingChecklist: `/projects/${studyId}/artifact/checklist_map`,
+    prosperoFields: `/projects/${studyId}/artifact/prospero_fields`,
   };
 }
 

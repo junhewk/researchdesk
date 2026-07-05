@@ -169,10 +169,10 @@ export function ReviewerResponseEditor({
         </span>
         {compiled && (
           <a
-            href={`/my-articles/${manuscriptId}/workspace`}
+            href={`/projects/${manuscriptId}/review`}
             className="text-[12px] underline underline-offset-2"
           >
-            Open the letter in the manuscript workspace →
+            Open the letter in the project review →
           </a>
         )}
         {error && (

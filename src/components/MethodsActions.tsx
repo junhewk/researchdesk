@@ -7,6 +7,7 @@ import { Beaker, ClipboardCheck } from "lucide-react";
 interface Props {
   manuscriptId: string;
   studyId?: string | null;
+  projectId?: string;
 }
 
 interface LetterCommentary {
@@ -18,7 +19,7 @@ interface ManuscriptVersion {
   id: string;
 }
 
-export function MethodsActions({ manuscriptId, studyId }: Props) {
+export function MethodsActions({ manuscriptId, studyId, projectId }: Props) {
   const router = useRouter();
   const [busy, startTransition] = useTransition();
   const [hasDecisionLetter, setHasDecisionLetter] = useState(false);
@@ -85,7 +86,9 @@ export function MethodsActions({ manuscriptId, studyId }: Props) {
         return;
       }
       const created = (await res.json()) as { id: string };
-      router.push(`/methods-workbench/readiness/${created.id}`);
+      router.push(
+        `/projects/${projectId ?? studyId ?? manuscriptId}/review/readiness/${created.id}`,
+      );
     });
   };
 
@@ -112,7 +115,9 @@ export function MethodsActions({ manuscriptId, studyId }: Props) {
         return;
       }
       const created = (await res.json()) as { id: string };
-      router.push(`/methods-workbench/reviewer-responses/${created.id}`);
+      router.push(
+        `/projects/${projectId ?? studyId ?? manuscriptId}/review/reviewer-responses/${created.id}`,
+      );
     });
   };
 

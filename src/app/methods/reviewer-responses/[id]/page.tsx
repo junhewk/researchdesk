@@ -17,21 +17,22 @@ export default async function ReviewerResponsePage({
 }) {
   const { id } = await params;
   const response = getReviewerResponse(id);
-  if (!response) redirect("/methods-workbench/reviewer-responses");
+  if (!response) redirect("/projects");
   const manuscript = getManuscript(response.manuscript_id);
+  const projectId = manuscript?.study_id ?? manuscript?.id;
   const items = listResponseItems(id);
 
   return (
     <div className="reveal mx-auto max-w-4xl">
       <Link
         href={
-          manuscript
-            ? `/my-articles/${manuscript.id}/workspace`
-            : "/methods-workbench"
+          projectId
+            ? `/projects/${projectId}/review`
+            : "/projects"
         }
         className="text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
       >
-        &larr; {manuscript?.title ?? "Methods Workbench"}
+        &larr; {manuscript?.title ?? "Research Projects"}
       </Link>
 
       <header className="mt-3 mb-6">

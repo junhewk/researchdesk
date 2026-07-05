@@ -6,5 +6,5 @@ export default async function LegacyReviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  redirect(`/my-articles/${id}/workspace?center=findings`);
+  redirect(`/projects/${id}/review?center=findings`);
 }

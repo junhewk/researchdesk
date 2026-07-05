@@ -2,31 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStudy } from "@/server/studies";
 import {
   compileStudyDraftingPrompts,
-  renderCombined,
-  renderTask,
-  renderFreeform,
-  renderAgentsMd,
-  renderDraftMd,
-  defaultSections,
+  renderGeneratedAgentsMd,
+  renderGeneratedDraftMd,
   ALL_TASKS,
   type DraftTask,
 } from "@/server/methods/studyDraftingPrompts";
 import { exportStudyDraftingPrompts } from "@/server/methods/studyExport";
+import {
+  apiAgentRequestSchema,
+  providerFieldWasProvided,
+  requireLocalApiProvider,
+  resolveApiProvider,
+} from "@/server/apiAgent/providers";
+import { runArticleHarnessAgent } from "@/server/apiAgent/workflows";
+import { classifyAgentError } from "@/server/providerHealth";
 
-// Compile drafting prompts from a study's recorded design (and screened corpus,
-// for review modes), dual-write the AGENTS.md / drafting-prompts.md files, and
-// return the prompt forms for the UI and the MCP server.
+// Generate article-writing prompts from a deterministic grounding pack with a
+// structured LLM pass. The old aggregate deterministic prompt is intentionally
+// not a fallback: if the provider cannot create a valid harness, the caller gets
+// an actionable provider error and can retry.
 //
 // Optional JSON body:
 //   { sections?: DraftTask[];  // subset of outline/introduction/methodology/
 //                              // results/discussion/abstract (default: per-mode)
-//     task?: string }          // a freeform instruction to wrap with the grounding
+//     task?: string,           // a freeform instruction to wrap with the grounding
+//     provider/model/api_key/base_url/timeout_ms?: ... }
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  if (!getStudy(id)) {
+  const study = getStudy(id);
+  if (!study) {
     return NextResponse.json({ error: "study not found" }, { status: 404 });
   }
 
@@ -34,6 +41,10 @@ export async function POST(
     sections?: unknown;
     task?: unknown;
   };
+  const parsed = apiAgentRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
 
   const requested = Array.isArray(body.sections)
     ? (body.sections.filter(
@@ -41,28 +52,61 @@ export async function POST(
       ) as DraftTask[])
     : null;
 
-  const content = compileStudyDraftingPrompts(id);
-  const sections =
-    requested && requested.length > 0 ? requested : defaultSections(content.mode);
   const freeform =
     typeof body.task === "string" && body.task.trim() ? body.task : null;
+  let provider = resolveApiProvider(
+    parsed.data.provider,
+    providerFieldWasProvided(body),
+  );
+  if (study.confidentiality_mode === "local_only") {
+    const local = requireLocalApiProvider(
+      parsed.data.provider,
+      providerFieldWasProvided(body),
+    );
+    if (local.error || !local.provider) {
+      return NextResponse.json({ error: local.error }, { status: 400 });
+    }
+    provider = local.provider;
+  }
 
-  // Dual-write reflects the default per-mode brief, independent of the request.
-  exportStudyDraftingPrompts(id, {
-    agentsMd: renderAgentsMd(content),
-    draftMd: renderDraftMd(content),
-  });
+  try {
+    const harness = await runArticleHarnessAgent({
+      studyId: id,
+      sections: requested ?? undefined,
+      task: freeform,
+      config: {
+        provider,
+        model: parsed.data.model,
+        apiKey: parsed.data.api_key,
+        baseUrl: parsed.data.base_url,
+        timeoutMs: parsed.data.timeout_ms,
+        maxToolSteps: parsed.data.max_tool_steps,
+      },
+    });
+    const content = compileStudyDraftingPrompts(id);
+    const agentsMd = renderGeneratedAgentsMd(content, harness);
+    const draftMd = renderGeneratedDraftMd(content, harness);
+    exportStudyDraftingPrompts(id, { agentsMd, draftMd });
 
-  const taskPrompts: Partial<Record<DraftTask, string>> = {};
-  for (const s of sections) taskPrompts[s] = renderTask(content, s);
-
-  return NextResponse.json({
-    sections,
-    combinedPrompt: renderCombined(content, sections),
-    taskPrompts,
-    agentsMd: renderAgentsMd(content, sections),
-    freeformPrompt: freeform ? renderFreeform(content, freeform) : null,
-    hasDesign: content.recordedDesign != null,
-    hasCorpus: content.corpusSummary != null,
-  });
+    return NextResponse.json({
+      source: "agent",
+      harnessVersion: 1,
+      methodology: harness.methodology,
+      sections: harness.sections,
+      combinedPrompt: harness.combinedPrompt,
+      taskPrompts: harness.taskPrompts,
+      agentsMd,
+      freeformPrompt: harness.freeformPrompt,
+      qualityWarnings: harness.qualityWarnings,
+      unresolvedQuestions: harness.unresolvedQuestions,
+      hasDesign: harness.hasDesign,
+      hasCorpus: harness.hasCorpus,
+    });
+  } catch (err) {
+    const classified = classifyAgentError(err, provider);
+    return NextResponse.json(
+      { error: classified.message, error_code: classified.code, fix: classified.fix },
+      { status: 400 },
+    );
+  }
 }

@@ -22,11 +22,9 @@ type ManuscriptInputPatch = Partial<
 export function ReviewInputPanel({
   manuscript,
   onManuscriptChange,
-  onAgentScan,
 }: {
   manuscript: Manuscript;
   onManuscriptChange: (manuscript: Manuscript) => void;
-  onAgentScan: () => void;
 }) {
   const [assets, setAssets] = useState<ManuscriptAssetSummary[]>([]);
   const [commentaries, setCommentaries] = useState<Commentary[]>([]);
@@ -89,8 +87,6 @@ export function ReviewInputPanel({
         description="Required items support the review run; recommended and suggested items improve grounding."
         items={items}
         onItemAction={handleItemAction}
-        onAgentScan={onAgentScan}
-        agentScanLabel="Prepare agent scan"
       />
 
       <EditableFieldSection

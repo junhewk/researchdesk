@@ -9,22 +9,14 @@ const dashboardWorkspace: WorkspaceDefinition = {
   matchPrefix: false,
 };
 
-const myArticlesWorkspace: WorkspaceDefinition = {
-  id: "myArticles",
-  label: "My Articles",
-  href: "/my-articles",
-  icon: "myArticles",
-};
-
-const methodsWorkbenchWorkspace: WorkspaceDefinition = {
-  id: "methodsWorkbench",
-  label: "Methods Workbench",
-  href: "/methods-workbench",
-  icon: "methodsWorkbench",
+const researchProjectsWorkspace: WorkspaceDefinition = {
+  id: "researchProjects",
+  label: "Research Projects",
+  href: "/projects",
+  icon: "researchProjects",
 };
 
 export const workspaceRegistry: WorkspaceDefinition[] = [
   dashboardWorkspace,
-  methodsWorkbenchWorkspace,
-  myArticlesWorkspace,
+  researchProjectsWorkspace,
 ];

@@ -28,10 +28,10 @@ export default function MethodsWorkbenchReadinessPage() {
   return (
     <div className="reveal max-w-4xl">
       <Link
-        href="/methods-workbench"
+        href="/projects"
         className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
       >
-        &larr; Methods Workbench
+        &larr; Research Projects
       </Link>
       <h1
         className="mt-3 font-display text-[42px] leading-none tracking-tight"
@@ -50,7 +50,10 @@ export default function MethodsWorkbenchReadinessPage() {
         <ul className="mt-10 divide-y divide-[color:var(--color-outline-variant)] border-t border-[color:var(--color-outline-variant)]">
           {rows.map((row) => (
             <li key={row.id}>
-              <Link href={`/methods-workbench/readiness/${row.id}`} className="block py-5 group">
+              <Link
+                href={`/projects/${row.study_id ?? row.manuscript_id}/review/readiness/${row.id}`}
+                className="block py-5 group"
+              >
                 <div className="flex items-baseline gap-6">
                   <h2
                     className="font-display text-[22px] leading-tight flex-1 group-hover:text-[color:var(--color-primary)] transition-colors"

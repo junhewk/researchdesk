@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Copy, Check, Download, X } from "lucide-react";
+import type { Provider } from "@/server/types";
 
 type DraftTask =
   | "outline"
@@ -14,10 +15,17 @@ type DraftTask =
 type TaskPrompts = Partial<Record<DraftTask, string>>;
 
 interface DraftResponse {
+  source: "agent";
+  harnessVersion: number;
+  methodology: string;
+  sections: DraftTask[];
   combinedPrompt: string;
   taskPrompts: TaskPrompts;
   hasDesign: boolean;
   hasCorpus?: boolean;
+  qualityWarnings?: string[];
+  unresolvedQuestions?: string[];
+  freeformPrompt?: string | null;
 }
 
 const TASK_LABEL: Record<DraftTask, string> = {
@@ -31,40 +39,50 @@ const TASK_LABEL: Record<DraftTask, string> = {
 
 export function StudyDraftingPromptsPanel({
   studyId,
+  provider,
   onClose,
+  embedded = false,
 }: {
   studyId: string;
-  onClose: () => void;
+  provider: Provider | null;
+  onClose?: () => void;
+  embedded?: boolean;
 }) {
   const [data, setData] = useState<DraftResponse | null>(null);
-  const [busy, setBusy] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fix, setFix] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
-  // Compile on open — the prompts are a pure projection of the recorded design.
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      try {
-        const res = await fetch(`/api/studies/${studyId}/drafting-prompts`, {
-          method: "POST",
-        });
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          if (!cancelled) setError(body.error || `failed (${res.status})`);
-          return;
-        }
-        if (!cancelled) setData((await res.json()) as DraftResponse);
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "failed");
-      } finally {
-        if (!cancelled) setBusy(false);
+  const generate = async () => {
+    if (!provider) {
+      setError("Choose an AI provider first.");
+      setFix(null);
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setFix(null);
+    try {
+      const res = await fetch(`/api/studies/${studyId}/drafting-prompts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(body.error || `generation failed (${res.status})`);
+        setFix(body.fix ?? null);
+        return;
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [studyId]);
+      setData(body as DraftResponse);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "generation failed");
+      setFix(null);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const copy = async (key: string, text: string) => {
     try {
@@ -99,15 +117,18 @@ export function StudyDraftingPromptsPanel({
     }
   };
 
-  return (
+  const content = (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-6"
-      onClick={onClose}
+      className={
+        embedded
+          ? "relative w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] p-6"
+          : "relative mt-8 w-full max-w-3xl bg-[color:var(--color-surface)] border-2 border-[color:var(--color-on-surface)] p-6"
+      }
+      onClick={(e) => {
+        if (!embedded) e.stopPropagation();
+      }}
     >
-      <div
-        className="relative mt-8 w-full max-w-3xl bg-[color:var(--color-surface)] border-2 border-[color:var(--color-on-surface)] p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
+      {onClose && (
         <button
           type="button"
           onClick={onClose}
@@ -116,83 +137,145 @@ export function StudyDraftingPromptsPanel({
         >
           <X className="h-4 w-4" strokeWidth={1.75} />
         </button>
+      )}
 
-        <h2 className="label mb-1">Drafting prompts</h2>
-        <p className="text-[13px] text-[color:var(--color-on-surface-variant)]">
-          Ready-to-use prompts for drafting the article&apos;s sections from this
-          study&apos;s recorded design — and, for reviews, the screened corpus and
-          PRISMA flow. Paste into ChatGPT / Claude / Gemini, or download a file
-          for an agentic tool — every prompt is self-contained.
+      <h2 className="label mb-1">Drafting prompts</h2>
+      <p className="text-[13px] text-[color:var(--color-on-surface-variant)]">
+        Generate an article-writing harness with the selected AI provider.
+        The app supplies the recorded design, guideline coverage, and corpus
+        as grounding; the agent writes the section contracts and workflow.
+      </p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3 border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] p-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)]">
+            Provider
+          </p>
+          <p className="text-[13px] text-[color:var(--color-on-surface)]">
+            {provider ?? "Not selected"}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={generate}
+          disabled={busy || !provider}
+          className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-3 py-1.5 text-[12px] font-mono text-[color:var(--color-paper)] transition-colors hover:bg-[color:var(--color-redink)] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {busy ? "Generating..." : data ? "Regenerate" : "Generate with agent"}
+        </button>
+      </div>
+
+      {busy && (
+        <p className="mt-4 text-[12px] text-[color:var(--color-on-surface-variant)]">
+          Generating article-writing harness...
         </p>
+      )}
+      {error && (
+        <div className="mt-4 text-[12px] text-[color:var(--color-error)]">
+          <p>{error}</p>
+          {fix && <p className="mt-1 text-[color:var(--color-on-surface-variant)]">{fix}</p>}
+        </div>
+      )}
 
-        {busy && (
-          <p className="mt-4 text-[12px] text-[color:var(--color-on-surface-variant)]">
-            Generating…
-          </p>
-        )}
-        {error && (
-          <p className="mt-4 text-[12px] text-[color:var(--color-error)]">
-            {error}
-          </p>
-        )}
+      {!data && !busy && !error && (
+        <p className="mt-4 text-[12px] text-[color:var(--color-on-surface-variant)]">
+          No harness generated yet.
+        </p>
+      )}
 
-        {data && (
-          <div className="mt-5 space-y-6">
-            {!data.hasDesign && (
-              <p className="text-[12px] text-[color:var(--color-tertiary)]">
-                No decisions recorded yet — fill in the study cards for a
-                methodology grounded in your design.
-              </p>
+      {data && (
+        <div className="mt-5 space-y-6">
+          {!data.hasDesign && (
+            <p className="text-[12px] text-[color:var(--color-tertiary)]">
+              No decisions recorded yet — fill in the study cards for a
+              methodology grounded in your design.
+            </p>
+          )}
+
+          <div className="text-[12px] text-[color:var(--color-on-surface-variant)]">
+            <p>
+              Harness v{data.harnessVersion} · {data.methodology}
+            </p>
+            {data.qualityWarnings && data.qualityWarnings.length > 0 && (
+              <div className="mt-2">
+                <p className="label mb-1">Quality warnings</p>
+                <ul className="list-disc space-y-1 pl-5">
+                  {data.qualityWarnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+              </div>
             )}
-
-            <PromptBlock
-              label="Full prompt — all sections"
-              copyKey="combined"
-              text={data.combinedPrompt}
-              copied={copied}
-              onCopy={copy}
-            />
-
-            <div>
-              <h3 className="label mb-2">Per-section prompts</h3>
-              <div className="space-y-4">
-                {(Object.keys(data.taskPrompts) as DraftTask[]).map((task) => (
-                  <PromptBlock
-                    key={task}
-                    label={TASK_LABEL[task] ?? task}
-                    copyKey={task}
-                    text={data.taskPrompts[task] ?? ""}
-                    copied={copied}
-                    onCopy={copy}
-                  />
-                ))}
+            {data.unresolvedQuestions && data.unresolvedQuestions.length > 0 && (
+              <div className="mt-2">
+                <p className="label mb-1">Questions for the author</p>
+                <ul className="list-disc space-y-1 pl-5">
+                  {data.unresolvedQuestions.map((question) => (
+                    <li key={question}>{question}</li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )}
+          </div>
 
-            <div>
-              <h3 className="label mb-2">Download a file</h3>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => download("agents", "AGENTS.md")}
-                  className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[12px] font-mono hover:border-[color:var(--color-outline)] transition-colors"
-                >
-                  <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  AGENTS.md
-                </button>
-                <button
-                  type="button"
-                  onClick={() => download("md", "drafting-prompts.md")}
-                  className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[12px] font-mono hover:border-[color:var(--color-outline)] transition-colors"
-                >
-                  <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  drafting-prompts.md
-                </button>
-              </div>
+          <PromptBlock
+            label="Full prompt — all sections"
+            copyKey="combined"
+            text={data.combinedPrompt}
+            copied={copied}
+            onCopy={copy}
+          />
+
+          <div>
+            <h3 className="label mb-2">Per-section prompts</h3>
+            <div className="space-y-4">
+              {(Object.keys(data.taskPrompts) as DraftTask[]).map((task) => (
+                <PromptBlock
+                  key={task}
+                  label={TASK_LABEL[task] ?? task}
+                  copyKey={task}
+                  text={data.taskPrompts[task] ?? ""}
+                  copied={copied}
+                  onCopy={copy}
+                />
+              ))}
             </div>
           </div>
-        )}
-      </div>
+
+          <div>
+            <h3 className="label mb-2">Download a file</h3>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => download("agents", "AGENTS.md")}
+                className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[12px] font-mono hover:border-[color:var(--color-outline)] transition-colors"
+              >
+                <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
+                AGENTS.md
+              </button>
+              <button
+                type="button"
+                onClick={() => download("md", "drafting-prompts.md")}
+                className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[12px] font-mono hover:border-[color:var(--color-outline)] transition-colors"
+              >
+                <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
+                drafting-prompts.md
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-6"
+      onClick={onClose}
+    >
+      {content}
     </div>
   );
 }

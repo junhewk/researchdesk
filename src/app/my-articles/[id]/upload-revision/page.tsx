@@ -163,7 +163,7 @@ export default function UploadRevisionPage() {
       }
       await Promise.all(tasks);
 
-      router.push(`/my-articles/${manuscriptId}/workspace?center=diff`);
+      router.push(`/projects/${manuscript?.study_id ?? manuscriptId}/article?center=diff`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
       setSubmitting(false);
@@ -175,10 +175,10 @@ export default function UploadRevisionPage() {
       <div className="py-20 text-center">
         <p className="mb-3 text-[15px] text-[color:var(--color-error)]">{error}</p>
         <Link
-          href="/my-articles"
+          href="/projects"
           className="text-[13px] underline underline-offset-4"
         >
-          &larr; My articles
+          &larr; Research Projects
         </Link>
       </div>
     );
@@ -195,10 +195,10 @@ export default function UploadRevisionPage() {
   return (
     <div className="reveal mx-auto max-w-2xl">
       <Link
-        href={`/my-articles/${manuscriptId}/workspace`}
+        href={`/projects/${manuscript.study_id ?? manuscriptId}/article`}
         className="text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
       >
-        &larr; Workspace
+        &larr; Article stage
       </Link>
 
       <h1

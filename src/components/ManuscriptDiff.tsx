@@ -3,17 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { diffLines, diffWordsWithSpace, type Change } from "diff";
 import { ArrowLeftRight, Loader2, RefreshCw, Sparkles } from "lucide-react";
-import type { ManuscriptVersion } from "@/server/types";
+import type { AgentEffort, ManuscriptVersion, Provider } from "@/server/types";
 
 interface ManuscriptDiffProps {
   manuscriptId: string;
   /** Latest content_md (mirrored to manuscripts.content_md). Used as a
    * fallback if the versions list hasn't loaded yet. */
   fallbackCurrent: string;
-  /** Active manuscript-agent session id, so the "Create new version"
-   * button can dispatch a /version message into it. Null disables the
-   * button (no live session = no agent to talk to). */
-  sessionId: string | null;
+  provider?: Provider;
+  model?: string;
+  effort?: AgentEffort | "" | null;
 }
 
 type Granularity = "line" | "word";
@@ -53,7 +52,9 @@ function versionLabel(v: ManuscriptVersion): string {
 export function ManuscriptDiff({
   manuscriptId,
   fallbackCurrent,
-  sessionId,
+  provider,
+  model,
+  effort,
 }: ManuscriptDiffProps) {
   const [versions, setVersions] = useState<ManuscriptVersion[] | null>(null);
   const [leftId, setLeftId] = useState<string | null>(null);
@@ -61,15 +62,18 @@ export function ManuscriptDiff({
   const [granularity, setGranularity] = useState<Granularity>("line");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [createNotice, setCreateNotice] = useState<string | null>(null);
 
-  const loadVersions = useCallback(async () => {
+  const loadVersions = useCallback(async (selectLatest = false) => {
     const res = await fetch(`/api/manuscripts/${manuscriptId}/versions`);
     if (!res.ok) return;
     const data = (await res.json()) as ManuscriptVersion[];
     setVersions(data);
     if (data.length === 0) return;
     setLeftId((prev) => prev ?? data[0].id);
-    setRightId((prev) => prev ?? data[data.length - 1].id);
+    setRightId((prev) =>
+      selectLatest ? data[data.length - 1].id : prev ?? data[data.length - 1].id,
+    );
   }, [manuscriptId]);
 
   useEffect(() => {
@@ -98,28 +102,55 @@ export function ManuscriptDiff({
   const identical = stats.insertions === 0 && stats.deletions === 0;
 
   const createNewVersion = useCallback(async () => {
-    if (!sessionId || creating) return;
+    if (creating) return;
     setCreating(true);
     setCreateError(null);
+    setCreateNotice(null);
     try {
-      const res = await fetch(`/api/sessions/${sessionId}/messages`, {
+      const body: { provider?: Provider; model?: string; effort?: AgentEffort } = {};
+      if (provider) body.provider = provider;
+      if (model?.trim()) body.model = model.trim();
+      if (effort) body.effort = effort;
+      const res = await fetch(`/api/manuscripts/${manuscriptId}/versions/run-agent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content:
-            "/version\n\nIntegrate pending suggestions into a new manuscript version. Pause and ask before any judgment call.",
-        }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `HTTP ${res.status}`);
       }
+      const data = (await res.json()) as { session_id?: string };
+      setCreateNotice("Version pass started. This view will refresh when it finishes.");
+
+      if (data.session_id) {
+        for (let attempt = 0; attempt < 30; attempt += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          const statusRes = await fetch(`/api/sessions/${data.session_id}`);
+          if (!statusRes.ok) continue;
+          const statusData = (await statusRes.json()) as { status?: string };
+          if (statusData.status === "crashed") {
+            throw new Error("Version agent failed.");
+          }
+          if (
+            statusData.status === "idle" ||
+            statusData.status === "completed"
+          ) {
+            await loadVersions(true);
+            setCreateNotice("Version list refreshed.");
+            return;
+          }
+        }
+      }
+
+      await loadVersions(true);
+      setCreateNotice("Version run is still working. Use Refresh in a moment.");
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : "Send failed");
+      setCreateError(err instanceof Error ? err.message : "Version run failed");
     } finally {
       setCreating(false);
     }
-  }, [creating, sessionId]);
+  }, [creating, effort, loadVersions, manuscriptId, model, provider]);
 
   if (versions === null) {
     return (
@@ -135,10 +166,37 @@ export function ManuscriptDiff({
     return (
       <div className="rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-6 py-12 text-center">
         <p className="text-[14px] italic text-[color:var(--color-on-surface-variant)]">
-          No versions recorded yet. Type{" "}
-          <code className="font-mono not-italic">/version</code> in the
-          composer to ask the agent to draft one.
+          No versions recorded yet. Use Create new version after review
+          suggestions are ready.
         </p>
+        <button
+          type="button"
+          onClick={() => void createNewVersion()}
+          disabled={creating}
+          className="mt-4 inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1.5 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          {creating ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" strokeWidth={2} />
+              Creating…
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-3 w-3" strokeWidth={2} />
+              Create new version
+            </>
+          )}
+        </button>
+        {createNotice && (
+          <p className="mt-3 text-[12px] text-[color:var(--color-on-surface-variant)]">
+            {createNotice}
+          </p>
+        )}
+        {createError && (
+          <p className="mt-3 text-[12px] text-[color:var(--color-error)]">
+            {createError}
+          </p>
+        )}
       </div>
     );
   }
@@ -188,18 +246,14 @@ export function ManuscriptDiff({
           <button
             type="button"
             onClick={() => void createNewVersion()}
-            disabled={!sessionId || creating}
+            disabled={creating}
             className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-primary)] px-3 py-1.5 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            title={
-              sessionId
-                ? "Send /version to the agent"
-                : "Open the workspace to start a session first"
-            }
+            title="Create a new manuscript version"
           >
             {creating ? (
               <>
                 <Loader2 className="h-3 w-3 animate-spin" strokeWidth={2} />
-                Dispatching…
+                Creating…
               </>
             ) : (
               <>
@@ -214,6 +268,11 @@ export function ManuscriptDiff({
       {createError && (
         <div className="border-b border-[color:var(--color-error)] bg-[color:var(--color-error-container)] px-5 py-2 text-[12px] text-[color:var(--color-on-error-container)]">
           {createError}
+        </div>
+      )}
+      {createNotice && (
+        <div className="border-b border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] px-5 py-2 text-[12px] text-[color:var(--color-on-surface-variant)]">
+          {createNotice}
         </div>
       )}
 

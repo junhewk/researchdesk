@@ -1,1 +1,5 @@
-export { default } from "../../methods/new/page";
+import { redirect } from "next/navigation";
+
+export default function OldNewMethodsWorkbenchPage() {
+  redirect("/projects/new/setup");
+}

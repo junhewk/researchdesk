@@ -10,7 +10,6 @@ import {
 import Link from "next/link";
 import {
   Check,
-  ChevronDown,
   Clock,
   FileText,
   History,
@@ -24,20 +23,14 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { MethodsActions } from "@/components/MethodsActions";
-import { SessionStream } from "@/components/SessionStream";
-import {
-  PromptComposer,
-  type SlashCommand,
-} from "@/components/PromptComposer";
 import { ProviderSelector } from "@/components/ProviderSelector";
-import { CLOUD_PROVIDER_VALUES } from "@/lib/providers";
+import { CLOUD_PROVIDER_VALUES, isProvider } from "@/lib/providers";
 import { AgentModelEffortPicker } from "@/components/AgentModelEffortPicker";
 import { MarkdownText } from "@/components/MarkdownText";
 import { ManuscriptDiff } from "@/components/ManuscriptDiff";
 import { AttachmentsPanel } from "@/components/AttachmentsPanel";
 import { ReviewInputPanel } from "@/components/ReviewInputPanel";
 import {
-  agentRunLabel,
   normalizeEffortForProvider,
   normalizeModelForProvider,
   supportsModelEffort,
@@ -50,54 +43,7 @@ import type {
   Provider,
   Review,
   Revision,
-  Session,
-  SessionStatus,
 } from "@/server/types";
-
-// ─── Slash commands ────────────────────────────────────────────────────────
-
-const MANUSCRIPT_SLASH_COMMANDS: SlashCommand[] = [
-  {
-    command: "/revise",
-    title: "Apply revisions to the project files",
-    detail:
-      "Mechanical fixes + rewrite drafts grounded in the decision letter.",
-  },
-  {
-    command: "/review",
-    title: "Critique without editing",
-    detail:
-      "Produce review items grounded in prior reviews and validated citations.",
-  },
-  {
-    command: "/draft",
-    title: "Plan a new section or response",
-    detail:
-      "Outline what to write — never produces novel research content.",
-  },
-  {
-    command: "/cite",
-    title: "Find evidence in the literature",
-    detail: "Search Semantic Scholar / OpenAlex; validate every DOI.",
-  },
-  {
-    command: "/explain",
-    title: "Summarize a passage or letter",
-    detail: "Read-only — does not edit anything.",
-  },
-  {
-    command: "/version",
-    title: "Create a new revised manuscript version",
-    detail:
-      "Agent integrates pending suggestions into a complete v(N+1) and saves it for diffing.",
-  },
-  {
-    command: "/finalize",
-    title: "Compile the final submission package",
-    detail:
-      "Writes response_to_reviewers_final.md + revision_table_final.md and returns a verdict.",
-  },
-];
 
 // ─── Tab routing ───────────────────────────────────────────────────────────
 
@@ -111,7 +57,7 @@ const TABS: Array<{ key: CenterTab; label: string }> = [
 ];
 
 function parseCenter(raw: string | null): CenterTab {
-  // Legacy redirects from /revise and /review come in as `changes` / `findings`.
+  // Legacy redirects still come in as `changes` / `findings`.
   switch (raw) {
     case "drafts":
     case "changes":
@@ -126,24 +72,6 @@ function parseCenter(raw: string | null): CenterTab {
       return "peer";
     default:
       return "drafts";
-  }
-}
-
-function slashOf(text: string): string | null {
-  const m = text.trim().match(/^\/[a-z-]+/i);
-  return m ? m[0].toLowerCase() : null;
-}
-
-function tabForCommand(text: string): CenterTab | null {
-  switch (slashOf(text)) {
-    case "/revise":
-    case "/draft":
-      return "drafts";
-    case "/review":
-    case "/cite":
-      return "peer";
-    default:
-      return null;
   }
 }
 
@@ -233,17 +161,23 @@ function severityChipClass(s: CommentSeverity): string {
 
 // ─── Page ──────────────────────────────────────────────────────────────────
 
-export default function ManuscriptWorkspacePage() {
-  const { id: manuscriptId } = useParams<{ id: string }>();
+export function ManuscriptWorkspace({
+  manuscriptId,
+  projectId,
+  defaultCenter = "drafts",
+}: {
+  manuscriptId: string;
+  projectId?: string;
+  defaultCenter?: CenterTab;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const tab = parseCenter(searchParams.get("center"));
+  const tab = searchParams.has("center")
+    ? parseCenter(searchParams.get("center"))
+    : defaultCenter;
 
   const [manuscript, setManuscript] = useState<Manuscript | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [sessionStatus, setSessionStatus] = useState<SessionStatus>("new");
-  const [sessionError, setSessionError] = useState<string | null>(null);
   const [revisions, setRevisions] = useState<Revision[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
 
@@ -251,8 +185,7 @@ export default function ManuscriptWorkspacePage() {
   const [model, setModel] = useState("");
   const [effort, setEffort] = useState<AgentEffortInput>("");
 
-  const [composerText, setComposerText] = useState("");
-  const [sending, setSending] = useState(false);
+  const [reviewRunning, setReviewRunning] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [revisionTracking, setRevisionTracking] = useState(true);
   const [marking, setMarking] = useState(false);
@@ -292,31 +225,6 @@ export default function ManuscriptWorkspacePage() {
         const m = (await mRes.json()) as Manuscript;
         if (cancelled) return;
         setManuscript(m);
-
-        const sRes = await fetch("/api/sessions/manuscript", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            manuscript_id: manuscriptId,
-          }),
-        });
-        if (cancelled) return;
-        if (!sRes.ok) {
-          const data = await sRes.json().catch(() => ({}));
-          setSessionError(
-            typeof data.error === "string"
-              ? data.error
-              : data.error?.formErrors?.join(", ") || "Could not open session",
-          );
-          return;
-        }
-        const s = (await sRes.json()) as Session;
-        setSession(s);
-        setSessionError(null);
-        setSessionStatus(s.status);
-        setProvider(s.provider);
-        setModel(normalizeModelForProvider(s.provider, s.model ?? ""));
-        setEffort(normalizeEffortForProvider(s.provider, s.effort ?? ""));
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "Failed to load workspace");
@@ -328,6 +236,38 @@ export default function ManuscriptWorkspacePage() {
       cancelled = true;
     };
   }, [manuscriptId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const localOnly = manuscript?.confidentiality_mode === "local_only";
+    fetch("/api/settings/providers")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { defaultProvider?: string } | null) => {
+        if (cancelled) return;
+        const configured = data?.defaultProvider ?? null;
+        const next: Provider | null =
+          isProvider(configured) &&
+          !(localOnly && CLOUD_PROVIDER_VALUES.includes(configured))
+            ? configured
+            : localOnly
+              ? "ollama"
+              : null;
+        if (!next) return;
+        setProvider(next);
+        setModel((cur) => normalizeModelForProvider(next, cur));
+        setEffort((cur) => normalizeEffortForProvider(next, cur));
+      })
+      .catch(() => {
+        if (!cancelled && localOnly) {
+          setProvider("ollama");
+          setModel((cur) => normalizeModelForProvider("ollama", cur));
+          setEffort((cur) => normalizeEffortForProvider("ollama", cur));
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [manuscript?.confidentiality_mode]);
 
   const reloadRevisions = useCallback(async () => {
     if (!manuscriptId) return;
@@ -346,40 +286,10 @@ export default function ManuscriptWorkspacePage() {
     void reloadReviews();
   }, [reloadRevisions, reloadReviews]);
 
-  const sendMessage = useCallback(async () => {
-    const text = composerText.trim();
-    if (!text || !session || sending) return;
-    setSending(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/sessions/${session.id}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || `Send failed (${res.status})`);
-      }
-      const next = tabForCommand(text);
-      if (next && next !== tab) setTab(next);
-      setComposerText("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Send failed");
-    } finally {
-      setSending(false);
-    }
-  }, [composerText, sending, session, setTab, tab]);
-
-  const interrupt = useCallback(async () => {
-    if (!session) return;
-    await fetch(`/api/sessions/${session.id}/interrupt`, { method: "POST" });
-  }, [session]);
-
   const markCompleted = useCallback(async () => {
     if (!manuscriptId || marking) return;
     const ok = window.confirm(
-      "Mark this manuscript as completed? The agent thread stays accessible but the manuscript is closed for new revisions.",
+      "Mark this manuscript as completed? The manuscript will be closed for new revisions.",
     );
     if (!ok) return;
     setMarking(true);
@@ -407,10 +317,6 @@ export default function ManuscriptWorkspacePage() {
     setModel((cur) => normalizeModelForProvider(next, cur));
     setEffort((cur) => normalizeEffortForProvider(next, cur));
   }, []);
-
-  const onTurnComplete = useCallback(() => {
-    void Promise.all([reloadRevisions(), reloadReviews()]);
-  }, [reloadReviews, reloadRevisions]);
 
   const resolveComment = useCallback(
     async (c: Comment, nextStatus: "applied" | "dismissed") => {
@@ -451,53 +357,41 @@ export default function ManuscriptWorkspacePage() {
   }, [reviews, revisions]);
 
   const openCount = comments.filter((c) => c.severity !== "Resolved").length;
-  const isRunning = sessionStatus === "running";
+  const isRunning = reviewRunning;
   const reviewInputsReady = Boolean(manuscript?.review_request?.trim());
-  const canSend =
-    !!session && !sending && !isRunning && composerText.trim().length > 0;
-  const canRunReview = !!session && !sending && !isRunning && reviewInputsReady;
-  const reviewActionHint = sessionError
-    ? "Manuscript thread unavailable"
-    : !session
-      ? "Opening manuscript thread..."
-      : reviewInputsReady
-        ? "Run the context-grounded ensemble review"
-        : "Add a review focus in Review Inputs first";
+  const canRunReview = !reviewRunning && reviewInputsReady;
+  const reviewActionHint = reviewInputsReady
+    ? "Run the context-grounded ensemble review"
+    : "Add a review focus in Review Inputs first";
 
-  // Basic, one-click entry to the product's context-grounded ensemble review
-  // (equivalent to typing /review in the composer). The provider/model used is
-  // whatever the Advanced drawer selects.
   const runReview = useCallback(async () => {
-    if (!session || sending || sessionStatus === "running") return;
+    if (reviewRunning) return;
     if (!manuscript?.review_request?.trim()) {
       setError("Add a review focus in Review Inputs before running the pre-submission review.");
       return;
     }
-    setSending(true);
+    setReviewRunning(true);
     setError(null);
     try {
-      const res = await fetch(`/api/sessions/${session.id}/messages`, {
+      const body: { provider: Provider; model?: string } = { provider };
+      if (model.trim()) body.model = model.trim();
+      const res = await fetch(`/api/manuscripts/${manuscriptId}/reviews/run-agent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: "/review" }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `Review failed (${res.status})`);
       }
+      await reloadReviews();
       setTab("peer");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start review");
     } finally {
-      setSending(false);
+      setReviewRunning(false);
     }
-  }, [manuscript?.review_request, session, sending, sessionStatus, setTab]);
-
-  const prepareInputScan = useCallback(() => {
-    setComposerText(
-      "/explain\n\nScan this manuscript project for missing inputs needed before a high-quality pre-submission review. Focus only on missing or weak project inputs, not manuscript critique yet. Return required, recommended, and suggested inputs with the reason each matters.",
-    );
-  }, []);
+  }, [manuscript?.review_request, manuscriptId, model, provider, reloadReviews, reviewRunning, setTab]);
 
   // ─── Bail-out states ───────────────────────────────────────────────────
 
@@ -508,10 +402,10 @@ export default function ManuscriptWorkspacePage() {
           {error}
         </p>
         <Link
-          href="/my-articles"
+          href={projectId ? `/projects/${projectId}` : "/projects"}
           className="text-[13px] text-[color:var(--color-on-surface-variant)] underline underline-offset-4 hover:text-[color:var(--color-on-surface)]"
         >
-          &larr; My articles
+          &larr; Research Projects
         </Link>
       </div>
     );
@@ -526,6 +420,7 @@ export default function ManuscriptWorkspacePage() {
   }
 
   // ─── Render ────────────────────────────────────────────────────────────
+  const effectiveProjectId = projectId ?? manuscript.study_id ?? manuscript.id;
 
   return (
     <div className="reveal">
@@ -583,16 +478,20 @@ export default function ManuscriptWorkspacePage() {
             </button>
             {manuscript.study_id && (
               <Link
-                href={`/methods-workbench/${manuscript.study_id}`}
+                href={`/projects/${manuscript.study_id}/setup`}
                 className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] text-[color:var(--color-on-surface)] hover:border-[color:var(--color-outline)] transition-colors"
               >
                 <FileText className="h-3.5 w-3.5" strokeWidth={1.75} />
-                Source methods
+                Setup
               </Link>
             )}
-            <MethodsActions manuscriptId={manuscriptId} studyId={manuscript.study_id} />
+            <MethodsActions
+              manuscriptId={manuscriptId}
+              studyId={manuscript.study_id}
+              projectId={effectiveProjectId}
+            />
             <Link
-              href={`/my-articles/${manuscriptId}/upload-revision`}
+              href={`/projects/${effectiveProjectId}/upload-revision`}
               className="inline-flex items-center gap-1.5 rounded border border-[color:var(--color-outline-variant)] px-3 py-1.5 text-[13px] text-[color:var(--color-on-surface)] hover:border-[color:var(--color-outline)] transition-colors"
             >
               <Upload className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -623,8 +522,8 @@ export default function ManuscriptWorkspacePage() {
         </div>
         {!manuscript.study_id && (
           <p className="pb-3 text-[12px] text-[color:var(--color-on-surface-variant)]">
-            No source methods are linked. This direct article can be reviewed,
-            but readiness checks cannot compare it against a Workbench plan.
+            No setup is linked. This article-only project can be reviewed, but
+            readiness checks cannot compare it against planned methods.
           </p>
         )}
       </header>
@@ -637,14 +536,14 @@ export default function ManuscriptWorkspacePage() {
           />
           <div className="min-w-0">
             <h2 className="font-display text-[15px] font-semibold text-[color:var(--color-on-surface)]">
-              Review agent
+              Review run
             </h2>
             <p className="text-[11px] text-[color:var(--color-on-surface-variant)]">
-              {sessionError
-                ? `Unavailable: ${sessionError}`
-                : session
-                  ? `${agentRunLabel(session)} · ${sessionStatus}`
-                  : "Opening manuscript thread..."}
+              {isRunning
+                ? "Running context-grounded review..."
+                : reviewInputsReady
+                  ? "Ready to create peer-style findings from the saved inputs."
+                  : "Add a review focus in Review Inputs before running."}
             </p>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -663,31 +562,6 @@ export default function ManuscriptWorkspacePage() {
             </span>
           </div>
         </div>
-
-        {session ? (
-          <details className="group" open={false}>
-            <summary className="flex cursor-pointer items-center gap-2 px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] [&::-webkit-details-marker]:hidden">
-              <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" strokeWidth={2} />
-              <span className="label-sm flex-1 truncate">
-                Agent stream · {sessionStatus}
-              </span>
-            </summary>
-            <div className="max-h-[220px] overflow-y-auto border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] px-4 py-3 text-[12px]">
-              <SessionStream
-                sessionId={session.id}
-                workflow="manuscript"
-                onStatusChange={setSessionStatus}
-                onTurnComplete={onTurnComplete}
-              />
-            </div>
-          </details>
-        ) : (
-          <div className="px-4 py-2 text-[12px] text-[color:var(--color-on-surface-variant)]">
-            {sessionError
-              ? `Manuscript thread unavailable: ${sessionError}`
-              : "Opening manuscript thread..."}
-          </div>
-        )}
 
         {settingsOpen && (
           <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-4 py-3 space-y-3">
@@ -716,8 +590,7 @@ export default function ManuscriptWorkspacePage() {
               />
             )}
             <p className="text-[11px] italic text-[color:var(--color-on-surface-variant)]">
-              Applies to new sessions. The current thread keeps its provider
-              until closed.
+              Applies to button-triggered review and revision runs.
             </p>
             <label className="flex items-center justify-between gap-2 border-t border-[color:var(--color-outline-variant)] pt-3 text-[12px] text-[color:var(--color-on-surface-variant)] select-none cursor-pointer">
               <span>Revision tracking (inline change markers)</span>
@@ -753,50 +626,6 @@ export default function ManuscriptWorkspacePage() {
             {error}
           </div>
         )}
-
-        <div className="border-t border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] px-3 py-3">
-          <PromptComposer
-            value={composerText}
-            onChange={setComposerText}
-            onSubmit={() => {
-              if (canSend) void sendMessage();
-            }}
-            submitOnEnter
-            disabled={!session || isRunning || sending}
-            placeholder={
-              sessionError
-                ? "Manuscript chat unavailable"
-                : isRunning
-                  ? "Agent is working..."
-                  : "Add a comment · type / for commands"
-            }
-            ariaLabel="Message the manuscript agent"
-            slashCommands={MANUSCRIPT_SLASH_COMMANDS}
-          />
-          <div className="mt-2 flex items-center justify-between gap-2 text-[11px]">
-            <span className="text-[color:var(--color-on-surface-variant)] tabular">
-              {sessionStatus}
-            </span>
-            {isRunning ? (
-              <button
-                type="button"
-                onClick={() => void interrupt()}
-                className="text-[12px] font-medium text-[color:var(--color-error)] hover:underline underline-offset-2"
-              >
-                Halt
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => void sendMessage()}
-                disabled={!canSend}
-                className="rounded bg-[color:var(--color-primary)] px-3 py-1 text-[12px] font-medium text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-container)] disabled:opacity-40 transition-colors"
-              >
-                Send
-              </button>
-            )}
-          </div>
-        </div>
       </section>
 
       {/* TWO-COLUMN BODY */}
@@ -814,7 +643,9 @@ export default function ManuscriptWorkspacePage() {
             <ManuscriptDiff
               manuscriptId={manuscript.id}
               fallbackCurrent={manuscript.content_md}
-              sessionId={session?.id ?? null}
+              provider={provider}
+              model={model}
+              effort={effort}
             />
           )}
           {tab === "history" && (
@@ -840,11 +671,10 @@ export default function ManuscriptWorkspacePage() {
         </main>
 
         {/* RIGHT — INPUTS + ATTACHMENTS */}
-        <aside className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-6rem)] flex flex-col gap-4">
+        <aside className="min-w-0 flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
           <ReviewInputPanel
             manuscript={manuscript}
             onManuscriptChange={setManuscript}
-            onAgentScan={prepareInputScan}
           />
 
           {/* Attachments panel */}
@@ -890,10 +720,10 @@ function DraftsPane({
             <>
               <span aria-hidden className="text-[color:var(--color-outline-variant)]">·</span>
               <Link
-                href={`/methods-workbench/${manuscript.study_id}`}
+                href={`/projects/${manuscript.study_id}/setup`}
                 className="font-body text-[color:var(--color-on-surface-variant)] underline-offset-2 hover:text-[color:var(--color-on-surface)] hover:underline"
               >
-                Methods source
+                Setup source
               </Link>
             </>
           )}
@@ -997,6 +827,11 @@ function DraftsPane({
   );
 }
 
+export default function ManuscriptWorkspacePage() {
+  const { id } = useParams<{ id: string }>();
+  return <ManuscriptWorkspace manuscriptId={id} />;
+}
+
 // ─── HistoryPane ───────────────────────────────────────────────────────────
 
 function HistoryPane({
@@ -1046,9 +881,8 @@ function HistoryPane({
 
       {byRound.length === 0 ? (
         <p className="py-8 text-[14px] italic text-[color:var(--color-on-surface-variant)]">
-          No revisions filed yet. Type{" "}
-          <code className="font-mono not-italic">/revise</code> in the composer
-          to start.
+          No revisions filed yet. Create a new version from the Diff tab after
+          applying suggestions.
         </p>
       ) : (
         <ol className="relative space-y-8 border-l border-[color:var(--color-outline-variant)] pl-6 ml-2">
@@ -1154,8 +988,7 @@ function PeerFeedbackGrid({
         {action}
         <div className="rounded-lg border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] px-6 py-12 text-center">
           <p className="text-[14px] italic text-[color:var(--color-on-surface-variant)]">
-            No feedback yet. Run the review here, or use the composer above
-            with <code className="font-mono not-italic">/review</code>.
+            No feedback yet. Run the review from this panel.
           </p>
           {!reviewInputsReady && (
             <p className="mt-2 text-[12px] text-[color:var(--color-error)]">
@@ -1210,7 +1043,7 @@ function CommentCard({
 
   return (
     <article
-      className={`rounded border transition-colors ${
+      className={`min-w-0 rounded border transition-colors ${
         resolved
           ? "border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]"
           : "border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-lowest)] hover:border-[color:var(--color-outline)]"
@@ -1235,10 +1068,10 @@ function CommentCard({
 
         {/* Body */}
         <div
-          className={`mt-2 overflow-hidden ${
+          className={`mt-2 break-words [overflow-wrap:anywhere] ${
             expanded
-              ? "max-h-[12em]"
-              : "max-h-[6.5em]"
+              ? "max-h-none overflow-visible"
+              : "max-h-[6.5em] overflow-hidden"
           } ${
             resolved
               ? "[&_*]:text-[color:var(--color-on-surface-variant)] [&_p]:line-through opacity-70"

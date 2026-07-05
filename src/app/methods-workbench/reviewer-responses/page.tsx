@@ -7,12 +7,13 @@ export const dynamic = "force-dynamic";
 
 type ResponseRow = ReviewerResponse & {
   manuscript_title: string;
+  study_id: string | null;
 };
 
 function listResponseRows(): ResponseRow[] {
   return getDb()
     .prepare(
-      `SELECT r.*, m.title AS manuscript_title
+      `SELECT r.*, m.title AS manuscript_title, m.study_id
          FROM reviewer_responses r
          JOIN manuscripts m ON m.id = r.manuscript_id
         ORDER BY r.updated_at DESC`,
@@ -26,10 +27,10 @@ export default function MethodsWorkbenchReviewerResponsesPage() {
   return (
     <div className="reveal max-w-4xl">
       <Link
-        href="/methods-workbench"
+        href="/projects"
         className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
       >
-        &larr; Methods Workbench
+        &larr; Research Projects
       </Link>
       <h1
         className="mt-3 font-display text-[42px] leading-none tracking-tight"
@@ -49,7 +50,7 @@ export default function MethodsWorkbenchReviewerResponsesPage() {
           {rows.map((row) => (
             <li key={row.id}>
               <Link
-                href={`/methods-workbench/reviewer-responses/${row.id}`}
+                href={`/projects/${row.study_id ?? row.manuscript_id}/review/reviewer-responses/${row.id}`}
                 className="block py-5 group"
               >
                 <div className="flex items-baseline gap-6">

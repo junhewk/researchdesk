@@ -116,3 +116,17 @@ export function exportStudyDraftingPrompts(
   fs.writeFileSync(path.join(dir, "AGENTS.md"), files.agentsMd, "utf-8");
   fs.writeFileSync(path.join(dir, "drafting-prompts.md"), files.draftMd, "utf-8");
 }
+
+export function readStudyDraftingPrompts(
+  studyId: string,
+): { agentsMd: string | null; draftMd: string | null } {
+  const dir = studyDir(studyId);
+  const read = (name: string): string | null => {
+    const file = path.join(dir, name);
+    return fs.existsSync(file) ? fs.readFileSync(file, "utf-8") : null;
+  };
+  return {
+    agentsMd: read("AGENTS.md"),
+    draftMd: read("drafting-prompts.md"),
+  };
+}

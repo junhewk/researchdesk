@@ -5,7 +5,7 @@ import {
   listManuscripts,
   replaceUneditedGeneratedContent,
 } from "@/server/manuscripts";
-import { createAsset } from "@/server/manuscriptAssets";
+import { createAsset, listAssets } from "@/server/manuscriptAssets";
 import { getModeSchema } from "@/server/methods/cardSchema";
 import {
   ALL_ARTIFACT_KINDS,
@@ -20,6 +20,7 @@ import {
   listDecisions,
   updateArtifact,
 } from "@/server/studies";
+import { readStudyDraftingPrompts } from "@/server/methods/studyExport";
 import type {
   DesignDecision,
   Manuscript,
@@ -88,14 +89,6 @@ function bulletLines(fields: Record<string, string>): string[] {
     .map(([key, value]) => `- **${key.replaceAll("_", " ")}:** ${value.trim()}`);
 }
 
-function firstFilled(...values: Array<string | undefined | null>): string {
-  return values.find((value) => value?.trim())?.trim() ?? "";
-}
-
-function trimSentence(value: string): string {
-  return value.trim().replace(/[.。]+$/u, "");
-}
-
 function draftTitle(study: Study): string {
   if (study.mode === "systematic_review") {
     return `${study.title.replace(/\s*\([^)]*\)\s*$/, "")}: systematic review protocol`;
@@ -107,123 +100,6 @@ function draftTitle(study: Study): string {
     return `${study.title}: retrospective cohort study`;
   }
   return `${study.title}: study manuscript draft`;
-}
-
-function systematicReviewDraft(
-  study: Study,
-  byType: Map<string, DesignDecision>,
-): string {
-  const question = valueOf(byType, "review_question");
-  const eligibility = valueOf(byType, "eligibility_criteria");
-  const sources = valueOf(byType, "information_sources");
-  const search = valueOf(byType, "search_strategy");
-  const screening = valueOf(byType, "screening_process");
-  const extraction = valueOf(byType, "data_extraction");
-  const rob = valueOf(byType, "risk_of_bias");
-  const effect = valueOf(byType, "effect_measure");
-  const synthesis = valueOf(byType, "synthesis_plan");
-  const heterogeneity = valueOf(byType, "heterogeneity");
-  const subgroups = valueOf(byType, "subgroup_analyses");
-  const sensitivity = valueOf(byType, "sensitivity_analyses");
-  const certainty = valueOf(byType, "certainty");
-  const registration = valueOf(byType, "registration");
-  const designs = trimSentence(
-    firstFilled(
-      eligibility.fields.designs,
-      "eligible comparative intervention studies",
-    ),
-  ).toLowerCase();
-  const intervention = trimSentence(
-    firstFilled(question.fields.intervention, "the intervention"),
-  ).toLowerCase();
-  const population = trimSentence(
-    firstFilled(question.fields.population, "the target population"),
-  ).toLowerCase();
-  const primaryOutcome = trimSentence(
-    firstFilled(
-      effect.fields.measure,
-      question.fields.outcome,
-      "validated depressive symptom measures",
-    ),
-  ).toLowerCase();
-
-  return [
-    `# ${draftTitle(study)}`,
-    "",
-    `> Generated from Methods Workbench study \`${study.id}\`. Treat this as a structured article draft; fill results after the review is conducted.`,
-    "",
-    "## Abstract",
-    "**Background:** Smartphone-delivered adaptive interventions are increasingly used in mental-health care, but their comparative effect on depressive symptoms needs synthesis.",
-    `**Objective:** ${study.research_question ?? question.value}`,
-    `**Methods:** We will include ${designs} that evaluate ${intervention} in ${population}. Primary outcomes will use ${primaryOutcome}.`,
-    "**Results:** To be completed after screening and synthesis.",
-    "**Conclusions:** To be completed after synthesis and certainty assessment.",
-    "",
-    "## Introduction",
-    "Digital mental-health interventions increasingly use context, symptoms, or engagement signals to adapt support in real time. A review is needed to separate adaptive intervention effects from static app access and usual-care comparators.",
-    "",
-    "## Methods",
-    "### Review Question",
-    question.value,
-    ...bulletLines(question.fields),
-    "",
-    "### Eligibility Criteria",
-    eligibility.value,
-    ...bulletLines(eligibility.fields),
-    "",
-    "### Information Sources",
-    sources.value,
-    ...bulletLines(sources.fields),
-    "",
-    "### Search Strategy",
-    search.value,
-    ...bulletLines(search.fields),
-    "",
-    "### Study Selection",
-    screening.value,
-    ...bulletLines(screening.fields),
-    "",
-    "### Data Extraction",
-    extraction.value,
-    ...bulletLines(extraction.fields),
-    "",
-    "### Risk of Bias",
-    rob.value,
-    ...bulletLines(rob.fields),
-    "",
-    "### Effect Measures and Synthesis",
-    effect.value,
-    ...bulletLines(effect.fields),
-    synthesis.value,
-    ...bulletLines(synthesis.fields),
-    "",
-    "### Heterogeneity and Additional Analyses",
-    heterogeneity.value,
-    ...bulletLines(heterogeneity.fields),
-    subgroups.value,
-    ...bulletLines(subgroups.fields),
-    sensitivity.value,
-    ...bulletLines(sensitivity.fields),
-    "",
-    "### Certainty of Evidence",
-    certainty.value,
-    ...bulletLines(certainty.fields),
-    "",
-    "### Registration",
-    registration.value,
-    ...bulletLines(registration.fields),
-    "",
-    "## Results",
-    "_Pending screening, extraction, and synthesis._",
-    "",
-    "## Discussion",
-    "_Pending results. Discuss intervention adaptivity, comparator heterogeneity, attrition, safety reporting, and certainty of evidence._",
-    "",
-    "## Declarations",
-    "**Funding:** _To be added._",
-    "**Competing interests:** _To be added._",
-    "**Data availability:** Extraction forms, search strings, and analytic code will be described here.",
-  ].filter((line) => line !== undefined).join("\n");
 }
 
 function genericStudyDraft(
@@ -272,10 +148,6 @@ function genericStudyDraft(
 }
 
 function buildDraft(study: Study, decisions: DesignDecision[]): string {
-  const byType = new Map(decisions.map((decision) => [decision.card_type, decision]));
-  if (study.mode === "systematic_review") {
-    return systematicReviewDraft(study, byType);
-  }
   return genericStudyDraft(study, decisions);
 }
 
@@ -301,6 +173,23 @@ function attachArtifacts(study: Study, manuscriptId: string, decisions: DesignDe
       content_md: md,
     });
   }
+}
+
+function attachLatestHarness(studyId: string, manuscriptId: string): void {
+  const files = readStudyDraftingPrompts(studyId);
+  if (!files.agentsMd) return;
+  const alreadyAttached = listAssets(manuscriptId).some(
+    (asset) => asset.original_file === "AGENTS.md" && asset.label === "Article-writing harness",
+  );
+  if (alreadyAttached) return;
+  createAsset({
+    manuscriptId,
+    kind: "appendix",
+    label: "Article-writing harness",
+    original_file: "AGENTS.md",
+    file_format: "markdown",
+    content_md: files.agentsMd,
+  });
 }
 
 export function listStudyArticleImportOptions(opts?: {
@@ -330,9 +219,9 @@ export function listStudyArticleImportOptions(opts?: {
           }
         : null,
       links: {
-        sourceStudy: `/methods-workbench/${study.id}`,
-        article: manuscript ? `/my-articles/${manuscript.id}` : null,
-        workspace: manuscript ? `/my-articles/${manuscript.id}/workspace` : null,
+        sourceStudy: `/projects/${study.id}/setup`,
+        article: manuscript ? `/projects/${study.id}/article` : null,
+        workspace: manuscript ? `/projects/${study.id}/article` : null,
       },
     };
   });
@@ -359,13 +248,14 @@ export function createArticleFromStudy(
             buildDraft(study, listDecisions(study.id)),
           ) ?? existing
         : existing;
+      attachLatestHarness(study.id, manuscript.id);
       return {
         manuscript,
         created: false,
         links: {
-          article: `/my-articles/${manuscript.id}`,
-          workspace: `/my-articles/${manuscript.id}/workspace`,
-          sourceStudy: `/methods-workbench/${study.id}`,
+          article: `/projects/${study.id}/article`,
+          workspace: `/projects/${study.id}/article`,
+          sourceStudy: `/projects/${study.id}/setup`,
         },
       };
     }
@@ -390,15 +280,16 @@ export function createArticleFromStudy(
   });
 
   attachArtifacts(study, manuscript.id, decisions);
+  attachLatestHarness(study.id, manuscript.id);
   const linked = autoProvisionProjectFolder(manuscript.id);
 
   return {
     manuscript: linked,
     created: true,
     links: {
-      article: `/my-articles/${linked.id}`,
-      workspace: `/my-articles/${linked.id}/workspace`,
-      sourceStudy: `/methods-workbench/${study.id}`,
+      article: `/projects/${study.id}/article`,
+      workspace: `/projects/${study.id}/article`,
+      sourceStudy: `/projects/${study.id}/setup`,
     },
   };
 }

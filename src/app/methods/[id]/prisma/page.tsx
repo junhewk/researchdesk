@@ -11,6 +11,6 @@ export default async function PrismaPage({
 }) {
   const { id } = await params;
   const study = getStudy(id);
-  if (!study) redirect("/methods-workbench/studies");
+  if (!study) redirect("/projects");
   return <PrismaPanel study={study} />;
 }

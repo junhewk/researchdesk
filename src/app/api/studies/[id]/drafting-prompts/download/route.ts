@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStudy } from "@/server/studies";
-import {
-  compileStudyDraftingPrompts,
-  renderAgentsMd,
-  renderDraftMd,
-} from "@/server/methods/studyDraftingPrompts";
+import { readStudyDraftingPrompts } from "@/server/methods/studyExport";
 
-// Stream the drafting prompts as a downloadable file: AGENTS.md (?format=agents)
-// for CLI agents, or drafting-prompts.md (default) to attach/upload anywhere.
+// Stream the latest agent-generated drafting harness. There is no deterministic
+// prompt fallback here; callers must generate with the agent first.
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -18,12 +14,19 @@ export async function GET(
   }
 
   const format = request.nextUrl.searchParams.get("format") ?? "md";
-  const content = compileStudyDraftingPrompts(id);
+  const files = readStudyDraftingPrompts(id);
 
   const [body, filename] =
     format === "agents"
-      ? [renderAgentsMd(content), "AGENTS.md"]
-      : [renderDraftMd(content), "drafting-prompts.md"];
+      ? [files.agentsMd, "AGENTS.md"]
+      : [files.draftMd, "drafting-prompts.md"];
+
+  if (!body) {
+    return NextResponse.json(
+      { error: "no generated article harness yet; generate with an AI provider first" },
+      { status: 404 },
+    );
+  }
 
   return new NextResponse(body, {
     headers: {

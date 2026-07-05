@@ -100,7 +100,7 @@ export function SetupPanel() {
             </ol>
             <p className="mt-3">
               <Link
-                href="/methods-workbench/new"
+                href="/projects/new/setup"
                 className="text-[13px] underline underline-offset-4 hover:text-[color:var(--color-redink)]"
               >
                 Start a study →

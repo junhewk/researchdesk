@@ -2,8 +2,8 @@ name: ResearchDesk release
 
 # Cutting a release: push a tag like `v0.1.2-pre.0`. This verifies the build,
 # packages the Windows x64 desktop binary, packages headless MCP bundles for
-# Linux/Windows/macOS, and publishes a matching GitHub release. Tags containing a
-# hyphen (e.g. `-pre.0`, `-beta.1`) are published as pre-releases.
+# Linux/Windows/macOS arm64, and publishes a matching GitHub release. Tags
+# containing a hyphen (e.g. `-pre.0`, `-beta.1`) are published as pre-releases.
 on:
   push:
     tags:
@@ -84,9 +84,6 @@ jobs:
           - os: windows-latest
             target: windows-x64
             archive: zip
-          - os: macos-13
-            target: darwin-x64
-            archive: tar
           - os: macos-14
             target: darwin-arm64
             archive: tar
@@ -161,7 +158,7 @@ jobs:
 
             Artifacts:
             - Windows x64 portable desktop app
-            - Headless + MCP bundles for Linux x64, Windows x64, macOS x64, and macOS arm64
+            - Headless + MCP bundles for Linux x64, Windows x64, and macOS arm64
 
             This is experimental research-assistance software. Verify LLM
             output, citations, calculations, prompts, and manuscript edits

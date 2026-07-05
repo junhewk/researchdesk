@@ -5,7 +5,7 @@ Context Protocol. The MCP server (`mcp/server.mjs`) is a small stdio process tha
 bridges to the app's existing local REST API — so a CLI agent can find or create
 a study, import scoping-review CSVs (one-shot, or with an LLM-proposed,
 author-approved column mapping), inspect the screened corpus + PRISMA flow,
-generate a self-contained drafting brief / `AGENTS.md` for any paper section,
+generate an agent-created drafting harness / `AGENTS.md` for any paper section,
 **promote a finished study into an article draft**, and run the product's
 context-grounded **ensemble review** on a manuscript.
 
@@ -119,7 +119,7 @@ args = ["mcp", "--with-server"]
 | `apply_csv_import`     | `POST …/import/apply`                              | apply the author-approved mapping (records CSVs require one; re-import keeps confirmed decisions unless told otherwise) |
 | `corpus_overview`      | `GET …/prisma` + `…/records`                       | PRISMA flow + per-database yields + screening stats        |
 | `export_corpus`        | `GET …/records/export`                             | round-trip records CSV, or characteristics table (csv/md)  |
-| `build_drafting_brief` | `POST …/drafting-prompts`                          | self-contained brief / `AGENTS.md` for any section(s)      |
+| `build_drafting_brief` | `POST …/drafting-prompts`                          | agent-created harness / `AGENTS.md` for any section(s)     |
 
 **Intake & give-and-take** (read the design, surface gaps, record the author's answers)
 
@@ -134,11 +134,12 @@ args = ["mcp", "--with-server"]
 | `list_records`         | `GET …/records`                                     | records with internal id + screen reason (drive screening review) |
 | `set_record_decision`  | `PATCH …/records/{rid}`                              | record the author's include/exclude/maybe decision         |
 
-`build_drafting_brief` accepts `sections` (any of
+`build_drafting_brief` calls the configured AI provider and accepts `sections` (any of
 `outline, introduction, methodology, results, discussion, abstract`) and/or a
 freeform `task`. Results/Discussion are grounded in the screened corpus + PRISMA
 counts; every prompt instructs the model to use only the recorded material and
-never invent findings.
+never invent findings. For `local_only` studies, pass a local `provider`
+(`ollama`, `lmstudio`, or `llama_server`).
 
 **Promotion & confidentiality** (promote a study into an article, control cloud use)
 

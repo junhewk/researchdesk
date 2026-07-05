@@ -76,7 +76,7 @@ export default function EditorPage() {
         <p className="text-[15px] text-[color:var(--color-error)]">
           {error || "Editor unavailable"}
         </p>
-        <Link href={`/my-articles/${manuscriptId}`} className="text-[12px] underline underline-offset-4">
+        <Link href={`/projects/${manuscript?.study_id ?? manuscriptId}/article`} className="text-[12px] underline underline-offset-4">
           &larr; Back
         </Link>
       </div>
@@ -86,7 +86,7 @@ export default function EditorPage() {
   return (
     <div className="reveal">
       <div className="mb-5 flex items-baseline justify-between">
-        <Link href={`/my-articles/${manuscriptId}`} className="text-[12px] text-[color:var(--color-sepia)] hover:text-[color:var(--color-ink)]">
+        <Link href={`/projects/${manuscript.study_id ?? manuscriptId}/article`} className="text-[12px] text-[color:var(--color-sepia)] hover:text-[color:var(--color-ink)]">
           &larr; {manuscript.title}
         </Link>
       </div>

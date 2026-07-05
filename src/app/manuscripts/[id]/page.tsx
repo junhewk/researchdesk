@@ -50,7 +50,7 @@ export default function ManuscriptDetailPage() {
     setDeleting(true);
     const res = await fetch(`/api/manuscripts/${id}`, { method: "DELETE" });
     if (res.ok) {
-      router.push("/my-articles");
+      router.push("/projects");
     } else {
       setDeleting(false);
       window.alert("Failed to delete manuscript.");
@@ -97,7 +97,7 @@ export default function ManuscriptDetailPage() {
         <p className="font-display italic text-[color:var(--color-redink)] text-[20px]">
           {error || "Manuscript not found"}
         </p>
-        <Link href="/my-articles" className="text-[13px] underline underline-offset-4">
+        <Link href="/projects" className="text-[13px] underline underline-offset-4">
           &larr; Back
         </Link>
       </div>
@@ -114,11 +114,12 @@ export default function ManuscriptDetailPage() {
   });
   const reviewsByCategory = groupBy(reviews, (r) => r.category);
   const categoryOrder: ReviewCategory[] = ["mechanical", "rewrite", "structural", "evidence"];
+  const projectId = manuscript.study_id ?? id;
 
   return (
     <div className="reveal">
-      <Link href="/my-articles" className="text-[12px] text-[color:var(--color-sepia)] hover:text-[color:var(--color-ink)]">
-        &larr; My articles
+      <Link href="/projects" className="text-[12px] text-[color:var(--color-sepia)] hover:text-[color:var(--color-ink)]">
+        &larr; Research Projects
       </Link>
 
       <div className="mt-4 mb-8">
@@ -135,10 +136,10 @@ export default function ManuscriptDetailPage() {
           {manuscript.journal_type && <span className="italic font-display">· for {manuscript.journal_type}</span>}
           {manuscript.study_id && (
             <Link
-              href={`/methods-workbench/${manuscript.study_id}`}
+              href={`/projects/${manuscript.study_id}/setup`}
               className="italic font-display underline-offset-2 hover:underline"
             >
-              · source methods
+              · setup source
             </Link>
           )}
           <span className="ml-auto font-mono tabular">
@@ -153,21 +154,21 @@ export default function ManuscriptDetailPage() {
         )}
 
         <div className="mt-5 flex items-center gap-2">
-          <Link href={`/my-articles/${id}/workspace`} className="px-4 py-1.5 text-[12px] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] transition-colors">
+          <Link href={`/projects/${projectId}/article`} className="px-4 py-1.5 text-[12px] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] transition-colors">
             Open workspace
           </Link>
-          <Link href={`/my-articles/${id}/lifecycle`} className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors">
+          <Link href={`/projects/${projectId}/lifecycle`} className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors">
             Lifecycle
           </Link>
-          <Link href={`/my-articles/${id}/editor`} className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors">
+          <Link href={`/projects/${projectId}/editor`} className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors">
             Editor
           </Link>
           {manuscript.study_id && (
             <Link
-              href={`/methods-workbench/${manuscript.study_id}`}
+              href={`/projects/${manuscript.study_id}/setup`}
               className="px-4 py-1.5 text-[12px] border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
             >
-              Source methods
+              Setup
             </Link>
           )}
           <button

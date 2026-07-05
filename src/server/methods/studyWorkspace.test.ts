@@ -81,6 +81,8 @@ test("study creation rejects attempts to import an existing manuscript", async (
 test("article creation from a study is the forward workbench bridge", async () => {
   await withTempDb(async () => {
     const { listManuscripts } = await import("../manuscripts");
+    const { listAssets } = await import("../manuscriptAssets");
+    const { exportStudyDraftingPrompts } = await import("./studyExport");
     const { createStudy } = await import("../studies");
     const { createArticleFromStudy } = await import("../studyArticle");
     const study = createStudy({
@@ -88,16 +90,26 @@ test("article creation from a study is the forward workbench bridge", async () =
       mode: "scoping_review",
       research_question: "How is AI used for education in shared decision medicine?",
     });
+    exportStudyDraftingPrompts(study.id, {
+      agentsMd: "# Article-writing harness\n\nAgent-created harness.",
+      draftMd: "# Drafting prompts\n\nAgent-created harness.",
+    });
 
     const result = createArticleFromStudy(study.id);
     const linked = listManuscripts({ studyId: study.id, limit: 5 });
     const reused = createArticleFromStudy(study.id);
+    const assets = listAssets(result.manuscript.id);
 
     assert.equal(result.created, true);
     assert.equal(result.manuscript.study_id, study.id);
-    assert.equal(result.links.article, `/my-articles/${result.manuscript.id}`);
-    assert.equal(result.links.workspace, `/my-articles/${result.manuscript.id}/workspace`);
-    assert.equal(result.links.sourceStudy, `/methods-workbench/${study.id}`);
+    assert.match(result.manuscript.content_md, /Generated from Methods Workbench/);
+    assert.doesNotMatch(result.manuscript.content_md, /Smartphone-delivered adaptive interventions/);
+    assert.equal(result.links.article, `/projects/${study.id}/article`);
+    assert.equal(result.links.workspace, `/projects/${study.id}/article`);
+    assert.equal(result.links.sourceStudy, `/projects/${study.id}/setup`);
+    assert.ok(
+      assets.some((asset) => asset.original_file === "AGENTS.md" && asset.label === "Article-writing harness"),
+    );
     assert.equal(linked.length, 1);
     assert.equal(reused.created, false);
     assert.equal(reused.manuscript.id, result.manuscript.id);
@@ -126,10 +138,47 @@ test("workbench import options show linked and unlinked article reviews", async 
     const unlinked = options.find((option) => option.study.id === unlinkedStudy.id);
 
     assert.equal(linked?.manuscript?.id, article.manuscript.id);
-    assert.equal(linked?.links.workspace, `/my-articles/${article.manuscript.id}/workspace`);
-    assert.equal(linked?.links.sourceStudy, `/methods-workbench/${linkedStudy.id}`);
+    assert.equal(linked?.links.workspace, `/projects/${linkedStudy.id}/article`);
+    assert.equal(linked?.links.sourceStudy, `/projects/${linkedStudy.id}/setup`);
     assert.equal(unlinked?.manuscript, null);
     assert.equal(unlinked?.links.workspace, null);
+  });
+});
+
+test("research projects merge setup and article records into one project", async () => {
+  await withTempDb(async () => {
+    const { createStudy } = await import("../studies");
+    const { createManuscript } = await import("../manuscripts");
+    const { createArticleFromStudy } = await import("../studyArticle");
+    const { getResearchProject, listResearchProjects } = await import("../projects");
+
+    const linkedStudy = createStudy({
+      title: "Linked setup",
+      mode: "systematic_review",
+    });
+    const studyOnly = createStudy({
+      title: "Setup only",
+      mode: "interventional",
+    });
+    const linkedArticle = createArticleFromStudy(linkedStudy.id);
+    const directArticle = createManuscript({
+      title: "Direct article",
+      content_md: "# Direct",
+    });
+
+    const projects = listResearchProjects({ limit: 10 });
+    const linked = projects.find((project) => project.id === linkedStudy.id);
+    const setup = projects.find((project) => project.id === studyOnly.id);
+    const direct = projects.find((project) => project.id === directArticle.id);
+
+    assert.equal(linked?.kind, "study_article");
+    assert.equal(linked?.manuscriptId, linkedArticle.manuscript.id);
+    assert.equal(linked?.stages.article.status, "ready");
+    assert.equal(setup?.kind, "study");
+    assert.equal(setup?.stages.article.status, "missing");
+    assert.equal(direct?.kind, "article");
+    assert.equal(direct?.stages.setup.status, "unavailable");
+    assert.equal(getResearchProject(linkedArticle.manuscript.id)?.id, linkedStudy.id);
   });
 });
 

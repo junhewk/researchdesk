@@ -349,13 +349,13 @@ function ScreeningHeader({
     <div className="border-b-2 border-[color:var(--color-ink)] pb-3 sticky top-0 z-30 bg-[color:var(--color-surface)]">
       <div className="flex items-baseline justify-between">
         <Link
-          href={`/methods-workbench/${study.id}`}
+          href={`/projects/${study.id}/setup`}
           className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
         >
           ← Design canvas
         </Link>
         <Link
-          href={`/methods-workbench/${study.id}/prisma`}
+          href={`/projects/${study.id}/prisma`}
           className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
         >
           PRISMA flow & exports →

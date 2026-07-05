@@ -4,6 +4,7 @@ import {
   Archive,
   FileText,
   FlaskConical,
+  FolderKanban,
   HelpCircle,
   LayoutDashboard,
   Settings,
@@ -36,6 +37,7 @@ const SHELL_COPY: Record<AppLanguage, {
     tagline: "AI prompt harnesses",
     nav: {
       dashboard: "Dashboard",
+      researchProjects: "Research Projects",
       methodsWorkbench: "Methods Workbench",
       myArticles: "My Articles",
       archives: "Archives",
@@ -50,6 +52,7 @@ const SHELL_COPY: Record<AppLanguage, {
     tagline: "AI 프롬프트 하네스",
     nav: {
       dashboard: "대시보드",
+      researchProjects: "Research Projects",
       methodsWorkbench: "Methods Workbench",
       myArticles: "My Articles",
       archives: "아카이브",
@@ -95,6 +98,8 @@ function PrimaryNav({ language }: { language: AppLanguage }) {
     switch (icon) {
       case "dashboard":
         return <LayoutDashboard className="h-4 w-4" strokeWidth={1.75} />;
+      case "researchProjects":
+        return <FolderKanban className="h-4 w-4" strokeWidth={1.75} />;
       case "myArticles":
         return <FileText className="h-4 w-4" strokeWidth={1.75} />;
       case "methodsWorkbench":
@@ -105,7 +110,7 @@ function PrimaryNav({ language }: { language: AppLanguage }) {
   return (
     <nav
       aria-label={copy.ariaMain}
-      className="flex-1 flex flex-col gap-0.5 py-3"
+      className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto py-3"
     >
       {workspaceRegistry.map((workspace) => (
         <NavLink
@@ -133,7 +138,7 @@ function FooterNav({ language }: { language: AppLanguage }) {
   return (
     <nav
       aria-label={copy.ariaAccount}
-      className="flex flex-col gap-0.5 py-3 border-t border-[color:var(--color-outline-variant)]"
+      className="flex shrink-0 flex-col gap-0.5 border-t border-[color:var(--color-outline-variant)] py-3"
     >
       <NavLink
         href="/settings"
@@ -163,11 +168,11 @@ export default function RootLayout({
     <html lang={language}>
       <body className="antialiased">
         <LanguageBootstrap language={language} />
-        <div className="flex min-h-screen">
+        <div className="flex h-screen min-h-0 overflow-hidden">
           {/* Desktop persistent rail */}
           <aside
             aria-label={copy.ariaPrimary}
-            className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]"
+            className="hidden h-screen min-h-0 w-[240px] shrink-0 flex-col border-r border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] lg:flex"
           >
             <BrandBlock language={language} />
             <PrimaryNav language={language} />
@@ -175,9 +180,9 @@ export default function RootLayout({
           </aside>
 
           {/* Main column */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {/* Mobile top bar (lg- only) */}
-            <header className="lg:hidden flex items-center justify-between px-4 h-14 border-b border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]">
+            <header className="flex h-14 shrink-0 items-center justify-between border-b border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)] px-4 lg:hidden">
               <Link
                 href="/"
                 className="flex items-center gap-2.5 min-w-0"
@@ -199,7 +204,7 @@ export default function RootLayout({
               </MobileNavDrawer>
             </header>
 
-            <main className="flex-1 px-5 sm:px-8 lg:px-12 py-8 lg:py-10">
+            <main className="min-h-0 flex-1 overflow-y-auto px-5 py-8 sm:px-8 lg:px-12 lg:py-10">
               {children}
             </main>
           </div>

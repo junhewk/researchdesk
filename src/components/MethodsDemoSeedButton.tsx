@@ -33,7 +33,7 @@ export function MethodsDemoSeedButton() {
         throw new Error(data?.error || `Methods demo failed (${response.status})`);
       }
 
-      router.push(data.links?.workbenchOverview ?? `/methods-workbench/${data.studyId}`);
+      router.push(data.links?.workbenchOverview ?? `/projects/${data.studyId}/setup`);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Methods demo failed");

@@ -21,8 +21,9 @@ export default async function ReadinessCheckPage({
 }) {
   const { id } = await params;
   const check = getReadinessCheck(id);
-  if (!check) redirect("/methods-workbench/readiness");
+  if (!check) redirect("/projects");
   const manuscript = getManuscript(check.manuscript_id);
+  const projectId = manuscript?.study_id ?? manuscript?.id;
   const comparedStudy = check.study_id ? getStudy(check.study_id) : undefined;
   const items = listReadinessItems(id);
 
@@ -38,13 +39,13 @@ export default async function ReadinessCheckPage({
     <div className="reveal mx-auto max-w-4xl">
       <Link
         href={
-          manuscript
-            ? `/my-articles/${manuscript.id}/workspace`
-            : "/methods-workbench"
+          projectId
+            ? `/projects/${projectId}/review`
+            : "/projects"
         }
         className="text-[12px] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
       >
-        &larr; {manuscript?.title ?? "Methods Workbench"}
+        &larr; {manuscript?.title ?? "Research Projects"}
       </Link>
 
       <header className="mt-3 mb-6">
@@ -89,7 +90,7 @@ export default async function ReadinessCheckPage({
           <p className="mt-1 text-[12px] text-[color:var(--color-on-surface-variant)]">
             compared against study:{" "}
             <Link
-              href={`/methods-workbench/${comparedStudy.id}`}
+              href={`/projects/${comparedStudy.id}/setup`}
               className="underline underline-offset-2 hover:text-[color:var(--color-redink)]"
             >
               {comparedStudy.title}

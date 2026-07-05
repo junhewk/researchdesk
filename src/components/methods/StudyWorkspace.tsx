@@ -3,11 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { InputReadinessPanel } from "@/components/InputReadinessPanel";
-import { SessionStream } from "@/components/SessionStream";
 import { AgentStatusChip } from "@/components/methods/AgentStatusChip";
 import { CanvasIntro, CANVAS_INTRO_STORAGE_KEY } from "@/components/methods/CanvasIntro";
 import { ImportEvidenceModal } from "@/components/methods/ImportEvidenceModal";
-import { StudyDraftingPromptsPanel } from "@/components/methods/StudyDraftingPromptsPanel";
 import { TermChip } from "@/components/methods/TermChip";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { useProviderHealth, type ProviderHealthView } from "@/lib/hooks/useProviderHealth";
@@ -503,7 +501,6 @@ export function StudyWorkspace({
             setStream(null);
             refresh();
           }}
-          onTurnComplete={refresh}
           onUseProposal={useProposal}
         />
       )}
@@ -528,16 +525,14 @@ function Header({
   onJumpNext: () => void;
   onShowIntro: () => void;
 }) {
-  const [showDraftingPrompts, setShowDraftingPrompts] = useState(false);
-
   return (
     <div className="border-b-2 border-[color:var(--color-ink)] pb-3 sticky top-0 z-30 bg-[color:var(--color-surface)]">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Link
-          href="/methods-workbench"
+          href="/projects"
           className="shrink-0 text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
         >
-          ← Methods Workbench
+          ← Research Projects
         </Link>
         <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 text-[10px] font-mono uppercase tracking-wide">
           <button
@@ -592,13 +587,13 @@ function Header({
             {study.mode === "scoping_review" && (
               <>
                 <Link
-                  href={`/methods-workbench/${study.id}/corpus`}
+                  href={`/projects/${study.id}/corpus`}
                   className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
                 >
                   Corpus & screening
                 </Link>
                 <Link
-                  href={`/methods-workbench/${study.id}/prisma`}
+                  href={`/projects/${study.id}/prisma`}
                   className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition-colors"
                 >
                   PRISMA flow
@@ -613,22 +608,15 @@ function Header({
                 Next: {inspector.nextBestAction} →
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => setShowDraftingPrompts(true)}
+            <Link
+              href={`/projects/${study.id}/harness`}
               className="px-3 py-1.5 text-[12px] border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)] hover:bg-[color:var(--color-redink)] transition-colors"
             >
               Drafting prompts
-            </button>
+            </Link>
           </div>
         </div>
       </div>
-      {showDraftingPrompts && (
-        <StudyDraftingPromptsPanel
-          studyId={study.id}
-          onClose={() => setShowDraftingPrompts(false)}
-        />
-      )}
     </div>
   );
 }
@@ -1473,7 +1461,7 @@ function ArtifactBar({
             {ARTIFACT_KIND_INFO[a.kind] ? (
               <InfoTip explain={ARTIFACT_KIND_INFO[a.kind].explain} underline={false}>
                 <Link
-                  href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
+                  href={`/projects/${studyId}/artifact/${a.kind}`}
                   className="font-display text-[14px] leading-tight hover:text-[color:var(--color-redink)]"
                 >
                   {a.title}
@@ -1481,7 +1469,7 @@ function ArtifactBar({
               </InfoTip>
             ) : (
               <Link
-                href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
+                href={`/projects/${studyId}/artifact/${a.kind}`}
                 className="font-display text-[14px] leading-tight hover:text-[color:var(--color-redink)]"
               >
                 {a.title}
@@ -1497,7 +1485,7 @@ function ArtifactBar({
             </div>
             <div className="mt-2 flex gap-2 text-[10px] font-mono uppercase">
               <Link
-                href={`/methods-workbench/${studyId}/artifact/${a.kind}`}
+                href={`/projects/${studyId}/artifact/${a.kind}`}
                 className="hover:text-[color:var(--color-redink)]"
               >
                 view
@@ -1574,22 +1562,17 @@ function StreamModal({
   base,
   target,
   onClose,
-  onTurnComplete,
   onUseProposal,
 }: {
   base: string;
   target: StreamTarget;
   onClose: () => void;
-  onTurnComplete: () => void;
   onUseProposal: (
     cardType: string,
     value: string,
     fields?: Record<string, string> | null,
   ) => void;
 }) {
-  const [reply, setReply] = useState("");
-  const [sending, setSending] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
   const [options, setOptions] = useState<ProposalOption[]>([]);
 
   // Poll for posted proposal options while the proposal pass runs.
@@ -1609,20 +1592,6 @@ function StreamModal({
       clearInterval(iv);
     };
   }, [base, target.cardType]);
-
-  async function send() {
-    const content = reply.trim();
-    if (!content) return;
-    setSending(true);
-    setErr(null);
-    const r = await post(`${base}/sessions/${target.id}/messages`, { content });
-    setSending(false);
-    if (r.ok) setReply("");
-    else {
-      const j = await r.json().catch(() => ({}));
-      setErr(formatApiError(j, "could not send the reply — try again"));
-    }
-  }
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
@@ -1681,34 +1650,15 @@ function StreamModal({
           </div>
         )}
 
-        <div className="overflow-y-auto flex-1">
-          <SessionStream sessionId={target.id} workflow="methods" onTurnComplete={onTurnComplete} />
-        </div>
+        {options.length === 0 && (
+          <div className="flex-1 rounded border border-[color:var(--color-outline-variant)] px-4 py-8 text-center text-[13px] italic text-[color:var(--color-on-surface-variant)]">
+            Generating options…
+          </div>
+        )}
 
         <div className="mt-3 border-t border-[color:var(--color-outline-variant)] pt-3">
-          <div className="flex gap-2 items-end">
-            <textarea
-              value={reply}
-              onChange={(e) => setReply(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
-              }}
-              rows={2}
-              placeholder="Reply to the agent — answer its question or ask for a different framing… (⌘/Ctrl+Enter)"
-              className="flex-1 bg-transparent border border-[color:var(--color-outline-variant)] rounded p-2 text-[13px] focus:outline-none focus:border-[color:var(--color-primary)]"
-            />
-            <button
-              onClick={send}
-              disabled={sending || !reply.trim()}
-              className="px-4 py-2 text-[12px] font-mono uppercase border border-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-surface)] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {sending ? "…" : "Send"}
-            </button>
-          </div>
-          {err && <p className="mt-1 text-[11px] text-[color:var(--color-error)]">{err}</p>}
           <p className="mt-2 text-[11px] text-[color:var(--color-on-surface-variant)]">
-            Pick an option above (pre-fills the card, you still save), reply to refine,
-            or close and edit the card directly — the agent never sets a value for you.
+            Choose an option to pre-fill the card, then save or edit it directly.
           </p>
         </div>
       </div>

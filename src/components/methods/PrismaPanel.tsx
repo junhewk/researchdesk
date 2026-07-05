@@ -89,13 +89,13 @@ export function PrismaPanel({
       <div className="border-b-2 border-[color:var(--color-ink)] pb-3">
         <div className="flex items-baseline justify-between">
           <Link
-            href={`/methods-workbench/${study.id}/corpus`}
+            href={`/projects/${study.id}/corpus`}
             className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
           >
             ← Corpus & screening
           </Link>
           <Link
-            href={`/methods-workbench/${study.id}`}
+            href={`/projects/${study.id}/setup`}
             className="text-[11px] font-mono uppercase tracking-wide text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-redink)]"
           >
             Design canvas →
