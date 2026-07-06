@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       "./dist/**/*",
       "./.release/**/*",
       "./.git/**/*",
+      "./data/**/*",
       "./.next/cache/**/*",
     ],
   },

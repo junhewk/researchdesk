@@ -13,7 +13,7 @@ const config = [
     },
   },
   {
-    ignores: ["data/", ".next/", ".release/"],
+    ignores: ["data/", "dist/", ".next/", ".release/"],
   },
 ];
 

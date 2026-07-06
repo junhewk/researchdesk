@@ -24,9 +24,30 @@ const copyEntries = [
   "package.json",
   "package-lock.json",
 ];
+const CODEX_NATIVE_PACKAGES = [
+  "@openai/codex-darwin-arm64",
+  "@openai/codex-darwin-x64",
+  "@openai/codex-linux-arm64",
+  "@openai/codex-linux-x64",
+  "@openai/codex-win32-arm64",
+  "@openai/codex-win32-x64",
+];
 
 function rmrf(file) {
   fs.rmSync(file, { recursive: true, force: true });
+}
+
+function shouldCopyEntrySource(entry, source) {
+  if (entry !== ".next") return true;
+  const rel = path.relative(path.join(root, ".next"), source).split(path.sep).join("/");
+  return ![
+    "cache",
+    "dev",
+    "standalone/.git",
+    "standalone/.release",
+    "standalone/data",
+    "standalone/dist",
+  ].some((blocked) => rel === blocked || rel.startsWith(`${blocked}/`));
 }
 
 function copyEntry(entry) {
@@ -35,7 +56,7 @@ function copyEntry(entry) {
   const dst = path.join(outDir, entry);
   fs.cpSync(src, dst, {
     recursive: true,
-    filter: (source) => !source.includes(`${path.sep}.next${path.sep}cache${path.sep}`),
+    filter: (source) => shouldCopyEntrySource(entry, source),
   });
 }
 
@@ -94,6 +115,20 @@ function chmodLaunchers() {
   }
 }
 
+function pruneCodexNativeRuntime() {
+  for (const nodeModulesDir of [
+    path.join(outDir, "node_modules"),
+    path.join(outDir, ".next", "standalone", "node_modules"),
+  ]) {
+    for (const name of CODEX_NATIVE_PACKAGES) {
+      rmrf(path.join(nodeModulesDir, ...name.split("/")));
+    }
+    for (const name of ["codex", "codex.cmd", "codex.ps1"]) {
+      rmrf(path.join(nodeModulesDir, ".bin", name));
+    }
+  }
+}
+
 function writeManifest() {
   const manifest = {
     name: "ResearchDesk Headless",
@@ -127,6 +162,7 @@ function main() {
   if (!process.env.RESEARCHDESK_SKIP_BUNDLE_INSTALL) {
     run("npm", ["ci", "--omit=dev"]);
   }
+  pruneCodexNativeRuntime();
 
   console.log(outDir);
 }

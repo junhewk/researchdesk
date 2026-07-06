@@ -157,8 +157,9 @@ jobs:
             ResearchDesk ${{ github.ref_name }}.
 
             Artifacts:
-            - Windows x64 portable desktop app
-            - Headless + MCP bundles for Linux x64, Windows x64, and macOS arm64
+            - Windows x64 portable desktop app with the bundled Codex runtime
+            - Headless MCP bundles for Linux x64, Windows x64, and macOS arm64
+              (no embedded Codex runtime; Codex/Claude connect as MCP clients)
 
             This is experimental research-assistance software. Verify LLM
             output, citations, calculations, prompts, and manuscript edits

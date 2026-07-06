@@ -47,9 +47,11 @@ validated — expect updates and validation for those workflows soon.
 - **Codex as a first-class model provider.** The API Providers screen now
   includes Codex with app-scoped ChatGPT browser sign-in, so users can run
   ResearchDesk agents through Codex without saving an OpenAI API key.
-- **Bundled Codex runtime.** Desktop packaging now includes the platform Codex
-  native runtime and audits the expected binary, while allowing the larger
-  app payload that comes with the Codex bundle.
+- **Bundled Codex runtime for desktop.** Desktop packaging now includes the
+  platform Codex native runtime and audits the expected binary, while allowing
+  the larger app payload that comes with the Codex bundle. Headless MCP bundles
+  intentionally omit the native Codex runtime because Codex is the MCP client
+  in that flow, not an embedded ResearchDesk model provider.
 - **Codex-aware provider health.** Provider status now reports bundled runtime
   availability and ChatGPT auth state instead of treating Codex like an API-key
   provider.
