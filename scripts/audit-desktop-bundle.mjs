@@ -13,11 +13,12 @@ const require = createRequire(import.meta.url);
 const { readArchiveHeaderSync } = require("@electron/asar/lib/disk");
 
 // The original 250 MB guardrail predated the bundled Codex native runtime.
-// Current macOS arm64 payload is ~294 MB: ~35 MB app.asar plus ~258 MB
-// app.asar.unpacked, mostly the platform-specific Codex executable. Keep a
-// narrow default cap so accidental cross-platform or duplicate payloads still
-// fail loudly, while allowing the intended Codex bundle.
-const maxPayloadMb = Number(process.env.DESKTOP_APP_PAYLOAD_MAX_MB || 330);
+// Current Codex-aware payloads are ~294 MB on macOS arm64 and ~358 MB on
+// Windows x64. Keep narrow platform defaults so accidental cross-platform or
+// duplicate payloads still fail loudly, while allowing the intended Codex bundle.
+const maxPayloadMbOverride = process.env.DESKTOP_APP_PAYLOAD_MAX_MB
+  ? Number(process.env.DESKTOP_APP_PAYLOAD_MAX_MB)
+  : null;
 const MB = 1024 * 1024;
 
 function sizeOf(file) {
@@ -94,6 +95,15 @@ function expectedCodexBinary(platform, arch) {
   return null;
 }
 
+function maxPayloadMbFor(platform) {
+  if (maxPayloadMbOverride != null) return maxPayloadMbOverride;
+  return platform === "win" ? 390 : 330;
+}
+
+function normalizeArchivePath(file) {
+  return file.split(path.sep).join("/");
+}
+
 function wrongPlatformPatterns(platform) {
   if (platform === "win") return [/darwin/i, /linux-(x64|arm64)/i];
   if (platform === "darwin") return [/win32/i, /linux-(x64|arm64)/i];
@@ -122,20 +132,21 @@ function main() {
   for (const asarPath of asars) {
     const bundleDir = path.dirname(path.dirname(asarPath));
     const unpacked = `${asarPath}.unpacked`;
+    const rel = path.relative(root, asarPath);
+    const platform = targetPlatform(bundleDir);
+    const arch = targetArch(bundleDir);
+    const maxPayloadMb = maxPayloadMbFor(platform);
     const payloadBytes = sizeOf(asarPath) + (fs.existsSync(unpacked) ? sizeOf(unpacked) : 0);
     const payloadMb = payloadBytes / MB;
-    const rel = path.relative(root, asarPath);
     console.log(`${rel}: ${payloadMb.toFixed(1)} MB app payload`);
     if (payloadMb > maxPayloadMb) {
       failures.push(`${rel} is ${payloadMb.toFixed(1)} MB; limit is ${maxPayloadMb} MB`);
     }
 
-    const platform = targetPlatform(bundleDir);
-    const arch = targetArch(bundleDir);
     const patterns = wrongPlatformPatterns(platform);
     const files = [
       ...asarFiles(asarPath),
-      ...walkDir(unpacked).map((file) => path.relative(unpacked, file)),
+      ...walkDir(unpacked).map((file) => normalizeArchivePath(path.relative(unpacked, file))),
     ];
     const codexBinary = expectedCodexBinary(platform, arch);
     if (codexBinary && !files.includes(codexBinary)) {
