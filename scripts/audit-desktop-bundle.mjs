@@ -12,7 +12,12 @@ const distDir = process.env.DESKTOP_DIST_DIR
 const require = createRequire(import.meta.url);
 const { readArchiveHeaderSync } = require("@electron/asar/lib/disk");
 
-const maxPayloadMb = Number(process.env.DESKTOP_APP_PAYLOAD_MAX_MB || 250);
+// The original 250 MB guardrail predated the bundled Codex native runtime.
+// Current macOS arm64 payload is ~294 MB: ~35 MB app.asar plus ~258 MB
+// app.asar.unpacked, mostly the platform-specific Codex executable. Keep a
+// narrow default cap so accidental cross-platform or duplicate payloads still
+// fail loudly, while allowing the intended Codex bundle.
+const maxPayloadMb = Number(process.env.DESKTOP_APP_PAYLOAD_MAX_MB || 330);
 const MB = 1024 * 1024;
 
 function sizeOf(file) {
@@ -59,6 +64,36 @@ function targetPlatform(bundleDir) {
   return process.platform === "win32" ? "win" : process.platform;
 }
 
+function targetArch(bundleDir) {
+  const name = path.basename(bundleDir).toLowerCase();
+  if (name.includes("arm64") || name.includes("aarch64")) return "arm64";
+  if (name.includes("x64") || name.includes("x86_64")) return "x64";
+  return process.arch;
+}
+
+function expectedCodexBinary(platform, arch) {
+  const suffix = platform === "win" ? "codex.exe" : "codex";
+  if (platform === "darwin" && arch === "arm64") {
+    return `node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/${suffix}`;
+  }
+  if (platform === "darwin") {
+    return `node_modules/@openai/codex-darwin-x64/vendor/x86_64-apple-darwin/bin/${suffix}`;
+  }
+  if (platform === "win" && arch === "arm64") {
+    return `node_modules/@openai/codex-win32-arm64/vendor/aarch64-pc-windows-msvc/bin/${suffix}`;
+  }
+  if (platform === "win") {
+    return `node_modules/@openai/codex-win32-x64/vendor/x86_64-pc-windows-msvc/bin/${suffix}`;
+  }
+  if (platform === "linux" && arch === "arm64") {
+    return `node_modules/@openai/codex-linux-arm64/vendor/aarch64-unknown-linux-musl/bin/${suffix}`;
+  }
+  if (platform === "linux") {
+    return `node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/${suffix}`;
+  }
+  return null;
+}
+
 function wrongPlatformPatterns(platform) {
   if (platform === "win") return [/darwin/i, /linux-(x64|arm64)/i];
   if (platform === "darwin") return [/win32/i, /linux-(x64|arm64)/i];
@@ -96,11 +131,16 @@ function main() {
     }
 
     const platform = targetPlatform(bundleDir);
+    const arch = targetArch(bundleDir);
     const patterns = wrongPlatformPatterns(platform);
     const files = [
       ...asarFiles(asarPath),
       ...walkDir(unpacked).map((file) => path.relative(unpacked, file)),
     ];
+    const codexBinary = expectedCodexBinary(platform, arch);
+    if (codexBinary && !files.includes(codexBinary)) {
+      failures.push(`${rel} is missing bundled Codex runtime: ${codexBinary}`);
+    }
     for (const pattern of patterns) {
       const offender = files.find((file) => pattern.test(file));
       if (offender) {

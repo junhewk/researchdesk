@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, Save, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Check, ExternalLink, Loader2, LogIn, LogOut, RefreshCw, Save, Trash2 } from "lucide-react";
 import type { AppLanguage } from "@/server/appLanguage";
 
 type Provider =
   | "openai"
+  | "codex"
   | "gemini"
   | "deepseek"
   | "ollama"
@@ -31,8 +32,27 @@ interface EditableProviderSetting extends PublicProviderSetting {
   clearApiKey: boolean;
 }
 
+interface CodexAuthStatus {
+  configured: boolean;
+  detail: string | null;
+  error: string | null;
+  runtimeAvailable: boolean;
+  runtimeError: string | null;
+}
+
+interface CodexLoginStatus {
+  id: string;
+  status: "starting" | "pending" | "completed" | "failed" | "cancelled";
+  mode: "browser" | "device";
+  verificationUrl: string | null;
+  userCode: string | null;
+  message: string | null;
+  error: string | null;
+}
+
 const LABELS: Record<Provider, string> = {
   openai: "OpenAI",
+  codex: "Codex",
   gemini: "Gemini",
   deepseek: "DeepSeek",
   ollama: "Ollama",
@@ -42,6 +62,7 @@ const LABELS: Record<Provider, string> = {
 
 const DEFAULT_MODELS: Record<Provider, string> = {
   openai: "gpt-5.4",
+  codex: "gpt-5.4-mini",
   gemini: "gemini-2.5-pro",
   deepseek: "deepseek-chat",
   ollama: "qwen3.6",
@@ -51,6 +72,7 @@ const DEFAULT_MODELS: Record<Provider, string> = {
 
 const BASE_URL_HINTS: Record<Provider, string> = {
   openai: "Optional OpenAI-compatible base URL",
+  codex: "Not used",
   gemini: "Not used",
   deepseek: "Not used",
   ollama: "http://127.0.0.1:11434",
@@ -72,6 +94,22 @@ const PROVIDER_COPY: Record<AppLanguage, {
   baseUrl: string;
   apiKey: string;
   clearSavedKey: string;
+  codexAuth: {
+    title: string;
+    checking: string;
+    ready: string;
+    missing: string;
+    runtimeMissing: string;
+    startLogin: string;
+    startDeviceLogin: string;
+    starting: string;
+    openVerification: string;
+    logout: string;
+    refresh: string;
+    cancel: string;
+    codeLabel: string;
+    notApiKey: string;
+  };
   keyStatus: {
     saved: string;
     env: string;
@@ -100,6 +138,22 @@ const PROVIDER_COPY: Record<AppLanguage, {
     baseUrl: "Base URL",
     apiKey: "API key",
     clearSavedKey: "Clear saved key",
+    codexAuth: {
+      title: "Codex ChatGPT auth",
+      checking: "Checking Codex auth",
+      ready: "Signed in with ChatGPT",
+      missing: "Not signed in",
+      runtimeMissing: "Bundled Codex runtime is unavailable",
+      startLogin: "Sign in with browser",
+      startDeviceLogin: "Use code instead",
+      starting: "Starting",
+      openVerification: "Open sign-in link",
+      logout: "Log out",
+      refresh: "Refresh",
+      cancel: "Cancel",
+      codeLabel: "Code",
+      notApiKey: "Codex uses ChatGPT login, not an API key.",
+    },
     keyStatus: {
       saved: "saved key",
       env: "env key",
@@ -128,6 +182,22 @@ const PROVIDER_COPY: Record<AppLanguage, {
     baseUrl: "Base URL",
     apiKey: "API 키",
     clearSavedKey: "저장된 키 지우기",
+    codexAuth: {
+      title: "Codex ChatGPT 인증",
+      checking: "Codex 인증 확인 중",
+      ready: "ChatGPT로 로그인됨",
+      missing: "로그인되지 않음",
+      runtimeMissing: "번들된 Codex 런타임을 사용할 수 없습니다",
+      startLogin: "브라우저로 로그인",
+      startDeviceLogin: "코드로 로그인",
+      starting: "시작 중",
+      openVerification: "로그인 링크 열기",
+      logout: "로그아웃",
+      refresh: "새로고침",
+      cancel: "취소",
+      codeLabel: "코드",
+      notApiKey: "Codex는 API 키가 아니라 ChatGPT 로그인을 사용합니다.",
+    },
     keyStatus: {
       saved: "저장된 키",
       env: "환경 변수 키",
@@ -135,6 +205,7 @@ const PROVIDER_COPY: Record<AppLanguage, {
     },
     baseUrlHints: {
       openai: "선택 사항: OpenAI 호환 base URL",
+      codex: "사용하지 않음",
       gemini: "사용하지 않음",
       deepseek: "사용하지 않음",
       ollama: "http://127.0.0.1:11434",
@@ -170,6 +241,31 @@ export function ProviderSettingsForm({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [codexAuth, setCodexAuth] = useState<CodexAuthStatus | null>(null);
+  const [codexAuthLoading, setCodexAuthLoading] = useState(false);
+  const [codexLogin, setCodexLogin] = useState<CodexLoginStatus | null>(null);
+  const [codexBusy, setCodexBusy] = useState(false);
+
+  const loadCodexAuth = useCallback(async (refresh = false) => {
+    setCodexAuthLoading(true);
+    try {
+      const response = await fetch(
+        `/api/codex/auth/status${refresh ? "?refresh=1" : ""}`,
+      );
+      if (!response.ok) throw new Error(`Could not load Codex auth (${response.status})`);
+      setCodexAuth((await response.json()) as CodexAuthStatus);
+    } catch (err) {
+      setCodexAuth({
+        configured: false,
+        detail: null,
+        error: err instanceof Error ? err.message : "Could not load Codex auth",
+        runtimeAvailable: false,
+        runtimeError: err instanceof Error ? err.message : "Could not load Codex auth",
+      });
+    } finally {
+      setCodexAuthLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -193,6 +289,39 @@ export function ProviderSettingsForm({
       cancelled = true;
     };
   }, [copy.loadError]);
+
+  useEffect(() => {
+    void loadCodexAuth(false);
+  }, [loadCodexAuth]);
+
+  useEffect(() => {
+    if (!codexLogin || !["starting", "pending"].includes(codexLogin.status)) {
+      return;
+    }
+    let cancelled = false;
+    const timer = setInterval(() => {
+      void (async () => {
+        try {
+	          const response = await fetch(
+	            `/api/codex/auth/device/status?id=${encodeURIComponent(codexLogin.id)}`,
+	          );
+	          if (!response.ok) return;
+	          const next = (await response.json()) as CodexLoginStatus;
+	          if (cancelled) return;
+	          setCodexLogin(next);
+          if (next.status === "completed") {
+            void loadCodexAuth(true);
+          }
+        } catch {
+          // Keep polling; the auth status panel will surface persistent errors.
+        }
+      })();
+    }, 2000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [codexLogin, loadCodexAuth]);
 
   const providerOptions = useMemo(
     () => providers.map((provider) => provider.provider),
@@ -244,6 +373,74 @@ export function ProviderSettingsForm({
       setSaving(false);
     }
   };
+
+  const startCodexLogin = async (mode: "browser" | "device" = "browser") => {
+    setCodexBusy(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/codex/auth/device/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "Could not start Codex login");
+      const next = data as CodexLoginStatus;
+      setCodexLogin(next);
+      if (next.verificationUrl) {
+        window.open(next.verificationUrl, "_blank", "noopener,noreferrer");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not start Codex login");
+    } finally {
+      setCodexBusy(false);
+    }
+  };
+
+  const cancelCodexLogin = async () => {
+    if (!codexLogin) return;
+    setCodexBusy(true);
+    try {
+      const response = await fetch("/api/codex/auth/device/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+	        body: JSON.stringify({ id: codexLogin.id }),
+	      });
+	      const data = await response.json().catch(() => null);
+	      if (response.ok) setCodexLogin(data as CodexLoginStatus);
+    } finally {
+      setCodexBusy(false);
+    }
+  };
+
+  const logoutCodex = async () => {
+    setCodexBusy(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/codex/auth/logout", { method: "POST" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "Could not log out of Codex");
+      setCodexLogin(null);
+      setCodexAuth(data as CodexAuthStatus);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not log out of Codex");
+    } finally {
+      setCodexBusy(false);
+    }
+  };
+
+  const codexAuthText = codexAuthLoading
+    ? copy.codexAuth.checking
+    : codexAuth?.runtimeAvailable === false
+      ? `${copy.codexAuth.runtimeMissing}${codexAuth.runtimeError ? `: ${codexAuth.runtimeError}` : ""}`
+      : codexAuth?.configured
+        ? codexAuth.detail || copy.codexAuth.ready
+        : codexAuth?.error
+          ? `${copy.codexAuth.missing}: ${codexAuth.error}`
+          : copy.codexAuth.missing;
+  const codexAuthOk = Boolean(codexAuth?.runtimeAvailable && codexAuth.configured);
+  const codexLoginActive =
+    codexLogin != null && (codexLogin.status === "starting" || codexLogin.status === "pending");
 
   if (loading) {
     return (
@@ -308,7 +505,11 @@ export function ProviderSettingsForm({
                 {LABELS[provider.provider]}
               </h3>
               <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[color:var(--color-on-surface-variant)]">
-                {provider.savedApiKey
+                {provider.provider === "codex"
+                  ? codexAuthOk
+                    ? copy.codexAuth.ready
+                    : copy.codexAuth.missing
+                  : provider.savedApiKey
                   ? copy.keyStatus.saved
                   : provider.envApiKey
                     ? copy.keyStatus.env
@@ -338,6 +539,7 @@ export function ProviderSettingsForm({
                   }
                   placeholder={copy.baseUrlHints[provider.provider]}
                   disabled={
+                    provider.provider === "codex" ||
                     provider.provider === "gemini" ||
                     provider.provider === "deepseek"
                   }
@@ -346,46 +548,169 @@ export function ProviderSettingsForm({
               </div>
             </div>
 
-            <div className="mt-4">
-              <label className="label block mb-1">{copy.apiKey}</label>
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  value={provider.apiKey}
-                  onChange={(event) =>
-                    patchProvider(provider.provider, {
-                      apiKey: event.target.value,
-                      clearApiKey: false,
-                    })
-                  }
-                  placeholder={
-                    provider.savedApiKey
-                      ? copy.keyPlaceholders.saved
-                      : provider.envApiKey
-                        ? copy.keyPlaceholders.env
-                        : provider.provider === "ollama"
-                          ? copy.keyPlaceholders.ollama
-                          : copy.keyPlaceholders.paste
-                  }
-                  className="min-w-0 flex-1 rounded border border-[color:var(--color-outline-variant)] bg-transparent px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)]"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    patchProvider(provider.provider, {
-                      apiKey: "",
-                      clearApiKey: true,
-                      savedApiKey: false,
-                    })
-                  }
-                  disabled={!provider.savedApiKey && !provider.apiKey}
-                  title={copy.clearSavedKey}
-                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded border border-[color:var(--color-outline-variant)] text-[color:var(--color-on-surface-variant)] transition-colors hover:border-[color:var(--color-outline)] hover:text-[color:var(--color-on-surface)] disabled:opacity-35"
-                >
-                  <Trash2 className="h-4 w-4" strokeWidth={1.75} />
-                </button>
+            {provider.provider === "codex" ? (
+              <div className="mt-4 rounded border border-[color:var(--color-outline-variant)] p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[13px] font-medium text-[color:var(--color-on-surface)]">
+                      {copy.codexAuth.title}
+                    </p>
+                    <p className={`mt-1 text-[12px] ${
+                      codexAuthOk
+                        ? "text-[color:var(--color-on-secondary-container)]"
+                        : "text-[color:var(--color-on-surface-variant)]"
+                    }`}>
+                      {codexAuthText}
+                    </p>
+                    <p className="mt-1 text-[12px] text-[color:var(--color-on-surface-variant)]">
+                      {copy.codexAuth.notApiKey}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void loadCodexAuth(true)}
+                      disabled={codexAuthLoading || codexBusy}
+                      className="inline-flex h-9 items-center gap-2 rounded border border-[color:var(--color-outline-variant)] px-3 text-[12px] font-medium transition-colors hover:border-[color:var(--color-outline)] disabled:opacity-45"
+                    >
+                      {codexAuthLoading ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
+                      ) : (
+                        <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.75} />
+                      )}
+                      {copy.codexAuth.refresh}
+                    </button>
+                    {codexAuthOk ? (
+                      <button
+                        type="button"
+                        onClick={() => void logoutCodex()}
+                        disabled={codexBusy}
+                        className="inline-flex h-9 items-center gap-2 rounded border border-[color:var(--color-outline-variant)] px-3 text-[12px] font-medium transition-colors hover:border-[color:var(--color-outline)] disabled:opacity-45"
+                      >
+                        {codexBusy ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
+                        ) : (
+                          <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
+                        )}
+                        {copy.codexAuth.logout}
+                      </button>
+	                    ) : (
+	                      <>
+	                        <button
+	                          type="button"
+	                          onClick={() => void startCodexLogin("browser")}
+	                          disabled={codexBusy || codexLoginActive || codexAuth?.runtimeAvailable === false}
+	                          className="inline-flex h-9 items-center gap-2 rounded bg-[color:var(--color-primary)] px-3 text-[12px] font-medium text-[color:var(--color-on-primary)] transition-colors hover:bg-[color:var(--color-primary-container)] disabled:opacity-45"
+	                        >
+	                          {codexBusy || codexLoginActive ? (
+	                            <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
+	                          ) : (
+	                            <LogIn className="h-3.5 w-3.5" strokeWidth={1.75} />
+	                          )}
+	                          {codexBusy || codexLoginActive ? copy.codexAuth.starting : copy.codexAuth.startLogin}
+	                        </button>
+	                        <button
+	                          type="button"
+	                          onClick={() => void startCodexLogin("device")}
+	                          disabled={codexBusy || codexLoginActive || codexAuth?.runtimeAvailable === false}
+	                          className="inline-flex h-9 items-center gap-2 rounded border border-[color:var(--color-outline-variant)] px-3 text-[12px] font-medium transition-colors hover:border-[color:var(--color-outline)] disabled:opacity-45"
+	                        >
+	                          {copy.codexAuth.startDeviceLogin}
+	                        </button>
+	                      </>
+	                    )}
+                  </div>
+                </div>
+	                {codexLogin && codexLogin.status !== "completed" && (
+	                  <div className="mt-4 border-t border-[color:var(--color-outline-variant)] pt-4">
+	                    {(codexLogin.verificationUrl || codexLogin.userCode || codexLoginActive) && (
+	                      <div className="flex flex-wrap items-center gap-3">
+	                        {codexLogin.userCode && (
+	                          <>
+	                            <span className="label">{copy.codexAuth.codeLabel}</span>
+	                            <span className="rounded border border-[color:var(--color-outline-variant)] px-2 py-1 font-mono text-[16px] text-[color:var(--color-on-surface)]">
+	                              {codexLogin.userCode}
+	                            </span>
+	                          </>
+	                        )}
+	                        {codexLogin.verificationUrl && (
+	                          <button
+	                            type="button"
+	                            onClick={() =>
+	                              window.open(codexLogin.verificationUrl!, "_blank", "noopener,noreferrer")
+	                            }
+                            className="inline-flex h-8 items-center gap-2 rounded border border-[color:var(--color-outline-variant)] px-3 text-[12px] font-medium transition-colors hover:border-[color:var(--color-outline)]"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.75} />
+                            {copy.codexAuth.openVerification}
+                          </button>
+                        )}
+                        {codexLoginActive && (
+                          <button
+                            type="button"
+                            onClick={() => void cancelCodexLogin()}
+                            disabled={codexBusy}
+                            className="inline-flex h-8 items-center rounded border border-[color:var(--color-outline-variant)] px-3 text-[12px] font-medium transition-colors hover:border-[color:var(--color-outline)] disabled:opacity-45"
+                          >
+                            {copy.codexAuth.cancel}
+                          </button>
+                        )}
+                      </div>
+                    )}
+	                    {(codexLogin.message || codexLogin.error) && (
+	                      <p className={`mt-2 text-[12px] ${
+	                        codexLogin.error
+	                          ? "text-[color:var(--color-error)]"
+	                          : "text-[color:var(--color-on-surface-variant)]"
+	                      }`}>
+	                        {codexLogin.error || codexLogin.message}
+	                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
+            ) : (
+              <div className="mt-4">
+                <label className="label block mb-1">{copy.apiKey}</label>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={provider.apiKey}
+                    onChange={(event) =>
+                      patchProvider(provider.provider, {
+                        apiKey: event.target.value,
+                        clearApiKey: false,
+                      })
+                    }
+                    placeholder={
+                      provider.savedApiKey
+                        ? copy.keyPlaceholders.saved
+                        : provider.envApiKey
+                          ? copy.keyPlaceholders.env
+                          : provider.provider === "ollama"
+                            ? copy.keyPlaceholders.ollama
+                            : copy.keyPlaceholders.paste
+                    }
+                    className="min-w-0 flex-1 rounded border border-[color:var(--color-outline-variant)] bg-transparent px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      patchProvider(provider.provider, {
+                        apiKey: "",
+                        clearApiKey: true,
+                        savedApiKey: false,
+                      })
+                    }
+                    disabled={!provider.savedApiKey && !provider.apiKey}
+                    title={copy.clearSavedKey}
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded border border-[color:var(--color-outline-variant)] text-[color:var(--color-on-surface-variant)] transition-colors hover:border-[color:var(--color-outline)] hover:text-[color:var(--color-on-surface)] disabled:opacity-35"
+                  >
+                    <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

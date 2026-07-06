@@ -2,6 +2,7 @@ import { getDb } from "./db";
 
 export const apiProviderKeys = [
   "openai",
+  "codex",
   "gemini",
   "deepseek",
   "ollama",
@@ -55,6 +56,7 @@ export interface ProviderSettingsPatch {
 
 const API_KEY_ENV: Record<ApiProviderKey, string | null> = {
   openai: "OPENAI_API_KEY",
+  codex: null,
   gemini: "GEMINI_API_KEY",
   deepseek: "DEEPSEEK_API_KEY",
   ollama: null,

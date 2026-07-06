@@ -15,18 +15,19 @@ without inventing research content. Novel claims, study design choices,
 statistical judgments, citations, and final manuscript edits remain the user's
 responsibility.
 
-ResearchDesk can run against cloud or local API providers, including
-OpenAI-compatible endpoints, Ollama, LM Studio, and llama-server. Local
-llama-server / LM Studio endpoints are driven with grammar-constrained
-(JSON-schema) decoding, so small local models such as Qwen3 return reliable
-structured output. Data is stored locally by default, while provider calls only
-happen when you configure a provider and run an LLM-backed action.
+ResearchDesk can run against cloud or local API providers, including OpenAI,
+Codex with ChatGPT login, OpenAI-compatible endpoints, Ollama, LM Studio, and
+llama-server. Local llama-server / LM Studio endpoints are driven with
+grammar-constrained (JSON-schema) decoding, so small local models such as Qwen3
+return reliable structured output. Data is stored locally by default, while
+provider calls only happen when you configure a provider and run an LLM-backed
+action.
 
 Korean guide: [`i18n/korean/README.md`](i18n/korean/README.md)
 
 ## Status
 
-This is the `v0.1.3` release of a research-assistance app. The distributed
+This is the `v0.1.4` release of a research-assistance app. The distributed
 desktop artifacts are the Windows x64 portable `.exe` from GitHub Actions and
 the local macOS arm64 build in `dist/mac-arm64/ResearchDesk.app`. Headless MCP
 bundles are published separately as `ResearchDesk-Headless-*` artifacts for
@@ -40,6 +41,20 @@ So far the app has been tested primarily against **scoping- and
 systematic-review** research. The other study modes (retrospective
 observational and interventional/trial) are supported but not yet fully
 validated — expect updates and validation for those workflows soon.
+
+## What's new in v0.1.4
+
+- **Codex as a first-class model provider.** The API Providers screen now
+  includes Codex with app-scoped ChatGPT browser sign-in, so users can run
+  ResearchDesk agents through Codex without saving an OpenAI API key.
+- **Bundled Codex runtime.** Desktop packaging now includes the platform Codex
+  native runtime and audits the expected binary, while allowing the larger
+  app payload that comes with the Codex bundle.
+- **Codex-aware provider health.** Provider status now reports bundled runtime
+  availability and ChatGPT auth state instead of treating Codex like an API-key
+  provider.
+- **Codex auth state stays local.** The app stores the Codex auth cache under
+  the ResearchDesk data directory and ignores those local runtime files in git.
 
 ## What's new in v0.1.3
 
@@ -106,8 +121,11 @@ validated — expect updates and validation for those workflows soon.
 
 The app stores data locally in SQLite and markdown exports. Cloud providers
 receive manuscript or reviewer content only when you configure and use a cloud
-API provider. Do not send PHI, PII, embargoed manuscripts, or confidential peer
-review material to a cloud provider unless you have the right to do so.
+API provider. Codex is also a cloud provider: its ChatGPT auth cache is stored
+under the app data directory at `codex-home/auth.json`, and selected prompts are
+sent to OpenAI when you run Codex-backed actions. Do not send PHI, PII,
+embargoed manuscripts, or confidential peer review material to a cloud provider
+unless you have the right to do so.
 
 The Electron desktop app binds its server to `127.0.0.1` and protects local
 `/api/*` requests with a short-lived app token injected by the Electron main
@@ -168,12 +186,16 @@ Open `Settings` -> `API Providers`.
 
 Set the default provider, model, API key, and base URL. These settings power
 real LLM-backed actions such as manuscript review, readiness checks, reviewer
-responses, version creation, and finalization.
+responses, version creation, and finalization. For Codex, choose the model and
+use the ChatGPT browser sign-in controls; API key and base URL are not used.
+The older device-code flow is available only as a fallback.
 
 The Settings page and the Methods Workbench setup panel show a live status for
 every provider — what is reachable, what is missing an API key, and the exact
 step to fix it — so configuration problems surface immediately instead of after
 a long timeout. The same check is available at `GET /api/providers/health`.
+`local_only` studies and articles still reject all cloud providers, including
+Codex.
 
 Use `Settings` -> `Language` to switch the app shell and settings pane between
 English and Korean.
@@ -317,6 +339,10 @@ Node install, or a checkout path:
 ./bin/researchdesk server
 ./bin/researchdesk config codex
 ```
+
+This Codex registration is for using the Codex CLI as an MCP client. It is
+separate from `Settings` -> `API Providers` -> `Codex`, which lets the app use
+Codex as its own LLM provider through ChatGPT login.
 
 For MCP clients, `researchdesk mcp --with-server` starts a private loopback app
 server for the MCP session and shuts it down when the client exits.

@@ -1,6 +1,7 @@
 // Provider and workflow types
 export type Provider =
   | "openai"
+  | "codex"
   | "gemini"
   | "deepseek"
   | "ollama"

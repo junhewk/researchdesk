@@ -4,6 +4,7 @@ export type LocalProvider = Extract<Provider, "ollama" | "lmstudio" | "llama_ser
 
 export const PROVIDER_OPTIONS: { value: Provider; label: string }[] = [
   { value: "openai", label: "OpenAI" },
+  { value: "codex", label: "Codex" },
   { value: "gemini", label: "Gemini" },
   { value: "deepseek", label: "DeepSeek" },
   { value: "ollama", label: "Ollama" },

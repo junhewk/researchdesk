@@ -106,6 +106,10 @@ command = "/path/to/ResearchDesk-Headless/bin/researchdesk"
 args = ["mcp", "--with-server"]
 ```
 
+This registration lets the Codex CLI drive ResearchDesk over MCP. It is
+separate from the built-in `Codex` API provider in the desktop Settings screen,
+which lets ResearchDesk call Codex as an LLM backend through ChatGPT login.
+
 ## 6. Tools
 
 **Corpus & drafting**

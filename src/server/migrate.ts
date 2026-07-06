@@ -41,6 +41,72 @@ export function runMigrations(db: AppDatabase): void {
   if (currentVersion < 25) migrateV25(db);
   if (currentVersion < 26) migrateV26(db);
   if (currentVersion < 27) migrateV27(db);
+  if (currentVersion < 28) migrateV28(db);
+}
+
+function migrateV28(db: AppDatabase): void {
+  // Add Codex as a first-class API provider. Both sessions.provider and
+  // api_provider_settings.provider are guarded by CHECK constraints, so SQLite
+  // requires table rebuilds instead of ALTER COLUMN.
+  const foreignKeys = db.pragma("foreign_keys", { simple: true }) as number;
+  db.pragma("foreign_keys = OFF");
+  try {
+    db.transaction(() => {
+      db.exec(`
+        DROP TABLE IF EXISTS sessions_v28;
+        CREATE TABLE sessions_v28 (
+          id                  TEXT PRIMARY KEY,
+          manuscript_id       TEXT REFERENCES manuscripts(id) ON DELETE SET NULL,
+          protocol_id         TEXT,
+          study_id            TEXT REFERENCES studies(id) ON DELETE SET NULL,
+          workflow            TEXT NOT NULL CHECK (workflow IN ('revision','review','manuscript','methods')),
+          mode                TEXT,
+          provider            TEXT NOT NULL CHECK (provider IN ('openai','codex','gemini','deepseek','ollama','lmstudio','llama_server')),
+          model               TEXT,
+          effort              TEXT CHECK (effort IN ('low','medium','high','xhigh','max')),
+          provider_session_id TEXT,
+          status              TEXT NOT NULL DEFAULT 'new'
+                                CHECK (status IN ('new','running','idle','awaiting_user','completed','crashed')),
+          created_at          INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at          INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        INSERT INTO sessions_v28
+          (id, manuscript_id, protocol_id, study_id, workflow, mode, provider,
+           model, effort, provider_session_id, status, created_at, updated_at)
+        SELECT id, manuscript_id, protocol_id, study_id, workflow, mode, provider,
+               model, effort, provider_session_id, status, created_at, updated_at
+        FROM sessions;
+        DROP TABLE sessions;
+        ALTER TABLE sessions_v28 RENAME TO sessions;
+        CREATE INDEX IF NOT EXISTS idx_sessions_manuscript_workflow
+          ON sessions(manuscript_id, workflow, updated_at);
+        CREATE INDEX IF NOT EXISTS idx_sessions_protocol_workflow
+          ON sessions(protocol_id, workflow, updated_at);
+        CREATE INDEX IF NOT EXISTS idx_sessions_study_workflow
+          ON sessions(study_id, workflow, updated_at);
+
+        DROP TABLE IF EXISTS api_provider_settings_v28;
+        CREATE TABLE api_provider_settings_v28 (
+          provider    TEXT PRIMARY KEY
+                        CHECK (provider IN ('openai','codex','gemini','deepseek','ollama','lmstudio','llama_server')),
+          model       TEXT,
+          api_key     TEXT,
+          base_url    TEXT,
+          updated_at  INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        INSERT INTO api_provider_settings_v28
+          (provider, model, api_key, base_url, updated_at)
+        SELECT provider, model, api_key, base_url, updated_at
+        FROM api_provider_settings;
+        DROP TABLE api_provider_settings;
+        ALTER TABLE api_provider_settings_v28 RENAME TO api_provider_settings;
+
+        INSERT INTO schema_version (version) VALUES (28);
+      `);
+    })();
+  } finally {
+    db.pragma(`foreign_keys = ${foreignKeys ? "ON" : "OFF"}`);
+  }
 }
 
 function migrateV27(db: AppDatabase): void {

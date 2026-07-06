@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 const providerPatchSchema = z.object({
   provider: z
-    .enum(["openai", "gemini", "deepseek", "ollama", "lmstudio", "llama_server"]),
+    .enum(["openai", "codex", "gemini", "deepseek", "ollama", "lmstudio", "llama_server"]),
   model: z.string().nullable().optional(),
   apiKey: z.string().nullable().optional(),
   clearApiKey: z.boolean().optional(),
@@ -18,7 +18,7 @@ const providerPatchSchema = z.object({
 
 const settingsPatchSchema = z.object({
   defaultProvider: z
-    .enum(["openai", "gemini", "deepseek", "ollama", "lmstudio", "llama_server"])
+    .enum(["openai", "codex", "gemini", "deepseek", "ollama", "lmstudio", "llama_server"])
     .optional(),
   providers: z.array(providerPatchSchema).optional(),
 });

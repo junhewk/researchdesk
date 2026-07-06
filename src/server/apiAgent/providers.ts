@@ -1,5 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
+import { CodexChatModel } from "./codexModel";
 import {
   getDefaultApiProvider,
   getProviderRuntimeSetting,
@@ -8,6 +9,7 @@ import {
 
 export const apiProviderSchema = z.enum([
   "openai",
+  "codex",
   "gemini",
   "deepseek",
   "ollama",
@@ -141,6 +143,10 @@ export async function createApiChatModel(
   const apiKey = config.apiKey || saved.apiKey;
   const baseUrl = config.baseUrl || saved.baseUrl;
 
+  if (config.provider === "codex") {
+    return new CodexChatModel({ ...config, model }, temperature);
+  }
+
   if (config.provider === "gemini") {
     const mod = await import("@langchain/google-genai");
     return new mod.ChatGoogleGenerativeAI({
@@ -235,6 +241,16 @@ export function resolveProviderConfig(
   const baseUrl = overrides?.baseUrl || saved.baseUrl || undefined;
 
   switch (provider) {
+    case "codex":
+      return {
+        provider,
+        kind: "cloud",
+        model: model || env("CODEX_MODEL") || "gpt-5.4-mini",
+        baseUrl: "codex://chatgpt",
+        apiKey: null,
+        keyEnvVar: null,
+        baseUrlEnvVar: null,
+      };
     case "gemini":
       return {
         provider,

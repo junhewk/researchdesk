@@ -307,6 +307,11 @@ export const PROVIDER_INFO: Record<string, ProviderInfo> = {
     kind: "cloud",
     explain: "Cloud provider — easiest to set up, needs an API key; text leaves this computer.",
   },
+  codex: {
+    label: "Codex",
+    kind: "cloud",
+    explain: "Cloud provider — uses ChatGPT Codex auth instead of an API key; text leaves this computer.",
+  },
   gemini: {
     label: "Google Gemini",
     kind: "cloud",

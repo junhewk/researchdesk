@@ -3,6 +3,7 @@ import {
   resolveProviderConfig,
   type ApiProvider,
 } from "./apiAgent/providers";
+import { getCodexAuthStatus } from "./codexAuth";
 
 /**
  * Cheap, no-token health probes for every AI provider, so the UI can tell a
@@ -81,12 +82,41 @@ export async function checkProvider(
     latency_ms: Date.now() - startedAt,
   });
 
+  if (provider === "codex") {
+    try {
+      const auth = await getCodexAuthStatus({ refresh: false });
+      if (!auth.runtimeAvailable) {
+        return done(
+          "error",
+          auth.runtimeError ?? "Bundled Codex runtime is unavailable.",
+          "Install a ResearchDesk build that includes the Codex runtime, then re-check.",
+        );
+      }
+      if (!auth.configured) {
+        return done(
+          "no_key",
+          "Codex is installed, but ChatGPT auth is not configured.",
+          "Open Settings -> API Providers and sign in with ChatGPT under Codex.",
+        );
+      }
+      return done("ok", `Codex ChatGPT auth is configured (model: ${resolved.model}).`);
+    } catch (err) {
+      return done(
+        "error",
+        err instanceof Error ? err.message : "Codex health check failed.",
+        "Open Settings -> API Providers and re-check Codex auth.",
+      );
+    }
+  }
+
   // Cloud providers without a key fail fast, no network call.
   if (resolved.kind === "cloud" && !resolved.apiKey) {
     return done(
       "no_key",
       `No API key configured for ${provider}.`,
-      `Set ${resolved.keyEnvVar} in the .env file next to the app and restart it — or use a local provider instead.`,
+      resolved.keyEnvVar
+        ? `Set ${resolved.keyEnvVar} in the .env file next to the app and restart it — or use a local provider instead.`
+        : "Check the provider configuration in Settings.",
     );
   }
 
@@ -276,6 +306,13 @@ export function classifyAgentError(
     lower.includes("permission") ||
     lower.includes("authentication")
   ) {
+    if (provider === "codex") {
+      return {
+        code: "missing_or_bad_key",
+        message: "Codex ChatGPT auth is missing or was rejected.",
+        fix: "Open Settings -> API Providers and sign in with ChatGPT under Codex.",
+      };
+    }
     return {
       code: "missing_or_bad_key",
       message: `The ${provider} API key is missing or was rejected.`,

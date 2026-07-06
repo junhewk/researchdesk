@@ -42,6 +42,8 @@ data/*.bak
 data/exports/
 data/projects/
 data/snapshots/
+data/codex-home/
+data/codex-workspace/
 
 # python
 python/__pycache__/
